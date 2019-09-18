@@ -8,14 +8,20 @@ import android.view.WindowManager;
 
 import com.android.ajtprestigecleaning.R;
 
-public class ForgotPasswordActivity extends AppCompatActivity {
+public class ForgotPasswordActivity extends BaseActivityk {
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
+    }
+
+    @Override
+    protected int getLayoutResourceId() {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        setContentView(R.layout.activity_forgot_password);
+        return R.layout.activity_forgot_password;
     }
 }

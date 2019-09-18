@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.android.ajtprestigecleaning">
 
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -9,9 +10,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activities.PrivacyActivity"></activity>
-        <activity android:name=".activities.TermsActivity" />
-        <activity android:name=".activities.ContactUsActivity" />
+        <activity android:name=".activities.PrivacyActivity"
+            android:screenOrientation="portrait"></activity>
+        <activity android:name=".activities.TermsActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".activities.ContactUsActivity"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".activities.DashboardActivity"
             android:label=""

@@ -1,5 +1,9 @@
 package com.android.ajtprestigecleaning.activities;
 
+import android.app.Dialog;
+import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 
 import com.android.ajtprestigecleaning.R;
@@ -19,25 +23,76 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentManager;
 
+import android.view.View;
+import android.view.Window;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 
-public class DashboardActivity extends AppCompatActivity
+import io.paperdb.Paper;
+
+public class DashboardActivity extends BaseActivityk
         implements NavigationView.OnNavigationItemSelectedListener {
+    TextView contactus,terms,privacy,logout;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_dashboard);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        final DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
+        contactus=findViewById(R.id.contactus);
+        terms=findViewById(R.id.terms);
+        privacy=findViewById(R.id.privacy);
+        logout=findViewById(R.id.logout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
+
+        contactus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(DashboardActivity.this,ContactUsActivity.class);
+                startActivity(intent);
+                drawer.closeDrawer(GravityCompat.START);
+
+            }
+        });
+
+        terms.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(DashboardActivity.this,TermsActivity.class);
+                startActivity(intent);
+                drawer.closeDrawer(GravityCompat.START);
+
+            }
+        });
+
+
+        privacy.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(DashboardActivity.this,PrivacyActivity.class);
+                startActivity(intent);
+                drawer.closeDrawer(GravityCompat.START);
+            }
+        });
+
+        logout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+               showIosDialog();
+
+
+            }
+        });
+
+
+
+
         BottomNavigationView bottomNavigationView = (BottomNavigationView)
                 findViewById(R.id.bottom_navigation);
 
@@ -59,6 +114,11 @@ public class DashboardActivity extends AppCompatActivity
                         return false;
                     }
                 });
+    }
+
+    @Override
+    protected int getLayoutResourceId() {
+        return R.layout.activity_dashboard;
     }
 
     @Override
@@ -97,4 +157,36 @@ public class DashboardActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+    public void showIosDialog(){
+        final Dialog dialog = new Dialog(this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setCancelable(false);
+        dialog.setContentView(R.layout.logout_dialog);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        TextView text = (TextView) dialog.findViewById(R.id.ios_text_logout);
+        TextView dialogButton = (TextView) dialog.findViewById(R.id.ios_cancel);
+        dialogButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        TextView dialogButton_logout = (TextView) dialog.findViewById(R.id.ios_logout);
+        dialogButton_logout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(DashboardActivity.this, LoginActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
+
+        dialog.show();
+
+
+    }
+
+
 }

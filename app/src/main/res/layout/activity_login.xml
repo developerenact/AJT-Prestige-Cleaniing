@@ -11,7 +11,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true"
-        android:scrollbarSize="0dp"
         tools:context=".activities.Login">
 
 
@@ -32,64 +31,40 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@mipmap/small_logo" />
 
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/label_signup"
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/tablayout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="@string/sign_up"
-                android:textSize="18sp"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:tabIndicatorFullWidth="false"
+                app:tabTextAppearance="@style/CustomTextAppearanceTab"
+                app:layout_constraintTop_toTopOf="parent"
+                app:tabIndicatorColor="@color/grey"
+                app:tabMode="scrollable">
+
+                <com.google.android.material.tabs.TabItem
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Sign In" />
+
+                <com.google.android.material.tabs.TabItem
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:text="Sign Up" />
+            </com.google.android.material.tabs.TabLayout>
 
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/label_signin"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:layout_marginRight="24dp"
-                android:text="Sign In"
-                android:textSize="18sp"
-                app:layout_constraintRight_toLeftOf="@id/label_signup"
-                app:layout_constraintTop_toTopOf="parent" />
-
-
-            <View
-                android:id="@+id/sign_in_view"
-                android:layout_width="0dp"
-                android:layout_height="2dp"
-                android:layout_marginTop="4dp"
-                android:background="@color/grey"
-                android:visibility="gone"
-                app:layout_constraintEnd_toEndOf="@id/label_signin"
-                app:layout_constraintStart_toStartOf="@id/label_signin"
-                app:layout_constraintTop_toBottomOf="@+id/label_signin" />
-
-
-            <View
-                android:id="@+id/sign_up_view"
-                android:layout_width="0dp"
-                android:layout_height="2dp"
-                android:layout_marginTop="4dp"
-                android:background="@color/grey"
-                android:visibility="gone"
-                app:layout_constraintEnd_toEndOf="@id/label_signup"
-                app:layout_constraintStart_toStartOf="@id/label_signup"
-                app:layout_constraintTop_toBottomOf="@+id/label_signup" />
-
-
-            <FrameLayout
-                android:id="@+id/container"
+            <androidx.viewpager.widget.ViewPager
+                android:id="@+id/viewpager"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:paddingTop="8dp"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/logo">
 
-            </FrameLayout>
+            </androidx.viewpager.widget.ViewPager>
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

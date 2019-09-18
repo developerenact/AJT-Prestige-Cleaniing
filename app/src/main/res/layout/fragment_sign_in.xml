@@ -11,8 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true"
-        android:scrollbarSize="0dp"
-        tools:context=".activities.Login">
+        android:scrollbarSize="0dp">
 
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -33,15 +32,7 @@
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/label_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="John Doe"
-                android:textColor="@color/black"
-                android:textSize="28sp"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/label_welcome" />
+
 
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:id="@+id/linear_layout"
@@ -55,7 +46,7 @@
                 android:paddingRight="8dp"
                 android:paddingBottom="30dp"
                 app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/label_name">
+                app:layout_constraintTop_toBottomOf="@id/label_welcome">
 
                 <androidx.appcompat.widget.AppCompatEditText
                     android:id="@+id/et_email"
@@ -115,7 +106,7 @@
                 app:cardCornerRadius="8dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginRight="2dp"
-                android:layout_marginBottom="2dp"
+                android:layout_marginBottom="8dp"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/label_forgot_pass">
 
