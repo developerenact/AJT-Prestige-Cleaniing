@@ -12,4 +12,7 @@
     <color name="underline">#F48544</color>
     <color name="green">#A7C933</color>
     <color name="red">#F26C1E</color>
+    <color name="blue">#2196F3</color>
+    <color name="darkgray">#EFECED</color>
+
 </resources>

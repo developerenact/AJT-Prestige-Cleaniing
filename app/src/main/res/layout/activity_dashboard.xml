@@ -31,7 +31,7 @@
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:layout_marginTop="42dp"
-            android:layout_marginLeft="24dp"
+            android:layout_marginLeft="32dp"
             android:layout_marginRight="24dp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -50,7 +50,7 @@
             android:textSize="18sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="24dp"
+            android:layout_marginLeft="32dp"
             android:text="John Doe"/>
 
         <androidx.appcompat.widget.AppCompatTextView
@@ -60,7 +60,7 @@
             android:layout_width="wrap_content"
             android:textSize="11sp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="24dp"
+            android:layout_marginLeft="32dp"
             android:text="Prestige member"/>
 
 
@@ -69,14 +69,14 @@
             app:layout_constraintTop_toBottomOf="@id/nav_member"
             app:layout_constraintStart_toStartOf="parent"
             android:layout_width="wrap_content"
-            android:textSize="11sp"
-            android:paddingRight="40dp"
-            android:drawablePadding="24dp"
-            android:paddingLeft="12dp"
+            android:textSize="14sp"
+            android:paddingRight="64dp"
+            android:drawablePadding="12dp"
+            android:paddingLeft="8dp"
             android:drawableLeft="@mipmap/profile"
             android:drawableTint="@color/white"
-            android:paddingTop="4dp"
-            android:paddingBottom="4dp"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp"
             android:textColor="@color/white"
             android:background="@drawable/profile_border"
             android:layout_marginTop="16dp"
@@ -87,9 +87,10 @@
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/work_history"
             app:layout_constraintTop_toBottomOf="@id/profile"
-            app:layout_constraintStart_toStartOf="parent"
             android:layout_width="wrap_content"
             android:layout_marginTop="16dp"
+            android:layout_marginLeft="8dp"
+            app:layout_constraintLeft_toLeftOf="parent"
             android:drawableLeft="@mipmap/work_history"
             android:drawablePadding="12dp"
             android:layout_height="wrap_content"
@@ -98,10 +99,11 @@
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/changepassword"
             app:layout_constraintTop_toBottomOf="@id/work_history"
-            app:layout_constraintStart_toStartOf="parent"
             android:layout_width="wrap_content"
             android:drawableLeft="@mipmap/change_password"
             android:drawablePadding="12dp"
+            android:layout_marginLeft="8dp"
+            app:layout_constraintLeft_toLeftOf="parent"
             android:layout_marginTop="16dp"
             android:layout_height="wrap_content"
             android:text="Change Password"/>
@@ -110,9 +112,10 @@
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/settings"
             app:layout_constraintTop_toBottomOf="@id/changepassword"
-            app:layout_constraintStart_toStartOf="parent"
             android:layout_width="wrap_content"
             android:layout_marginTop="16dp"
+            android:layout_marginLeft="8dp"
+            app:layout_constraintLeft_toLeftOf="parent"
             android:drawableLeft="@mipmap/settings"
             android:drawablePadding="12dp"
             android:layout_height="wrap_content"
@@ -121,9 +124,10 @@
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/contactus"
             app:layout_constraintTop_toBottomOf="@id/settings"
-            app:layout_constraintStart_toStartOf="parent"
             android:layout_width="wrap_content"
             android:layout_marginTop="16dp"
+            android:layout_marginLeft="8dp"
+            app:layout_constraintLeft_toLeftOf="parent"
             android:drawableLeft="@mipmap/conatct_us"
             android:drawablePadding="12dp"
             android:layout_height="wrap_content"
@@ -132,9 +136,10 @@
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/about"
             app:layout_constraintTop_toBottomOf="@id/contactus"
-            app:layout_constraintStart_toStartOf="parent"
             android:layout_width="wrap_content"
             android:layout_marginTop="16dp"
+            android:layout_marginLeft="8dp"
+            app:layout_constraintLeft_toLeftOf="parent"
             android:drawableLeft="@mipmap/about"
             android:drawablePadding="12dp"
             android:layout_height="wrap_content"
@@ -143,10 +148,11 @@
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/Help"
             app:layout_constraintTop_toBottomOf="@id/about"
-            app:layout_constraintStart_toStartOf="parent"
             android:layout_width="wrap_content"
             android:layout_marginTop="16dp"
             android:drawableLeft="@mipmap/help"
+            android:layout_marginLeft="8dp"
+            app:layout_constraintLeft_toLeftOf="parent"
             android:drawablePadding="12dp"
             android:layout_height="wrap_content"
             android:text="Help/ FAQ"/>
@@ -154,10 +160,11 @@
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/terms"
             app:layout_constraintTop_toBottomOf="@id/Help"
-            app:layout_constraintStart_toStartOf="parent"
             android:layout_width="wrap_content"
             android:layout_marginTop="16dp"
             android:drawableLeft="@mipmap/terms"
+            android:layout_marginLeft="8dp"
+            app:layout_constraintLeft_toLeftOf="parent"
             android:drawablePadding="12dp"
             android:layout_height="wrap_content"
             android:text="Terms"/>
@@ -165,9 +172,10 @@
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/privacy"
             app:layout_constraintTop_toBottomOf="@id/terms"
-            app:layout_constraintStart_toStartOf="parent"
             android:layout_width="wrap_content"
             android:layout_marginTop="16dp"
+            android:layout_marginLeft="8dp"
+            app:layout_constraintLeft_toLeftOf="parent"
             android:drawableLeft="@mipmap/privacy_policy"
             android:drawablePadding="12dp"
             android:layout_height="wrap_content"
@@ -177,7 +185,8 @@
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/logout"
             app:layout_constraintTop_toBottomOf="@id/privacy"
-            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginLeft="8dp"
+            app:layout_constraintLeft_toLeftOf="parent"
             android:layout_width="wrap_content"
             android:drawableLeft="@mipmap/logout"
             android:drawablePadding="12dp"

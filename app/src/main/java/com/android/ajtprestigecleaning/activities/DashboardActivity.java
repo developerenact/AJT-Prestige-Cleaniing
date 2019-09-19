@@ -3,6 +3,7 @@ package com.android.ajtprestigecleaning.activities;
 import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 
@@ -32,7 +33,7 @@ import io.paperdb.Paper;
 
 public class DashboardActivity extends BaseActivityk
         implements NavigationView.OnNavigationItemSelectedListener {
-    TextView contactus,terms,privacy,logout;
+    TextView contactus,terms,privacy,logout,nav_name;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -41,10 +42,13 @@ public class DashboardActivity extends BaseActivityk
         setSupportActionBar(toolbar);
         final DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
+        nav_name=findViewById(R.id.nav_name);
         contactus=findViewById(R.id.contactus);
         terms=findViewById(R.id.terms);
         privacy=findViewById(R.id.privacy);
         logout=findViewById(R.id.logout);
+        Typeface custom_font = Typeface.createFromAsset(getApplicationContext().getAssets(), "fonts/Montserrat-Medium.ttf");
+        nav_name.setTypeface(custom_font);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);

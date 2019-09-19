@@ -1,32 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/root"
     android:layout_width="match_parent"
+    android:orientation="vertical"
     android:layout_height="match_parent"
     android:background="@color/white">
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true"
-        tools:context=".activities.Login">
-
+        android:fillViewport="true">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:focusableInTouchMode="true"
-            android:padding="12dp"
-            tools:context=".activities.Login">
-
+            android:layout_height="match_parent"
+            android:fitsSystemWindows="true"
+            android:paddingLeft="12dp"
+            android:paddingRight="12dp"
+            android:paddingTop="12dp">
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/label_welcome"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="64dp"
+                android:layout_marginTop="52dp"
                 android:text="@string/welcome_member"
                 android:textSize="30sp"
                 app:layout_constraintLeft_toLeftOf="parent"
@@ -36,7 +35,7 @@
                 android:id="@+id/label_member"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="64dp"
+                android:layout_marginTop="52dp"
                 android:text="Member"
                 android:textColor="@color/black"
                 android:layout_marginLeft="10dp"
@@ -57,7 +56,7 @@
                 android:id="@+id/linear_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="36dp"
+                android:layout_marginTop="30dp"
                 android:background="@drawable/border"
                 android:orientation="vertical"
                 android:paddingLeft="8dp"
@@ -71,7 +70,9 @@
                     android:id="@+id/et_email"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:textSize="@dimen/edittext"
                     android:inputType="textEmailAddress"
+                    android:textColor="@color/white"
                     android:backgroundTint="@android:color/transparent"
                     android:hint="Email address"
                     android:textColorHint="@color/white"
@@ -92,6 +93,9 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="24dp"
                     android:maxLines="1"
+                    android:inputType="text"
+                    android:textSize="@dimen/edittext"
+                    android:textColor="@color/white"
                     android:backgroundTint="@android:color/transparent"
                     android:hint="@string/username"
                     android:textColorHint="@color/white"
@@ -112,7 +116,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="24dp"
+                    android:textColor="@color/white"
                     android:inputType="number"
+                    android:textSize="@dimen/edittext"
                     android:backgroundTint="@android:color/transparent"
                     android:hint="@string/phone"
                     android:textColorHint="@color/white"
@@ -133,7 +139,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="24dp"
+                    android:textColor="@color/white"
                     android:maxLines="1"
+                    android:textSize="@dimen/edittext"
+                    android:inputType="textPassword"
                     android:backgroundTint="@android:color/transparent"
                     android:hint="@string/password"
                     android:textColorHint="@color/white"
@@ -150,9 +159,6 @@
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 
-
-
-
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -164,6 +170,7 @@
                 app:layout_constraintTop_toBottomOf="@id/linear_layout">
 
                 <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/signup"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="20dp"
@@ -177,4 +184,4 @@
 
     </ScrollView>
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</LinearLayout>

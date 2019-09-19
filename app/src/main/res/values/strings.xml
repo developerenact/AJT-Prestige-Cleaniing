@@ -9,11 +9,11 @@
     <string name="email_address">Email address</string>
     <string name="password">Password</string>
     <string name="welcome_member">Welcome</string>
-    <string name="enter_your_information_below_or_login_with_a_social_account">Enter your information below or \nlogin with a social account</string>
+    <string name="enter_your_information_below_or_login_with_a_social_account">Enter your information below</string>
     <string name="username">Username</string>
     <string name="phone">Phone</string>
     <string name="reset">Reset</string>
-    <string name="enter_the_email_address_you_used_to_create_your_account_and_we_will_email_you_a_link_to_resetyour_password">Enter the email address you used to create your\naccount and we will email you a link to reset\nyour password</string>
+    <string name="enter_the_email_address_you_used_to_create_your_account_and_we_will_email_you_a_link_to_resetyour_password">Enter the email address you used to create your account and we will email you a link to reset your password</string>
     <string name="title_activity_dashboard">DashboardActivity</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>

@@ -6,7 +6,6 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -15,6 +14,7 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.ajtprestigecleaning.R;
 import com.android.ajtprestigecleaning.fragments.SignInFragment;
@@ -29,30 +29,40 @@ public class LoginActivity extends BaseActivityk {
     View signin_line,signup_line;
     TextView tv_signin,tv_signup;
     FragmentTransaction fragmentTransaction;
+    int pos;
 
     TabLayout tabLayout;
     ViewPager viewPager;
+    PagerAdapter pageAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         tabLayout=findViewById(R.id.tablayout);
         viewPager=findViewById(R.id.viewpager);
-
-        PagerAdapter pageAdapter=new com.android.ajtprestigecleaning.adapter.PagerAdapter(getSupportFragmentManager());
+        pageAdapter=new com.android.ajtprestigecleaning.adapter.PagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(pageAdapter);
         tabLayout.setupWithViewPager(viewPager);
-
-
 
     }
 
     @Override
     protected int getLayoutResourceId() {
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//        requestWindowFeature(Window.FEATURE_NO_TITLE);
+//        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+//                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         return R.layout.activity_login;
+    }
+
+    @Override
+    public void onBackPressed() {
+        pos=viewPager.getCurrentItem();
+        if(pos==1){
+            viewPager.setCurrentItem(0);
+        }
+        else {
+            finish();
+        }
+
     }
 }
