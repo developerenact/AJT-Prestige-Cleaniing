@@ -21,9 +21,6 @@ import com.android.ajtprestigecleaning.apiServices.BaseUrl;
 import com.android.ajtprestigecleaning.model.LoginPojo.LoginPojo;
 import com.android.ajtprestigecleaning.model.ResetPassword.ResetPassword;
 
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -77,16 +74,16 @@ public class ForgotPasswordActivity extends BaseActivityk {
 
 
     public void resetPass() {
+        showLoader(ForgotPasswordActivity.this);
         if (isNetworkConnected(ForgotPasswordActivity.this)) {
-            showLoader(ForgotPasswordActivity.this);
             ApiInterface service = BaseUrl.CreateService(ApiInterface.class);
             Call<ResetPassword> call = service.forgotPassword(et_email.getText().toString());
             call.enqueue(new Callback<ResetPassword>() {
                 @Override
                 public void onResponse(Call<ResetPassword> call, Response<ResetPassword> response) {
                     if (response.isSuccessful()) {
-                        hideLoader();
-                        showAlert(ForgotPasswordActivity.this, response.body().getMessage(), "Alert...");
+                       hideLoader();
+                        customDialog(ForgotPasswordActivity.this, response.body().getMessage());
                     } else {
                         hideLoader();
                         Toast.makeText(ForgotPasswordActivity.this, "Something went wrong", Toast.LENGTH_LONG).show();
@@ -104,7 +101,7 @@ public class ForgotPasswordActivity extends BaseActivityk {
             });
         } else {
             hideLoader();
-            showAlert(ForgotPasswordActivity.this, "Pleasr check your Internet Connection", "Alert...");
+            customDialog(ForgotPasswordActivity.this, "Pleasr check your Internet Connection");
 
         }
 

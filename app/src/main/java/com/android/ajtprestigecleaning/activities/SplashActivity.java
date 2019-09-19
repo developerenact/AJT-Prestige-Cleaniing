@@ -9,6 +9,9 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import com.android.ajtprestigecleaning.R;
+import com.android.ajtprestigecleaning.util.Constants;
+
+import io.paperdb.Paper;
 
 public class SplashActivity extends BaseActivityk {
 
@@ -20,19 +23,29 @@ public class SplashActivity extends BaseActivityk {
         new Handler().postDelayed(new Runnable(){
             @Override
             public void run() {
-                /* Create an Intent that will start the Menu-Activity. */
-                Intent mainIntent = new Intent(SplashActivity.this, LoginActivity.class);
-                startActivity(mainIntent);
-                finish();
+                if(Paper.book().read(Constants.ISLOGIN,"false").equals("true")){
+                    Intent mainIntent = new Intent(SplashActivity.this, DashboardActivity.class);
+                    startActivity(mainIntent);
+                    finish();
+                }
+                else {
+                    Intent mainIntent = new Intent(SplashActivity.this, LoginActivity.class);
+                    startActivity(mainIntent);
+                    finish();
+                }
+
+
+
+
             }
         }, 3000);
     }
 
     @Override
     protected int getLayoutResourceId() {
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        /*requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);*/
         return R.layout.activity_splash;
     }
 }

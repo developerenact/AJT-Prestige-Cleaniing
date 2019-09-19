@@ -1,16 +1,21 @@
 package com.android.ajtprestigecleaning.activities;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 
 import com.android.ajtprestigecleaning.R;
+import com.android.ajtprestigecleaning.util.Constants;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.core.view.GravityCompat;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 
@@ -34,7 +39,7 @@ import io.paperdb.Paper;
 public class DashboardActivity extends BaseActivityk
         implements NavigationView.OnNavigationItemSelectedListener {
     TextView contactus,terms,privacy,logout,nav_name;
-
+    String login_Username;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,6 +47,7 @@ public class DashboardActivity extends BaseActivityk
         setSupportActionBar(toolbar);
         final DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
+        login_Username=Paper.book().read(Constants.USERNAME,"UserName");
         nav_name=findViewById(R.id.nav_name);
         contactus=findViewById(R.id.contactus);
         terms=findViewById(R.id.terms);
@@ -49,6 +55,8 @@ public class DashboardActivity extends BaseActivityk
         logout=findViewById(R.id.logout);
         Typeface custom_font = Typeface.createFromAsset(getApplicationContext().getAssets(), "fonts/Montserrat-Medium.ttf");
         nav_name.setTypeface(custom_font);
+        nav_name.setText(login_Username);
+
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
@@ -131,7 +139,22 @@ public class DashboardActivity extends BaseActivityk
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("Are you sure you want to exit?")
+                    .setCancelable(false)
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+                        public void onClick(DialogInterface dialog, int id) {
+                            finishAffinity();
+                        }
+                    })
+                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.cancel();
+                        }
+                    });
+            AlertDialog alert = builder.create();
+            alert.show();
         }
     }
 
@@ -181,6 +204,9 @@ public class DashboardActivity extends BaseActivityk
         dialogButton_logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Paper.book().delete(Constants.ISLOGIN);
+                Paper.book().delete(Constants.USERNAME);
+                Paper.book().delete(Constants.EMAIL);
                 Intent intent = new Intent(DashboardActivity.this, LoginActivity.class);
                 startActivity(intent);
                 finish();

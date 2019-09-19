@@ -21,6 +21,7 @@ import com.android.ajtprestigecleaning.activities.DashboardActivity;
 import com.android.ajtprestigecleaning.apiServices.ApiInterface;
 import com.android.ajtprestigecleaning.apiServices.BaseUrl;
 import com.android.ajtprestigecleaning.model.RegisterPojo.RegisterPojo;
+import com.android.ajtprestigecleaning.util.Constants;
 
 import java.math.BigInteger;
 import java.security.MessageDigest;
@@ -31,6 +32,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static com.android.ajtprestigecleaning.activities.BaseActivityk.customDialog;
 import static com.android.ajtprestigecleaning.activities.BaseActivityk.hideLoader;
 import static com.android.ajtprestigecleaning.activities.BaseActivityk.isNetworkConnected;
 import static com.android.ajtprestigecleaning.activities.BaseActivityk.showAlert;
@@ -92,10 +94,8 @@ public class SignUpFragment extends Fragment {
 
 
     public void register() {
+        showLoader(getActivity());
         if (isNetworkConnected(getContext())) {
-
-
-            showLoader(getActivity());
             ApiInterface service = BaseUrl.CreateService(ApiInterface.class);
             Call<RegisterPojo> call = service.userRegister(et_username.getText().toString(), getMd5Hash(et_pass.getText().toString()), et_email.getText().toString(), et_phone.getText().toString());
             call.enqueue(new Callback<RegisterPojo>() {
@@ -104,11 +104,15 @@ public class SignUpFragment extends Fragment {
                     if (response.isSuccessful()) {
                         if (response.body().getStatus() == 0) {
                             hideLoader();
+                            Paper.book().write(Constants.ISLOGIN,"true");
+                            Paper.book().write(Constants.EMAIL,response.body().getData().getEmail());
+                            Paper.book().write(Constants.USERNAME,response.body().getData().getUserName());
                             Intent intent = new Intent(getContext(), DashboardActivity.class);
                             startActivity(intent);
+                            getActivity().finish();
 
                         } else {
-                            showAlert(getActivity(), response.body().getMessage(), "Alert...");
+                            customDialog(getActivity(), response.body().getMessage());
                             hideLoader();
                         }
 
@@ -129,7 +133,7 @@ public class SignUpFragment extends Fragment {
             });
         } else {
             hideLoader();
-            showAlert(getActivity(), "Pleasr check your Internet Connection", "Alert...");
+            customDialog(getActivity(), "Pleasr check your Internet Connection");
 
         }
 
