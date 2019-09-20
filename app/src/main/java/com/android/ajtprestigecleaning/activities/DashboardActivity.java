@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.Bundle;
 
 import com.android.ajtprestigecleaning.R;
+import com.android.ajtprestigecleaning.fragments.JobsFragment;
 import com.android.ajtprestigecleaning.util.Constants;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -33,6 +34,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import io.paperdb.Paper;
 
@@ -40,11 +42,16 @@ public class DashboardActivity extends BaseActivityk
         implements NavigationView.OnNavigationItemSelectedListener {
     TextView contactus,terms,privacy,logout,nav_name;
     String login_Username;
+     JobsFragment fragment;
+    FragmentManager manager;
+    FrameLayout frameLayout;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        frameLayout=findViewById(R.id.frame);
+        if (manager == null) manager = getSupportFragmentManager();
         final DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
         login_Username=Paper.book().read(Constants.USERNAME,"UserName");
@@ -102,7 +109,8 @@ public class DashboardActivity extends BaseActivityk
             }
         });
 
-
+        fragment = new JobsFragment();
+        manager.beginTransaction().add(R.id.frame,fragment).commit();
 
 
         BottomNavigationView bottomNavigationView = (BottomNavigationView)
@@ -114,13 +122,12 @@ public class DashboardActivity extends BaseActivityk
                     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                         switch (item.getItemId()) {
                             case R.id.action_favorites:
-
+                                fragment = new JobsFragment();
+                                manager.beginTransaction().replace(R.id.frame,fragment).commit();
                                 break;
                             case R.id.action_schedules:
-
                                 break;
                             case R.id.action_music:
-
                                 break;
                         }
                         return false;

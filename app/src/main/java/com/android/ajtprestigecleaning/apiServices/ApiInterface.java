@@ -1,6 +1,7 @@
 package com.android.ajtprestigecleaning.apiServices;
 
 
+import com.android.ajtprestigecleaning.model.JobDetailPojo.JobDetailPojo;
 import com.android.ajtprestigecleaning.model.LoginPojo.LoginPojo;
 import com.android.ajtprestigecleaning.model.RegisterPojo.RegisterPojo;
 import com.android.ajtprestigecleaning.model.ResetPassword.ResetPassword;
@@ -32,4 +33,10 @@ public interface ApiInterface {
     @Headers("Secret-Key:AJT_Lbim_0f6bd8a808ea3e9996b3aee1900aa2e8")
     @POST("resetPassword")
     Call<ResetPassword> forgotPassword(@Field("email") String email);
+
+    @FormUrlEncoded
+    @Headers("Secret-Key:AJT_Lbim_0f6bd8a808ea3e9996b3aee1900aa2e8")
+    @POST("jobDetail")
+    Call<JobDetailPojo> getjobDetail(@Field("jobId") int jobId);
+
 }

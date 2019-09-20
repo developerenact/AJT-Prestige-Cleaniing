@@ -3,20 +3,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/action_favorites"
-        android:enabled="true"
         android:icon="@mipmap/jobs"
         android:title="Jobs"
-        app:showAsAction="ifRoom" />
+         />
     <item
         android:id="@+id/action_schedules"
-        android:enabled="true"
         android:icon="@mipmap/report"
         android:title="Report"
-        app:showAsAction="ifRoom" />
+         />
     <item
         android:id="@+id/action_music"
-        android:enabled="true"
         android:icon="@mipmap/more"
         android:title="More"
-        app:showAsAction="ifRoom" />
+        />
 </menu>

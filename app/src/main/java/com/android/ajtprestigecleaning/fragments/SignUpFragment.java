@@ -43,7 +43,7 @@ import static com.android.ajtprestigecleaning.activities.BaseActivityk.showLoade
  * A simple {@link Fragment} subclass.
  */
 public class SignUpFragment extends Fragment {
-    TextView label_member;
+    TextView label_member,lebel_info;
     EditText et_email, et_username, et_pass, et_phone;
     ImageView signup;
 
@@ -58,6 +58,7 @@ public class SignUpFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_sign_up, container, false);
         label_member = view.findViewById(R.id.label_member);
+        lebel_info = view.findViewById(R.id.label_info);
         et_email = view.findViewById(R.id.et_email);
         et_username = view.findViewById(R.id.et_username);
         et_phone = view.findViewById(R.id.et_phone);
@@ -65,6 +66,7 @@ public class SignUpFragment extends Fragment {
         signup = view.findViewById(R.id.signup);
         Typeface custom_font = Typeface.createFromAsset(getContext().getAssets(), "fonts/Montserrat-Medium.ttf");
         label_member.setTypeface(custom_font);
+        lebel_info.setTypeface(custom_font);
 
         signup.setOnClickListener(new View.OnClickListener() {
             @Override
