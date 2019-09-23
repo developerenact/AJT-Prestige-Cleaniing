@@ -83,7 +83,6 @@
             android:id="@+id/id_number"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Id number / #2456321"
             android:textColor="@color/white"
             android:textSize="12sp" />
 
@@ -103,7 +102,6 @@
                 android:layout_weight="1"
                 android:drawableLeft="@mipmap/address"
                 android:drawablePadding="4dp"
-                android:text="Del Amo Fashion Center Torrance, CA, United States"
                 android:textColor="@color/white" />
 
             <androidx.appcompat.widget.AppCompatImageView
@@ -123,7 +121,6 @@
             android:layout_marginTop="4dp"
             android:drawableLeft="@mipmap/cleaning"
             android:drawablePadding="4dp"
-            android:text="Cleaning and Dusting"
             android:textColor="@color/white" />
 
 
@@ -136,7 +133,6 @@
             android:layout_marginRight="8dp"
             android:drawableLeft="@mipmap/calendar"
             android:drawablePadding="4dp"
-            android:text="02-08-2019 | 08:00 AM"
             android:textColor="@color/white" />
 
 
@@ -147,7 +143,6 @@
             android:layout_below="@id/date_time"
             android:layout_marginTop="20dp"
             android:layout_marginRight="8dp"
-            android:text="Loreum ipsum is simply dummy text of the printing and typesetting industry. Loreum Ipsum has been the industry's standard dummy text ever since the 1500', when an unknown printer took a gallery of type and scrambled it to make a type book. it has survived not only five centuries."
             android:textColor="@color/white"
             android:textSize="13sp" />
 

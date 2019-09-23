@@ -1,5 +1,6 @@
 package com.android.ajtprestigecleaning.activities;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -11,7 +12,11 @@ import android.os.Build;
 import android.os.Bundle;
 
 import com.android.ajtprestigecleaning.R;
+import com.android.ajtprestigecleaning.adapter.JobsAdapter;
+import com.android.ajtprestigecleaning.apiServices.ApiInterface;
+import com.android.ajtprestigecleaning.apiServices.BaseUrl;
 import com.android.ajtprestigecleaning.fragments.JobsFragment;
+import com.android.ajtprestigecleaning.model.JobListPojo.JobListPojo;
 import com.android.ajtprestigecleaning.util.Constants;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -20,6 +25,8 @@ import androidx.annotation.RequiresApi;
 import androidx.core.view.GravityCompat;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 
 import com.google.android.material.navigation.NavigationView;
@@ -33,10 +40,18 @@ import androidx.fragment.app.FragmentManager;
 import android.view.View;
 import android.view.Window;
 import android.widget.FrameLayout;
+import android.widget.HorizontalScrollView;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+
 import io.paperdb.Paper;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class DashboardActivity extends BaseActivityk
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -45,12 +60,24 @@ public class DashboardActivity extends BaseActivityk
      JobsFragment fragment;
     FragmentManager manager;
     FrameLayout frameLayout;
+    LinearLayout hsvLayout;
+    TextView label_alljobs;
+    ImageView alljobs_arrow;
+    Activity activity;
+    HorizontalScrollView horizontalScrollView;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         frameLayout=findViewById(R.id.frame);
+        hsvLayout=findViewById(R.id.hsvLinearLayout);
+        activity=DashboardActivity.this;
+        label_alljobs=findViewById(R.id.label_alljobs);
+        alljobs_arrow=findViewById(R.id.alljobs_arrow);
+        horizontalScrollView=findViewById(R.id.horizontal_scroll);
+        int[] image_array = new int[]{R.mipmap.all_jobs,R.mipmap.in_progess,R.mipmap.upcpming_jobs,R.mipmap.past_jobs,R.mipmap.rejected_jobs};
+        String[] category_name = new String[]{"All jobs","In Progress","Upcoming Jobs","Past jobs","Rejected jobs"};
         if (manager == null) manager = getSupportFragmentManager();
         final DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
@@ -63,7 +90,35 @@ public class DashboardActivity extends BaseActivityk
         Typeface custom_font = Typeface.createFromAsset(getApplicationContext().getAssets(), "fonts/Montserrat-Medium.ttf");
         nav_name.setTypeface(custom_font);
         nav_name.setText(login_Username);
+        ArrayList<TextView> textViewList=new ArrayList<>();
+        ArrayList<ImageView> category_imgview=new ArrayList<>();
+        ArrayList<View> category_view=new ArrayList<>();
+        for (int i=0;i<category_name.length;i++) {
+            View main_view = LayoutInflater.from(this).inflate(R.layout.categoty_layout, null);
+            LinearLayout categoryMainLayout = main_view.findViewById(R.id.categoryMainLayout);
 
+            final ImageView cat_img = main_view.findViewById(R.id.img);
+            TextView cat_text = main_view.findViewById(R.id.text);
+            cat_text.setText(category_name[i]);
+            cat_img.setImageResource(image_array[i]);
+            textViewList.add(cat_text);
+            category_imgview.add(cat_img);
+            category_view.add(main_view);
+            hsvLayout.addView(main_view);
+
+
+            final int finalI = i;
+            main_view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    fragment.getjobs(finalI,activity);
+
+
+                }
+            });
+
+
+        }
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
@@ -76,6 +131,22 @@ public class DashboardActivity extends BaseActivityk
                 Intent intent=new Intent(DashboardActivity.this,ContactUsActivity.class);
                 startActivity(intent);
                 drawer.closeDrawer(GravityCompat.START);
+
+            }
+        });
+
+        label_alljobs.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(horizontalScrollView.getVisibility()==View.VISIBLE){
+                    horizontalScrollView.setVisibility(View.GONE);
+                    alljobs_arrow.setImageResource(R.mipmap.small_white_arrow);
+                }
+                else {
+                    horizontalScrollView.setVisibility(View.VISIBLE);
+                    alljobs_arrow.setImageResource(R.mipmap.small_white_arrow_up);
+                }
+
 
             }
         });
@@ -111,6 +182,7 @@ public class DashboardActivity extends BaseActivityk
 
         fragment = new JobsFragment();
         manager.beginTransaction().add(R.id.frame,fragment).commit();
+        fragment.getjobs(0,activity);
 
 
         BottomNavigationView bottomNavigationView = (BottomNavigationView)
@@ -124,6 +196,7 @@ public class DashboardActivity extends BaseActivityk
                             case R.id.action_favorites:
                                 fragment = new JobsFragment();
                                 manager.beginTransaction().replace(R.id.frame,fragment).commit();
+                                fragment.getjobs(0,activity);
                                 break;
                             case R.id.action_schedules:
                                 break;
@@ -224,6 +297,8 @@ public class DashboardActivity extends BaseActivityk
 
 
     }
+
+
 
 
 }

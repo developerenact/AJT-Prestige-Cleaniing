@@ -7,10 +7,36 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".activities.DashboardActivity"
     tools:showIn="@layout/app_bar_dashboard">
-<FrameLayout
+
+    <HorizontalScrollView
+        android:id="@+id/horizontal_scroll"
+        android:layout_width="match_parent"
+        android:layout_centerHorizontal="true"
+        android:background="@color/orange"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:layout_marginBottom="4dp"
+        android:visibility="gone"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:id="@+id/hsvLinearLayout"
+            android:orientation="horizontal"
+            android:background="@color/orange"
+            android:layout_gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbarThumbHorizontal="@android:color/transparent"
+            >
+        </LinearLayout>
+    </HorizontalScrollView>
+
+
+
+    <FrameLayout
     android:id="@+id/frame"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+        android:layout_below="@id/horizontal_scroll"
     android:layout_above="@id/bottom_navigation">
 
 </FrameLayout>
@@ -19,9 +45,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        app:itemBackground="@color/white"
-        app:itemTextColor="@color/orange"
-        app:itemIconTint="@color/orange"
+        android:background="@color/white"
+        app:itemIconTint="@drawable/bottom_navigation_colors"
+        app:itemTextColor="@drawable/bottom_navigation_colors"
         app:menu="@menu/bottom_navigation_main" />
 
 </RelativeLayout>

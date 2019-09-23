@@ -4,28 +4,33 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.android.ajtprestigecleaning.R;
 import com.android.ajtprestigecleaning.activities.JobDetailActivity;
+import com.android.ajtprestigecleaning.model.JobDetailPojo.Task;
+import com.android.ajtprestigecleaning.model.JobListPojo.Datum;
 import com.android.ajtprestigecleaning.model.JobModel;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import io.paperdb.Paper;
 
+import io.paperdb.Paper;
 
 
 public class JobsAdapter extends RecyclerView.Adapter<JobsAdapter.ViewHolder> {
 
-    ArrayList<JobModel> joblist;
+    List<Datum> results;
     private final Context context;
 
     @Override
@@ -40,12 +45,12 @@ public class JobsAdapter extends RecyclerView.Adapter<JobsAdapter.ViewHolder> {
                 return 2;
             }*/
 
-      return 1;
+        return 1;
 
     }
 
-    public JobsAdapter( ArrayList<JobModel> joblist,Context context) {
-        this.joblist=joblist;
+    public JobsAdapter(List<Datum> results, Context context) {
+        this.results = results;
         this.context = context;
 
 
@@ -57,9 +62,7 @@ public class JobsAdapter extends RecyclerView.Adapter<JobsAdapter.ViewHolder> {
 
         if (viewType == 1) {
             return new JobsAdapter.ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.job_recycle_item, parent, false));
-        }
-
-        else {
+        } else {
             return new JobsAdapter.ViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.job_recycle_item, parent, false));
         }
 
@@ -68,46 +71,44 @@ public class JobsAdapter extends RecyclerView.Adapter<JobsAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(final JobsAdapter.ViewHolder holder, final int position) {
-        holder.id.setText(joblist.get(position).getId());
-        holder.address.setText(joblist.get(position).getAddress());
-        holder.work.setText(joblist.get(position).getWork());
+        holder.id.setText(results.get(position).getId());
+        holder.address.setText(results.get(position).getAddress());
+        holder.work.setText(results.get(position).getName());
+        holder.time.setText(convertDate(results.get(position).getCreatedAt(),"dd-MM-yyyy | hh.mm aa"));
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(context, JobDetailActivity.class);
+                Intent intent = new Intent(context, JobDetailActivity.class);
+                intent.putExtra("jobId",results.get(position).getId());
                 context.startActivity(intent);
             }
         });
-
 
 
     }
 
     @Override
     public int getItemCount() {
-        return joblist.size();
+        return results.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView header,id, address, work, time;
+        TextView header, id, address, work, time;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            id=itemView.findViewById(R.id.id_number);
-            address=itemView.findViewById(R.id.location);
-            work=itemView.findViewById(R.id.desc);
+            id = itemView.findViewById(R.id.id_number);
+            address = itemView.findViewById(R.id.location);
+            work = itemView.findViewById(R.id.desc);
+            time = itemView.findViewById(R.id.date_time);
 
 
         }
     }
 
-    private String TimeStumpToDate(Long time) {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd hh.mm aa");
-        String dateString = formatter.format(new Date((time)));
-        return (dateString);
-
+    public static String convertDate(String dateInMilliseconds, String dateFormat) {
+        return DateFormat.format(dateFormat, Long.parseLong(dateInMilliseconds)).toString();
     }
-
 
 
 

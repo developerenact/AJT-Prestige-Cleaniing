@@ -29,20 +29,23 @@
 
 
             <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/label_alljobs"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
                 android:layout_gravity="center"
                 android:textColor="@color/white"
+                android:padding="8dp"
                 android:textStyle="bold"
                 android:text="All Jobs"/>
 
             <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/alljobs_arrow"
                 android:layout_width="15dp"
                 android:layout_height="15dp"
                 android:layout_centerInParent="true"
                 android:layout_gravity="center"
-                android:layout_marginLeft="4dp"
+                android:layout_marginLeft="6dp"
                 android:textColor="@color/white"
                 app:srcCompat="@mipmap/small_white_arrow" />
 

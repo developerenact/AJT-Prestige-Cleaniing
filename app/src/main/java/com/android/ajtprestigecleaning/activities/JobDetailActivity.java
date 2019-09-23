@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -31,19 +32,23 @@ import retrofit2.Response;
 
 public class JobDetailActivity extends BaseActivityk {
     ImageView back;
-    TextView id,location,task,date,desc;
+    TextView id,location,task,date,desc,approx_hour;
     RecyclerView recyclerView;
     RecyclerView.LayoutManager layoutManager;
     JobsDetailAdapter adapter;
-    ArrayList<String> jobtasks;
+    JobDetailPojo jobDetailPojo;
+    String jobId="";
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        login();
+        Intent intent=getIntent();
+        jobId=intent.getStringExtra("jobId");
+        jobDetail();
         back=findViewById(R.id.back);
         id=findViewById(R.id.id_number);
         location=findViewById(R.id.location);
         task=findViewById(R.id.desc);
+        approx_hour=findViewById(R.id.approx_hour);
         date=findViewById(R.id.date_time);
         recyclerView = findViewById(R.id.task_recyclerview);
         layoutManager = new LinearLayoutManager(this);
@@ -62,11 +67,11 @@ public class JobDetailActivity extends BaseActivityk {
         return R.layout.activity_job_detail;
     }
 
-    public void login() {
+    public void jobDetail() {
         showLoader(JobDetailActivity.this);
         if (isNetworkConnected(JobDetailActivity.this)) {
             ApiInterface service = BaseUrl.CreateService(ApiInterface.class);
-            Call<JobDetailPojo> call = service.getjobDetail(2);
+            Call<JobDetailPojo> call = service.getjobDetail(Integer.parseInt(jobId));
             call.enqueue(new Callback<JobDetailPojo>() {
                 @Override
                 public void onResponse(Call<JobDetailPojo> call, Response<JobDetailPojo> response) {
@@ -77,12 +82,10 @@ public class JobDetailActivity extends BaseActivityk {
                             id.setText(response.body().getData().getId());
                             location.setText(response.body().getData().getAddress());
                             task.setText(response.body().getData().getName());
-                            date.setText(response.body().getData().getStartDateTime());
+                            date.setText(convertDate(response.body().getData().getCreatedAt(),"dd-MM-yyyy | hh.mm aa"));
                             desc.setText(response.body().getData().getDescription());
-                            for(int j=0;j<=response.body().getData().getTasks().size();j++){
-
-                            }
-                            adapter = new JobsDetailAdapter(jobtasks, JobDetailActivity.this);
+                            approx_hour.setText("Approximation hours:"+" "+response.body().getData().getHoursDaily()+" "+"Hours");
+                            adapter = new JobsDetailAdapter(response.body().getData().getTasks(), JobDetailActivity.this);
                             recyclerView.setAdapter(adapter);
 
                         } else {
@@ -113,6 +116,9 @@ public class JobDetailActivity extends BaseActivityk {
 
     }
 
+    public static String convertDate(String dateInMilliseconds, String dateFormat) {
+        return DateFormat.format(dateFormat, Long.parseLong(dateInMilliseconds)).toString();
+    }
 
 
 }

@@ -11,21 +11,23 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.ajtprestigecleaning.R;
 import com.android.ajtprestigecleaning.activities.JobDetailActivity;
+import com.android.ajtprestigecleaning.model.JobDetailPojo.Task;
 import com.android.ajtprestigecleaning.model.JobModel;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 
 public class JobsDetailAdapter extends RecyclerView.Adapter<JobsDetailAdapter.ViewHolder> {
 
-    ArrayList<String> jobtasks;
+    List<Task> results;
     private final Context context;
 
 
-    public JobsDetailAdapter(ArrayList<String> jobtasks, Context context) {
-        this.jobtasks = jobtasks;
+    public JobsDetailAdapter(List<Task> results, Context context) {
+        this.results = results;
         this.context = context;
 
 
@@ -40,7 +42,7 @@ public class JobsDetailAdapter extends RecyclerView.Adapter<JobsDetailAdapter.Vi
 
     @Override
     public void onBindViewHolder(final JobsDetailAdapter.ViewHolder holder, final int position) {
-        holder.task.setText(jobtasks.get(position));
+        holder.task.setText(results.get(position).getName());
 
 
 
@@ -48,7 +50,7 @@ public class JobsDetailAdapter extends RecyclerView.Adapter<JobsDetailAdapter.Vi
 
     @Override
     public int getItemCount() {
-        return jobtasks.size();
+        return results.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
