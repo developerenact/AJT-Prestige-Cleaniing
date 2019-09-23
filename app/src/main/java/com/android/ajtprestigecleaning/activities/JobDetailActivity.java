@@ -31,21 +31,24 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class JobDetailActivity extends BaseActivityk {
-    ImageView back;
+    ImageView back,navigation;
     TextView id,location,task,date,desc,approx_hour;
     RecyclerView recyclerView;
     RecyclerView.LayoutManager layoutManager;
     JobsDetailAdapter adapter;
     JobDetailPojo jobDetailPojo;
     String jobId="";
+    String lat="";
+    String lng="";
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Intent intent=getIntent();
+        final Intent intent=getIntent();
         jobId=intent.getStringExtra("jobId");
         jobDetail();
         back=findViewById(R.id.back);
         id=findViewById(R.id.id_number);
+        navigation=findViewById(R.id.navigation);
         location=findViewById(R.id.location);
         task=findViewById(R.id.desc);
         approx_hour=findViewById(R.id.approx_hour);
@@ -58,6 +61,18 @@ public class JobDetailActivity extends BaseActivityk {
             @Override
             public void onClick(View v) {
                 finish();
+            }
+        });
+
+        navigation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent1=new Intent(JobDetailActivity.this,MapsActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putString("lat", lat);
+                bundle.putString("lng", lng);
+                intent1.putExtras(bundle);
+                startActivity(intent1);
             }
         });
     }
@@ -79,6 +94,8 @@ public class JobDetailActivity extends BaseActivityk {
                         hideLoader();
 
                         if (response.body().getStatus() == 0) {
+                            lat=response.body().getData().getLatitude();
+                            lng=response.body().getData().getLongitude();
                             id.setText(response.body().getData().getId());
                             location.setText(response.body().getData().getAddress());
                             task.setText(response.body().getData().getName());

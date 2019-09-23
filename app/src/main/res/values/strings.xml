@@ -32,4 +32,5 @@
     <string name="contact">Contact</string>
     <string name="us">Us</string>
     <string name="are_you_sure_you_want_to_logout">Are you sure you want to logout?</string>
+    <string name="title_activity_maps">Map</string>
 </resources>

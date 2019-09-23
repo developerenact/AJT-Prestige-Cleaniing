@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.ajtprestigecleaning.R;
@@ -52,6 +53,7 @@ public class JobsFragment extends Fragment {
     JobsAdapter adapter;
     ArrayList<JobModel> joblist;
     JobListPojo jobListPojo;
+    TextView header;
 
     public JobsFragment() {
         // Required empty public constructor
@@ -62,9 +64,10 @@ public class JobsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view= inflater.inflate(R.layout.fragment_jobs, container, false);
+        View view = inflater.inflate(R.layout.fragment_jobs, container, false);
 
         recyclerView = view.findViewById(R.id.job_recyclerview);
+        header = view.findViewById(R.id.header);
 
 
       /*  Collections.sort(joblist, new Comparator<JobModel>() {
@@ -78,13 +81,13 @@ public class JobsFragment extends Fragment {
 
         layoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(layoutManager);
-       // getjobs(0);
+        // getjobs(0);
 
-        return  view;
+        return view;
     }
 
 
-    public void getjobs(int state, final Activity activity) {
+    public void getjobs(final int state, final Activity activity) {
         showLoader(activity);
         if (isNetworkConnected(activity)) {
             ApiInterface service = BaseUrl.CreateService(ApiInterface.class);
@@ -95,6 +98,28 @@ public class JobsFragment extends Fragment {
                     if (response.isSuccessful()) {
                         if (response.body().getStatus() == 0) {
                             hideLoader();
+                            if(response.body().getData().size()>0) {
+                                header.setVisibility(View.VISIBLE);
+                                if (state == 0) {
+                                    header.setVisibility(View.GONE);
+                                } else if (state == 1) {
+                                    header.setText("In Progress");
+                                } else if (state == 2) {
+                                    header.setText("Upcoming Jobs");
+                                } else if (state == 3) {
+                                    header.setText("Past Jobs");
+                                } else if (state == 4) {
+                                    header.setText("Rejected Jobs");
+
+                                } else {
+                                    header.setText("Completed Jobs");
+
+                                }
+                            }
+                            else{
+                                customDialog(activity, "No Jobs Available");
+                                header.setVisibility(View.GONE);
+                            }
                             adapter = new JobsAdapter(response.body().getData(), getContext());
                             recyclerView.setAdapter(adapter);
 
@@ -124,8 +149,6 @@ public class JobsFragment extends Fragment {
         }
 
     }
-
-
 
 
 }

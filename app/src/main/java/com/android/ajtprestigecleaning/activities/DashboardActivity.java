@@ -1,10 +1,12 @@
 package com.android.ajtprestigecleaning.activities;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
@@ -55,7 +57,7 @@ import retrofit2.Response;
 
 public class DashboardActivity extends BaseActivityk
         implements NavigationView.OnNavigationItemSelectedListener {
-    TextView contactus,terms,privacy,logout,nav_name;
+    TextView contactus,terms,privacy,logout,nav_name,change_pass;
     String login_Username;
      JobsFragment fragment;
     FragmentManager manager;
@@ -71,13 +73,15 @@ public class DashboardActivity extends BaseActivityk
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         frameLayout=findViewById(R.id.frame);
+        checkpermission();
         hsvLayout=findViewById(R.id.hsvLinearLayout);
         activity=DashboardActivity.this;
         label_alljobs=findViewById(R.id.label_alljobs);
+        change_pass=findViewById(R.id.changepassword);
         alljobs_arrow=findViewById(R.id.alljobs_arrow);
         horizontalScrollView=findViewById(R.id.horizontal_scroll);
-        int[] image_array = new int[]{R.mipmap.all_jobs,R.mipmap.in_progess,R.mipmap.upcpming_jobs,R.mipmap.past_jobs,R.mipmap.rejected_jobs};
-        String[] category_name = new String[]{"All jobs","In Progress","Upcoming Jobs","Past jobs","Rejected jobs"};
+        int[] image_array = new int[]{R.mipmap.all_jobs,R.mipmap.in_progess,R.mipmap.upcpming_jobs,R.mipmap.past_jobs,R.mipmap.rejected_jobs,R.mipmap.completed_jobs};
+        String[] category_name = new String[]{"All jobs","In Progress","Upcoming Jobs","Past jobs","Rejected jobs","Completed jobs"};
         if (manager == null) manager = getSupportFragmentManager();
         final DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
@@ -135,6 +139,16 @@ public class DashboardActivity extends BaseActivityk
             }
         });
 
+        change_pass.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(DashboardActivity.this,ChangePasswordActivity.class);
+                startActivity(intent);
+                drawer.closeDrawer(GravityCompat.START);
+
+            }
+        });
+
         label_alljobs.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -150,6 +164,23 @@ public class DashboardActivity extends BaseActivityk
 
             }
         });
+
+        alljobs_arrow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(horizontalScrollView.getVisibility()==View.VISIBLE){
+                    horizontalScrollView.setVisibility(View.GONE);
+                    alljobs_arrow.setImageResource(R.mipmap.small_white_arrow);
+                }
+                else {
+                    horizontalScrollView.setVisibility(View.VISIBLE);
+                    alljobs_arrow.setImageResource(R.mipmap.small_white_arrow_up);
+                }
+
+
+            }
+        });
+
 
         terms.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -188,13 +219,16 @@ public class DashboardActivity extends BaseActivityk
         BottomNavigationView bottomNavigationView = (BottomNavigationView)
                 findViewById(R.id.bottom_navigation);
 
+
+
         bottomNavigationView.setOnNavigationItemSelectedListener(
                 new BottomNavigationView.OnNavigationItemSelectedListener() {
                     @Override
                     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                        item.setChecked(true);
                         switch (item.getItemId()) {
                             case R.id.action_favorites:
-                                fragment = new JobsFragment();
+                               fragment = new JobsFragment();
                                 manager.beginTransaction().replace(R.id.frame,fragment).commit();
                                 fragment.getjobs(0,activity);
                                 break;
@@ -298,6 +332,32 @@ public class DashboardActivity extends BaseActivityk
 
     }
 
+
+    private void checkpermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+
+            if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+                    checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 5);
+
+            } else {
+            }
+        }
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case 5: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                } else {
+                }
+                return;
+            }
+        }
+    }
 
 
 

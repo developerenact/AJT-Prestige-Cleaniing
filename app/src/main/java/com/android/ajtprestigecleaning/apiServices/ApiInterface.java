@@ -1,6 +1,7 @@
 package com.android.ajtprestigecleaning.apiServices;
 
 
+import com.android.ajtprestigecleaning.model.ChangePasswordPojo.ChangePasswordPojo;
 import com.android.ajtprestigecleaning.model.JobDetailPojo.JobDetailPojo;
 import com.android.ajtprestigecleaning.model.JobListPojo.JobListPojo;
 import com.android.ajtprestigecleaning.model.LoginPojo.LoginPojo;
@@ -46,5 +47,13 @@ public interface ApiInterface {
     @Headers("Secret-Key:AJT_Lbim_0f6bd8a808ea3e9996b3aee1900aa2e8")
     @POST("jobDetail")
     Call<JobDetailPojo> getjobDetail(@Field("jobId") int jobId);
+
+    @FormUrlEncoded
+    @Headers("Secret-Key:AJT_Lbim_0f6bd8a808ea3e9996b3aee1900aa2e8")
+    @POST("changePassword")
+    Call<ChangePasswordPojo> chnagePass(@Field("userId") String userId,
+                                        @Field("oldPassword") String oldPassword,
+                                        @Field("password") String password);
+
 
 }

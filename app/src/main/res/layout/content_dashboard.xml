@@ -11,35 +11,37 @@
     <HorizontalScrollView
         android:id="@+id/horizontal_scroll"
         android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
+        android:layout_marginBottom="4dp"
         android:background="@color/orange"
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
-        android:layout_marginBottom="4dp"
-        android:visibility="gone"
-        android:layout_height="wrap_content">
+        android:scrollbarThumbHorizontal="@android:color/transparent"
+        android:visibility="gone">
+
         <LinearLayout
             android:id="@+id/hsvLinearLayout"
-            android:orientation="horizontal"
-            android:background="@color/orange"
-            android:layout_gravity="center"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:scrollbarThumbHorizontal="@android:color/transparent"
-            >
-        </LinearLayout>
+            android:layout_gravity="center"
+            android:background="@color/orange"
+            android:layout_marginLeft="20dp"
+            android:orientation="horizontal"
+
+            ></LinearLayout>
     </HorizontalScrollView>
 
 
-
     <FrameLayout
-    android:id="@+id/frame"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-        android:layout_below="@id/horizontal_scroll"
-    android:layout_above="@id/bottom_navigation">
+        android:id="@+id/frame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/bottom_navigation"
+        android:layout_below="@id/horizontal_scroll">
 
-</FrameLayout>
+    </FrameLayout>
+
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"
         android:layout_width="match_parent"

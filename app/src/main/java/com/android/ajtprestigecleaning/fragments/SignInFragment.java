@@ -114,6 +114,7 @@ public class SignInFragment extends Fragment {
                     if (response.isSuccessful()) {
                         if (response.body().getStatus() == 0) {
                             hideLoader();
+                            Paper.book().write(Constants.USERID,response.body().getData().getId());
                             Paper.book().write(Constants.ISLOGIN,"true");
                             Paper.book().write(Constants.EMAIL,response.body().getData().getEmail());
                             Paper.book().write(Constants.USERNAME,response.body().getData().getUserName());
