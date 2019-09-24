@@ -61,6 +61,30 @@
 
         </androidx.appcompat.widget.Toolbar>
 
+        <HorizontalScrollView
+            android:id="@+id/horizontal_scroll"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="4dp"
+            android:background="@color/orange"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:scrollbarThumbHorizontal="@android:color/transparent"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:id="@+id/hsvLinearLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:background="@color/orange"
+                android:layout_marginLeft="32dp"
+                android:orientation="horizontal"
+
+                ></LinearLayout>
+        </HorizontalScrollView>
+
     </com.google.android.material.appbar.AppBarLayout>
 
     <include layout="@layout/content_dashboard" />

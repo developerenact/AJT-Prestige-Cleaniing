@@ -11,6 +11,15 @@ public class Data implements Serializable
     @SerializedName("id")
     @Expose
     private String id;
+
+    @SerializedName("firstName")
+    @Expose
+    private String firstName;
+
+    @SerializedName("lastName")
+    @Expose
+    private String lastName;
+
     @SerializedName("phone")
     @Expose
     private String phone;
@@ -39,6 +48,22 @@ public class Data implements Serializable
     @Expose
     private String updatedAt;
     private final static long serialVersionUID = 3044389902379972520L;
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
 
     public String getId() {
         return id;

@@ -1,15 +1,18 @@
 package com.android.ajtprestigecleaning.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -57,6 +60,7 @@ public class JobDetailActivity extends BaseActivityk {
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         desc=findViewById(R.id.description);
+
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -67,12 +71,19 @@ public class JobDetailActivity extends BaseActivityk {
         navigation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent1=new Intent(JobDetailActivity.this,MapsActivity.class);
+
+                Intent intent =
+                        new Intent(Intent.ACTION_VIEW,
+                                Uri.parse("http://maps.google.com/maps?"  +
+                                        "&daddr=" + String.valueOf(lat) + ","
+                                        + String.valueOf(lng)));
+                startActivity(intent);
+               /* Intent intent1=new Intent(JobDetailActivity.this,MapsActivity.class);
                 Bundle bundle = new Bundle();
                 bundle.putString("lat", lat);
                 bundle.putString("lng", lng);
                 intent1.putExtras(bundle);
-                startActivity(intent1);
+                startActivity(intent1);*/
             }
         });
     }
@@ -96,12 +107,12 @@ public class JobDetailActivity extends BaseActivityk {
                         if (response.body().getStatus() == 0) {
                             lat=response.body().getData().getLatitude();
                             lng=response.body().getData().getLongitude();
-                            id.setText(response.body().getData().getId());
+                            id.setText("Id number / #"+response.body().getData().getId());
                             location.setText(response.body().getData().getAddress());
                             task.setText(response.body().getData().getName());
                             date.setText(convertDate(response.body().getData().getCreatedAt(),"dd-MM-yyyy | hh.mm aa"));
                             desc.setText(response.body().getData().getDescription());
-                            approx_hour.setText("Approximation hours:"+" "+response.body().getData().getHoursDaily()+" "+"Hours");
+                            approx_hour.setText(response.body().getData().getHoursDaily()+" "+"Hours");
                             adapter = new JobsDetailAdapter(response.body().getData().getTasks(), JobDetailActivity.this);
                             recyclerView.setAdapter(adapter);
 
@@ -112,7 +123,7 @@ public class JobDetailActivity extends BaseActivityk {
 
                     } else {
                         hideLoader();
-                        Toast.makeText(JobDetailActivity.this, "Something went wrong", Toast.LENGTH_LONG).show();
+                        Toast.makeText(JobDetailActivity.this, getApplicationContext().getString(R.string.something_wrong), Toast.LENGTH_LONG).show();
 
 
                     }
@@ -122,12 +133,12 @@ public class JobDetailActivity extends BaseActivityk {
                 public void onFailure(Call<JobDetailPojo> call, Throwable t) {
                     hideLoader();
                     Log.d("otp", t.getMessage());
-                    Toast.makeText(JobDetailActivity.this, "Something went wrong", Toast.LENGTH_LONG).show();
+                    Toast.makeText(JobDetailActivity.this, getApplicationContext().getString(R.string.something_wrong), Toast.LENGTH_LONG).show();
                 }
             });
         } else {
             hideLoader();
-            customDialog(JobDetailActivity.this, "Pleasr check your Internet Connection");
+            customDialog(JobDetailActivity.this, getApplicationContext().getString(R.string.no_internet));
 
         }
 

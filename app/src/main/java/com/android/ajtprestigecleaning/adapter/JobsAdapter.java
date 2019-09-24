@@ -71,7 +71,7 @@ public class JobsAdapter extends RecyclerView.Adapter<JobsAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(final JobsAdapter.ViewHolder holder, final int position) {
-        holder.id.setText(results.get(position).getId());
+        holder.id.setText("Id number / #"+results.get(position).getId());
         holder.address.setText(results.get(position).getAddress());
         holder.work.setText(results.get(position).getName());
         holder.time.setText(convertDate(results.get(position).getCreatedAt(),"dd-MM-yyyy | hh.mm aa"));

@@ -11,6 +11,15 @@ public class Data implements Serializable
     @SerializedName("id")
     @Expose
     private String id;
+
+    @SerializedName("firstName")
+    @Expose
+    private String firstName;
+
+    @SerializedName("lastName")
+    @Expose
+    private String lastName;
+
     @SerializedName("userName")
     @Expose
     private String userName;
@@ -33,6 +42,22 @@ public class Data implements Serializable
 
     public String getId() {
         return id;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public void setId(String id) {

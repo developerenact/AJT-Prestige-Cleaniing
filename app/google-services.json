@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "675069804587",
+    "firebase_url": "https://ajtprestigecleaning-34dfd.firebaseio.com",
+    "project_id": "ajtprestigecleaning-34dfd",
+    "storage_bucket": "ajtprestigecleaning-34dfd.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:675069804587:android:e81e3f0f404c5fdd70aa6e",
+        "android_client_info": {
+          "package_name": "com.android.ajtprestigecleaning"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "675069804587-d9co5e89vrvbg6gp3vum7j8t72hm8srk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.android.ajtprestigecleaning",
+            "certificate_hash": "4ef004c44e0b5c2cab07cc4e4d416873129ce696"
+          }
+        },
+        {
+          "client_id": "675069804587-rp5d2li9djjeq27sgqa32rjds7piqfon.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBwT84ZLR0O5_F4S573aj_seuMTKmR8nTg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "675069804587-rp5d2li9djjeq27sgqa32rjds7piqfon.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

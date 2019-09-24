@@ -2,17 +2,17 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/action_favorites"
+        android:id="@+id/jobs"
         android:icon="@mipmap/jobs"
         android:title="Jobs"
          />
     <item
-        android:id="@+id/action_schedules"
+        android:id="@+id/reports"
         android:icon="@mipmap/report"
         android:title="Report"
          />
     <item
-        android:id="@+id/action_music"
+        android:id="@+id/more"
         android:icon="@mipmap/more"
         android:title="More"
         />

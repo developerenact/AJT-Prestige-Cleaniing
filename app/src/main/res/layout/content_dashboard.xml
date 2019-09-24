@@ -8,7 +8,7 @@
     tools:context=".activities.DashboardActivity"
     tools:showIn="@layout/app_bar_dashboard">
 
-    <HorizontalScrollView
+   <!-- <HorizontalScrollView
         android:id="@+id/horizontal_scroll"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -26,11 +26,11 @@
             android:layout_height="match_parent"
             android:layout_gravity="center"
             android:background="@color/orange"
-            android:layout_marginLeft="20dp"
+            android:layout_marginLeft="32dp"
             android:orientation="horizontal"
 
             ></LinearLayout>
-    </HorizontalScrollView>
+    </HorizontalScrollView>-->
 
 
     <FrameLayout
@@ -38,7 +38,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/bottom_navigation"
-        android:layout_below="@id/horizontal_scroll">
+        >
 
     </FrameLayout>
 

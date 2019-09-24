@@ -34,7 +34,8 @@
                 app:tabIndicatorFullWidth="false"
                 app:tabTextAppearance="@style/CustomTextAppearanceTab"
                 app:layout_constraintTop_toTopOf="parent"
-                app:tabIndicatorColor="@color/grey"
+                app:tabIndicatorColor="@color/underlineblack"
+                app:tabIndicatorHeight="1dp"
                 app:tabMode="scrollable">
 
                 <com.google.android.material.tabs.TabItem

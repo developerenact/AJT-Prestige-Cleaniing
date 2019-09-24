@@ -33,4 +33,25 @@
     <string name="us">Us</string>
     <string name="are_you_sure_you_want_to_logout">Are you sure you want to logout?</string>
     <string name="title_activity_maps">Map</string>
+    <string name="firstname_validation">Please enter your First Name</string>
+    <string name="lastname_validation">Please enter your Last Name</string>
+    <string name="emptyemail_validation">Please enter your email address</string>
+    <string name="email_validation">Please enter valid email address</string>
+    <string name="username_validation">Please enter Username</string>
+    <string name="emptyphone_validation">Please Enter phone number</string>
+    <string name="phone_length_validation">Please enter valid phone number</string>
+    <string name="emptypassword_validation">Please enter your password</string>
+    <string name="password_length_validation">Password should be greater than 6</string>
+    <string name="no_internet">Pleasr check your Internet Connection</string>
+    <string name="something_wrong">Something went wrong</string>
+    <string name="old_password_validation">Please enter your Old Password</string>
+    <string name="new_pass_validation">Please enter New Password</string>
+    <string name="reenter_new_pass">Please Re-enter your New Password</string>
+    <string name="pass_confirmpass_notmatch">Password and Confirm password do not match</string>
+    <string name="no_jobs_available">No Jobs Available</string>
+    <string name="in_progress">In Progress</string>
+    <string name="upcoming">Upcoming Jobs</string>
+    <string name="past_jobs">Past Jobs</string>
+    <string name="rejected_jobs">Rejected Jobs</string>
+    <string name="completed_jobs">Completed Jobs</string>
 </resources>

@@ -2,6 +2,8 @@ package com.android.ajtprestigecleaning.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -26,17 +28,25 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class ChangePasswordActivity extends BaseActivityk {
-    TextView ed_oldPass, ed_newPass, ed_confirmPass;
+    TextView ed_oldPass, ed_newPass, ed_confirmPass,label_change,label_pass;
     ImageView back, change_pass;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        label_change = findViewById(R.id.label_change);
+        label_pass = findViewById(R.id.label_password);
         ed_oldPass = findViewById(R.id.et_old_pass);
         ed_newPass = findViewById(R.id.et_new_password);
         ed_confirmPass = findViewById(R.id.et_confirm_password);
         back = findViewById(R.id.back);
         change_pass = findViewById(R.id.chnagePass);
+
+        Typeface custom_font2 = Typeface.createFromAsset(getAssets(), "fonts/Montserrat-Light.ttf");
+        label_change.setTypeface(custom_font2);
+
+        Typeface custom_font = Typeface.createFromAsset(getApplicationContext().getAssets(), "fonts/Montserrat-Medium.ttf");
+        label_pass.setTypeface(custom_font);
 
         back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -48,15 +58,15 @@ public class ChangePasswordActivity extends BaseActivityk {
             @Override
             public void onClick(View v) {
                 if (ed_oldPass.getText().toString().isEmpty()) {
-                    ed_oldPass.setError("Please enter your Old Password");
+                    ed_oldPass.setError(getApplicationContext().getString(R.string.old_password_validation));
                 } else if (ed_newPass.getText().toString().isEmpty()) {
-                    ed_newPass.setError("Please enter New Password");
+                    ed_newPass.setError(getApplicationContext().getString(R.string.new_pass_validation));
                 }
                 else if (ed_confirmPass.getText().toString().isEmpty()) {
-                    ed_confirmPass.setError("Please Re-enter your New Password");
+                    ed_confirmPass.setError(getApplicationContext().getString(R.string.reenter_new_pass));
                 }
                 else if (!ed_newPass.getText().toString().matches(ed_confirmPass.getText().toString())) {
-                    ed_confirmPass.setError("Password and Confirm password do not match");
+                    ed_confirmPass.setError(getApplicationContext().getString(R.string.pass_confirmpass_notmatch));
                 }
 
                 else {
@@ -89,7 +99,7 @@ public class ChangePasswordActivity extends BaseActivityk {
                         ed_confirmPass.setText("");
                     } else {
                         hideLoader();
-                        Toast.makeText(ChangePasswordActivity.this, "Something went wrong", Toast.LENGTH_LONG).show();
+                        Toast.makeText(ChangePasswordActivity.this, getApplicationContext().getString(R.string.something_wrong), Toast.LENGTH_LONG).show();
 
 
                     }
@@ -99,12 +109,12 @@ public class ChangePasswordActivity extends BaseActivityk {
                 public void onFailure(Call<ChangePasswordPojo> call, Throwable t) {
                     hideLoader();
                     Log.d("otp", t.getMessage());
-                    Toast.makeText(ChangePasswordActivity.this, "Something went wrong", Toast.LENGTH_LONG).show();
+                    Toast.makeText(ChangePasswordActivity.this, getApplicationContext().getString(R.string.something_wrong), Toast.LENGTH_LONG).show();
                 }
             });
         } else {
             hideLoader();
-            customDialog(ChangePasswordActivity.this, "Pleasr check your Internet Connection");
+            customDialog(ChangePasswordActivity.this, getApplicationContext().getString(R.string.no_internet));
 
         }
 

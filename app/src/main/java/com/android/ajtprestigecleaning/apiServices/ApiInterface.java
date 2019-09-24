@@ -7,6 +7,7 @@ import com.android.ajtprestigecleaning.model.JobListPojo.JobListPojo;
 import com.android.ajtprestigecleaning.model.LoginPojo.LoginPojo;
 import com.android.ajtprestigecleaning.model.RegisterPojo.RegisterPojo;
 import com.android.ajtprestigecleaning.model.ResetPassword.ResetPassword;
+import com.google.gson.JsonObject;
 
 import retrofit2.Call;
 import retrofit2.http.Field;
@@ -22,14 +23,17 @@ public interface ApiInterface {
     Call<RegisterPojo> userRegister(@Field("userName") String userName,
                                     @Field("password") String password,
                                     @Field("email") String email,
-                                    @Field("phone") String phone);
+                                    @Field("phone") String phone,
+                                    @Field("firstName") String firstName,
+                                    @Field("lastName") String lastName);
 
 
     @FormUrlEncoded
     @Headers("Secret-Key:AJT_Lbim_0f6bd8a808ea3e9996b3aee1900aa2e8")
     @POST("login")
     Call<LoginPojo> loginUser(@Field("email") String email,
-                                 @Field("password") String password);
+                                 @Field("password") String password,
+                                 @Field("token") String token);
 
     @FormUrlEncoded
     @Headers("Secret-Key:AJT_Lbim_0f6bd8a808ea3e9996b3aee1900aa2e8")
@@ -54,6 +58,12 @@ public interface ApiInterface {
     Call<ChangePasswordPojo> chnagePass(@Field("userId") String userId,
                                         @Field("oldPassword") String oldPassword,
                                         @Field("password") String password);
+
+    @FormUrlEncoded
+    @Headers("Secret-Key:AJT_Lbim_0f6bd8a808ea3e9996b3aee1900aa2e8")
+    @POST("logout")
+    Call<JsonObject> logout(@Field("userId") String userId,
+                             @Field("token") String token);
 
 
 }

@@ -91,7 +91,7 @@ public class JobsFragment extends Fragment {
         showLoader(activity);
         if (isNetworkConnected(activity)) {
             ApiInterface service = BaseUrl.CreateService(ApiInterface.class);
-            Call<JobListPojo> call = service.getjobs(1, state);
+            Call<JobListPojo> call = service.getjobs(2, state);
             call.enqueue(new Callback<JobListPojo>() {
                 @Override
                 public void onResponse(Call<JobListPojo> call, Response<JobListPojo> response) {
@@ -103,21 +103,21 @@ public class JobsFragment extends Fragment {
                                 if (state == 0) {
                                     header.setVisibility(View.GONE);
                                 } else if (state == 1) {
-                                    header.setText("In Progress");
+                                    header.setText(getActivity().getString(R.string.in_progress));
                                 } else if (state == 2) {
-                                    header.setText("Upcoming Jobs");
+                                    header.setText(getActivity().getString(R.string.upcoming));
                                 } else if (state == 3) {
-                                    header.setText("Past Jobs");
+                                    header.setText(getActivity().getString(R.string.past_jobs));
                                 } else if (state == 4) {
-                                    header.setText("Rejected Jobs");
+                                    header.setText(getActivity().getString(R.string.rejected_jobs));
 
                                 } else {
-                                    header.setText("Completed Jobs");
+                                    header.setText(getActivity().getString(R.string.completed_jobs));
 
                                 }
                             }
                             else{
-                                customDialog(activity, "No Jobs Available");
+                                customDialog(activity, getActivity().getString(R.string.no_jobs_available));
                                 header.setVisibility(View.GONE);
                             }
                             adapter = new JobsAdapter(response.body().getData(), getContext());
@@ -129,7 +129,7 @@ public class JobsFragment extends Fragment {
 
                     } else {
                         hideLoader();
-                        Toast.makeText(getContext(), "Something went wrong", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getContext(),getActivity().getString(R.string.something_wrong), Toast.LENGTH_LONG).show();
 
 
                     }
@@ -139,12 +139,12 @@ public class JobsFragment extends Fragment {
                 public void onFailure(Call<JobListPojo> call, Throwable t) {
                     hideLoader();
                     Log.d("otp", t.getMessage());
-                    Toast.makeText(getContext(), "Something went wrong", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), getActivity().getString(R.string.something_wrong), Toast.LENGTH_LONG).show();
                 }
             });
         } else {
             hideLoader();
-            customDialog(activity, "Pleasr check your Internet Connection");
+            customDialog(activity, getActivity().getString(R.string.no_internet));
 
         }
 

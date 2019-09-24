@@ -26,6 +26,7 @@ import com.android.ajtprestigecleaning.apiServices.BaseUrl;
 import com.android.ajtprestigecleaning.model.LoginPojo.LoginPojo;
 import com.android.ajtprestigecleaning.model.RegisterPojo.RegisterPojo;
 import com.android.ajtprestigecleaning.util.Constants;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.math.BigInteger;
 import java.security.MessageDigest;
@@ -48,10 +49,10 @@ import static com.android.ajtprestigecleaning.activities.BaseActivityk.showLoade
  */
 public class SignInFragment extends Fragment {
 
-    TextView label_forgot_pass;
+    TextView label_forgot_pass,label_welcome;
     EditText et_email, et_pass;
     ImageView login;
-
+    String refreshedToken;
     public SignInFragment() {
         // Required empty public constructor
     }
@@ -63,8 +64,9 @@ public class SignInFragment extends Fragment {
 
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_sign_in, container, false);
-
+        onTokenRefresh();
         label_forgot_pass = view.findViewById(R.id.label_forgot_pass);
+        label_welcome = view.findViewById(R.id.label_welcome);
         login = view.findViewById(R.id.login);
         et_email = view.findViewById(R.id.et_email);
         et_pass = view.findViewById(R.id.et_password);
@@ -79,17 +81,21 @@ public class SignInFragment extends Fragment {
         Typeface custom_font = Typeface.createFromAsset(getContext().getAssets(), "fonts/Montserrat-Medium.ttf");
         label_forgot_pass.setTypeface(custom_font);
 
+        Typeface custom_font2 = Typeface.createFromAsset(getContext().getAssets(), "fonts/Montserrat-Light.ttf");
+        label_welcome.setTypeface(custom_font2);
+
+
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (et_email.getText().toString().isEmpty()) {
-                    et_email.setError("Please enter your email address");
+                    et_email.setError(getActivity().getString(R.string.emptyemail_validation));
                 } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(et_email.getText().toString()).matches()) {
-                    et_email.setError("Please enter valid email address");
+                    et_email.setError(getActivity().getString(R.string.email_validation));
                 } else if (et_pass.getText().toString().isEmpty()) {
-                    et_pass.setError("Please enter your password");
+                    et_pass.setError(getActivity().getString(R.string.emptypassword_validation));
                 } else if (et_pass.getText().toString().length() < 6) {
-                    et_pass.setError("Password should be greater than 6");
+                    et_pass.setError(getActivity().getString(R.string.password_length_validation));
                 } else {
                     login();
                 }
@@ -97,6 +103,7 @@ public class SignInFragment extends Fragment {
 
             }
         });
+
 
 
         return view;
@@ -107,7 +114,7 @@ public class SignInFragment extends Fragment {
         showLoader(getActivity());
         if (isNetworkConnected(getContext())) {
             ApiInterface service = BaseUrl.CreateService(ApiInterface.class);
-            Call<LoginPojo> call = service.loginUser(et_email.getText().toString(), getMd5Hash(et_pass.getText().toString()));
+            Call<LoginPojo> call = service.loginUser(et_email.getText().toString(), getMd5Hash(et_pass.getText().toString()),refreshedToken);
             call.enqueue(new Callback<LoginPojo>() {
                 @Override
                 public void onResponse(Call<LoginPojo> call, Response<LoginPojo> response) {
@@ -118,6 +125,8 @@ public class SignInFragment extends Fragment {
                             Paper.book().write(Constants.ISLOGIN,"true");
                             Paper.book().write(Constants.EMAIL,response.body().getData().getEmail());
                             Paper.book().write(Constants.USERNAME,response.body().getData().getUserName());
+                            Paper.book().write(Constants.FIRSTNAME,response.body().getData().getFirstName());
+                            Paper.book().write(Constants.LASTNAME,response.body().getData().getLastName());
                             Intent intent = new Intent(getContext(), DashboardActivity.class);
                             startActivity(intent);
                             getActivity().finish();
@@ -129,7 +138,7 @@ public class SignInFragment extends Fragment {
 
                     } else {
                         hideLoader();
-                        Toast.makeText(getContext(), "Something went wrong", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getContext(), getActivity().getString(R.string.something_wrong), Toast.LENGTH_LONG).show();
 
 
                     }
@@ -139,12 +148,12 @@ public class SignInFragment extends Fragment {
                 public void onFailure(Call<LoginPojo> call, Throwable t) {
                     hideLoader();
                     Log.d("otp", t.getMessage());
-                    Toast.makeText(getContext(), "Something went wrong", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), getActivity().getString(R.string.something_wrong), Toast.LENGTH_LONG).show();
                 }
             });
         } else {
             hideLoader();
-            customDialog(getActivity(), "Pleasr check your Internet Connection");
+            customDialog(getActivity(), getActivity().getString(R.string.no_internet));
 
         }
 
@@ -167,6 +176,11 @@ public class SignInFragment extends Fragment {
             return null;
         }
     }
+    public void onTokenRefresh() {
+        refreshedToken = FirebaseInstanceId.getInstance().getToken();
+        Paper.book().write(Constants.DEVICETOKEN,refreshedToken);
+        Log.d("refresh",refreshedToken);
 
+    }
 
 }

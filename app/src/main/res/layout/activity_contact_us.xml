@@ -31,6 +31,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="52dp"
+                    android:textColor="@color/black"
                     android:text="@string/contact"
                     android:textSize="30sp"
                     app:layout_constraintLeft_toLeftOf="parent"
@@ -80,7 +81,7 @@
 
                     <View
                         android:layout_width="match_parent"
-                        android:layout_height="2dp"
+                        android:layout_height="1dp"
                         android:layout_marginTop="4dp"
                         android:background="@color/underline"
                         app:layout_constraintEnd_toEndOf="@id/et_email"
@@ -102,7 +103,7 @@
 
                     <View
                         android:layout_width="match_parent"
-                        android:layout_height="2dp"
+                        android:layout_height="1dp"
                         android:layout_marginTop="4dp"
                         android:background="@color/underline"
                         app:layout_constraintEnd_toEndOf="@id/et_username"
@@ -125,7 +126,7 @@
 
                     <View
                         android:layout_width="match_parent"
-                        android:layout_height="2dp"
+                        android:layout_height="1dp"
                         android:layout_marginTop="4dp"
                         android:background="@color/underline"
                         app:layout_constraintEnd_toEndOf="@id/et_phone"
@@ -151,7 +152,7 @@
 
                     <View
                         android:layout_width="match_parent"
-                        android:layout_height="2dp"
+                        android:layout_height="1dp"
                         android:layout_marginTop="4dp"
                         android:background="@color/underline"
                         app:layout_constraintEnd_toEndOf="@id/et_pass"

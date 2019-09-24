@@ -19,11 +19,13 @@ import com.android.ajtprestigecleaning.apiServices.ApiInterface;
 import com.android.ajtprestigecleaning.apiServices.BaseUrl;
 import com.android.ajtprestigecleaning.fragments.JobsFragment;
 import com.android.ajtprestigecleaning.model.JobListPojo.JobListPojo;
+import com.android.ajtprestigecleaning.model.ResetPassword.ResetPassword;
 import com.android.ajtprestigecleaning.util.Constants;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 
@@ -32,6 +34,8 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.gson.JsonObject;
 
 import androidx.drawerlayout.widget.DrawerLayout;
 
@@ -66,6 +70,7 @@ public class DashboardActivity extends BaseActivityk
     TextView label_alljobs;
     ImageView alljobs_arrow;
     Activity activity;
+    Dialog dialog;
     HorizontalScrollView horizontalScrollView;
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -85,7 +90,7 @@ public class DashboardActivity extends BaseActivityk
         if (manager == null) manager = getSupportFragmentManager();
         final DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
-        login_Username=Paper.book().read(Constants.USERNAME,"UserName");
+        login_Username=Paper.book().read(Constants.FIRSTNAME,"john")+" "+Paper.book().read(Constants.LASTNAME,"Doe");
         nav_name=findViewById(R.id.nav_name);
         contactus=findViewById(R.id.contactus);
         terms=findViewById(R.id.terms);
@@ -227,14 +232,14 @@ public class DashboardActivity extends BaseActivityk
                     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                         item.setChecked(true);
                         switch (item.getItemId()) {
-                            case R.id.action_favorites:
+                            case R.id.jobs:
                                fragment = new JobsFragment();
                                 manager.beginTransaction().replace(R.id.frame,fragment).commit();
                                 fragment.getjobs(0,activity);
                                 break;
-                            case R.id.action_schedules:
+                            case R.id.reports:
                                 break;
-                            case R.id.action_music:
+                            case R.id.more:
                                 break;
                         }
                         return false;
@@ -299,8 +304,15 @@ public class DashboardActivity extends BaseActivityk
         return true;
     }
 
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+    }
+
     public void showIosDialog(){
-        final Dialog dialog = new Dialog(this);
+        dialog = new Dialog(this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setCancelable(false);
         dialog.setContentView(R.layout.logout_dialog);
@@ -318,12 +330,8 @@ public class DashboardActivity extends BaseActivityk
         dialogButton_logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Paper.book().delete(Constants.ISLOGIN);
-                Paper.book().delete(Constants.USERNAME);
-                Paper.book().delete(Constants.EMAIL);
-                Intent intent = new Intent(DashboardActivity.this, LoginActivity.class);
-                startActivity(intent);
-                finish();
+                userLogout();
+
             }
         });
 
@@ -357,6 +365,48 @@ public class DashboardActivity extends BaseActivityk
                 return;
             }
         }
+    }
+
+
+    public void userLogout() {
+        showLoader(DashboardActivity.this);
+        if (isNetworkConnected(DashboardActivity.this)) {
+            ApiInterface service = BaseUrl.CreateService(ApiInterface.class);
+            Call<JsonObject> call = service.logout(Paper.book().read(Constants.USERID,""), FirebaseInstanceId.getInstance().getToken());
+            call.enqueue(new Callback<JsonObject>() {
+                @Override
+                public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                    if (response.isSuccessful()) {
+                        hideLoader();
+                        dialog.dismiss();
+                        Paper.book().delete(Constants.ISLOGIN);
+                        Paper.book().delete(Constants.USERNAME);
+                        Paper.book().delete(Constants.EMAIL);
+                        Paper.book().delete(Constants.USERID);
+                        Intent intent = new Intent(DashboardActivity.this, LoginActivity.class);
+                        startActivity(intent);
+                        finish();
+                    } else {
+                        hideLoader();
+                        Toast.makeText(DashboardActivity.this, getApplicationContext().getString(R.string.something_wrong), Toast.LENGTH_LONG).show();
+
+
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<JsonObject> call, Throwable t) {
+                    hideLoader();
+                    Log.d("otp", t.getMessage());
+                    Toast.makeText(DashboardActivity.this, getApplicationContext().getString(R.string.something_wrong), Toast.LENGTH_LONG).show();
+                }
+            });
+        } else {
+            hideLoader();
+            customDialog(DashboardActivity.this, getApplicationContext().getString(R.string.no_internet));
+
+        }
+
     }
 
 

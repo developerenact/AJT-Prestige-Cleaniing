@@ -24,6 +24,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="52dp"
             android:text="@string/welcome_back"
+            android:textColor="@color/lightblack2"
             android:textSize="30sp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -57,7 +58,7 @@
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="2dp"
+                android:layout_height="1dp"
                 android:layout_marginTop="4dp"
                 android:background="@color/underline"
                 app:layout_constraintEnd_toEndOf="@id/et_email"
@@ -79,7 +80,7 @@
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="2dp"
+                android:layout_height="1dp"
                 android:layout_marginTop="4dp"
                 android:background="@color/underline"
                 app:layout_constraintEnd_toEndOf="@id/et_email"

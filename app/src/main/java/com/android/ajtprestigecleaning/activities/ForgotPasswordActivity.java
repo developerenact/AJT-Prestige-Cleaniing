@@ -27,7 +27,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class ForgotPasswordActivity extends BaseActivityk {
-    TextView label_pass;
+    TextView label_pass,label_welcome;
     EditText et_email;
     ImageView back, forgot_pass;
 
@@ -35,11 +35,15 @@ public class ForgotPasswordActivity extends BaseActivityk {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         label_pass = findViewById(R.id.label_pass);
+        label_welcome = findViewById(R.id.label_welcome);
         et_email = findViewById(R.id.et_email);
         forgot_pass = findViewById(R.id.forgot_pass);
         back = findViewById(R.id.back);
         Typeface custom_font = Typeface.createFromAsset(getApplicationContext().getAssets(), "fonts/Montserrat-Medium.ttf");
         label_pass.setTypeface(custom_font);
+
+        Typeface custom_font2 = Typeface.createFromAsset(getAssets(), "fonts/Montserrat-Light.ttf");
+        label_welcome.setTypeface(custom_font2);
 
         back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -86,7 +90,7 @@ public class ForgotPasswordActivity extends BaseActivityk {
                         customDialog(ForgotPasswordActivity.this, response.body().getMessage());
                     } else {
                         hideLoader();
-                        Toast.makeText(ForgotPasswordActivity.this, "Something went wrong", Toast.LENGTH_LONG).show();
+                        Toast.makeText(ForgotPasswordActivity.this, getApplicationContext().getString(R.string.something_wrong), Toast.LENGTH_LONG).show();
 
 
                     }
@@ -96,12 +100,12 @@ public class ForgotPasswordActivity extends BaseActivityk {
                 public void onFailure(Call<ResetPassword> call, Throwable t) {
                     hideLoader();
                     Log.d("otp", t.getMessage());
-                    Toast.makeText(ForgotPasswordActivity.this, "Something went wrong", Toast.LENGTH_LONG).show();
+                    Toast.makeText(ForgotPasswordActivity.this, getApplicationContext().getString(R.string.something_wrong), Toast.LENGTH_LONG).show();
                 }
             });
         } else {
             hideLoader();
-            customDialog(ForgotPasswordActivity.this, "Pleasr check your Internet Connection");
+            customDialog(ForgotPasswordActivity.this, getApplicationContext().getString(R.string.no_internet));
 
         }
 

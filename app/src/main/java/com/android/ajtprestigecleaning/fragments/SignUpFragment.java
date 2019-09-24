@@ -43,8 +43,8 @@ import static com.android.ajtprestigecleaning.activities.BaseActivityk.showLoade
  * A simple {@link Fragment} subclass.
  */
 public class SignUpFragment extends Fragment {
-    TextView label_member,lebel_info;
-    EditText et_email, et_username, et_pass, et_phone;
+    TextView label_member,lebel_info,label_welcome;
+    EditText et_email, et_username, et_pass, et_phone,et_fname,et_lname;
     ImageView signup;
 
     public SignUpFragment() {
@@ -60,31 +60,46 @@ public class SignUpFragment extends Fragment {
         label_member = view.findViewById(R.id.label_member);
         lebel_info = view.findViewById(R.id.label_info);
         et_email = view.findViewById(R.id.et_email);
+        label_welcome = view.findViewById(R.id.label_welcome);
         et_username = view.findViewById(R.id.et_username);
         et_phone = view.findViewById(R.id.et_phone);
         et_pass = view.findViewById(R.id.et_pass);
+        et_fname = view.findViewById(R.id.et_fname);
+        et_lname = view.findViewById(R.id.et_lname);
         signup = view.findViewById(R.id.signup);
         Typeface custom_font = Typeface.createFromAsset(getContext().getAssets(), "fonts/Montserrat-Medium.ttf");
         label_member.setTypeface(custom_font);
+
+        Typeface custom_font2 = Typeface.createFromAsset(getContext().getAssets(), "fonts/Montserrat-Light.ttf");
+        label_welcome.setTypeface(custom_font2);
+
         lebel_info.setTypeface(custom_font);
 
         signup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (et_email.getText().toString().isEmpty()) {
-                    et_email.setError("Please enter your email address");
+
+                if (et_fname.getText().toString().isEmpty()) {
+                    et_fname.setError(getActivity().getString(R.string.firstname_validation));
+                }
+
+                else if (et_lname.getText().toString().isEmpty()) {
+                    et_lname.setError(getActivity().getString(R.string.lastname_validation));
+                }
+               else if (et_email.getText().toString().isEmpty()) {
+                    et_email.setError(getActivity().getString(R.string.emptyemail_validation));
                 } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(et_email.getText().toString()).matches()) {
-                    et_email.setError("Please enter valid email address");
+                    et_email.setError(getActivity().getString(R.string.email_validation));
                 } else if (et_username.getText().toString().isEmpty()) {
-                    et_username.setError("Please enter Username");
+                    et_username.setError(getActivity().getString(R.string.username_validation));
                 } else if (et_phone.getText().toString().isEmpty()) {
-                    et_phone.setError("Please Enter phone number");
+                    et_phone.setError(getActivity().getString(R.string.emptyphone_validation));
                 } else if (et_phone.getText().toString().length() < 10) {
-                    et_phone.setError("Please enter valid phone number");
+                    et_phone.setError(getActivity().getString(R.string.phone_length_validation));
                 } else if (et_pass.getText().toString().isEmpty()) {
-                    et_pass.setError("Please enter your password");
+                    et_pass.setError(getActivity().getString(R.string.emptypassword_validation));
                 } else if (et_pass.getText().toString().length() < 6) {
-                    et_pass.setError("Password should be greater than 6");
+                    et_pass.setError(getActivity().getString(R.string.password_length_validation));
                 } else {
                     register();
                 }
@@ -99,7 +114,7 @@ public class SignUpFragment extends Fragment {
         showLoader(getActivity());
         if (isNetworkConnected(getContext())) {
             ApiInterface service = BaseUrl.CreateService(ApiInterface.class);
-            Call<RegisterPojo> call = service.userRegister(et_username.getText().toString(), getMd5Hash(et_pass.getText().toString()), et_email.getText().toString(), et_phone.getText().toString());
+            Call<RegisterPojo> call = service.userRegister(et_username.getText().toString(), getMd5Hash(et_pass.getText().toString()), et_email.getText().toString(), et_phone.getText().toString(),et_fname.getText().toString(),et_lname.getText().toString());
             call.enqueue(new Callback<RegisterPojo>() {
                 @Override
                 public void onResponse(Call<RegisterPojo> call, Response<RegisterPojo> response) {
@@ -110,6 +125,8 @@ public class SignUpFragment extends Fragment {
                             Paper.book().write(Constants.USERID,response.body().getData().getId());
                             Paper.book().write(Constants.EMAIL,response.body().getData().getEmail());
                             Paper.book().write(Constants.USERNAME,response.body().getData().getUserName());
+                            Paper.book().write(Constants.FIRSTNAME,response.body().getData().getFirstName());
+                            Paper.book().write(Constants.LASTNAME,response.body().getData().getLastName());
                             Intent intent = new Intent(getContext(), DashboardActivity.class);
                             startActivity(intent);
                             getActivity().finish();
@@ -121,7 +138,7 @@ public class SignUpFragment extends Fragment {
 
                     } else {
                         hideLoader();
-                        Toast.makeText(getContext(), "Something went wrong", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getContext(), getActivity().getString(R.string.something_wrong), Toast.LENGTH_LONG).show();
 
 
                     }
@@ -131,12 +148,12 @@ public class SignUpFragment extends Fragment {
                 public void onFailure(Call<RegisterPojo> call, Throwable t) {
                     hideLoader();
                     Log.d("otp", t.getMessage());
-                    Toast.makeText(getContext(), "Something went wrong", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), getActivity().getString(R.string.something_wrong), Toast.LENGTH_LONG).show();
                 }
             });
         } else {
             hideLoader();
-            customDialog(getActivity(), "Pleasr check your Internet Connection");
+            customDialog(getActivity(), getActivity().getString(R.string.no_internet));
 
         }
 
