@@ -127,6 +127,7 @@ public class SignInFragment extends Fragment {
                             Paper.book().write(Constants.USERNAME,response.body().getData().getUserName());
                             Paper.book().write(Constants.FIRSTNAME,response.body().getData().getFirstName());
                             Paper.book().write(Constants.LASTNAME,response.body().getData().getLastName());
+                            Paper.book().write(Constants.USERIMAGE,response.body().getData().getImage());
                             Intent intent = new Intent(getContext(), DashboardActivity.class);
                             startActivity(intent);
                             getActivity().finish();

@@ -7,13 +7,20 @@ import com.android.ajtprestigecleaning.model.JobListPojo.JobListPojo;
 import com.android.ajtprestigecleaning.model.LoginPojo.LoginPojo;
 import com.android.ajtprestigecleaning.model.RegisterPojo.RegisterPojo;
 import com.android.ajtprestigecleaning.model.ResetPassword.ResetPassword;
+import com.android.ajtprestigecleaning.model.SubmitHourPojo.SubmitHourPojo;
+import com.android.ajtprestigecleaning.model.UpdateProfilePojo.UpdateProfilePojo;
 import com.google.gson.JsonObject;
 
+import java.util.HashMap;
+
+import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.Headers;
+import retrofit2.http.Multipart;
 import retrofit2.http.POST;
+import retrofit2.http.PartMap;
 
 public interface ApiInterface {
 
@@ -32,8 +39,8 @@ public interface ApiInterface {
     @Headers("Secret-Key:AJT_Lbim_0f6bd8a808ea3e9996b3aee1900aa2e8")
     @POST("login")
     Call<LoginPojo> loginUser(@Field("email") String email,
-                                 @Field("password") String password,
-                                 @Field("token") String token);
+                              @Field("password") String password,
+                              @Field("token") String token);
 
     @FormUrlEncoded
     @Headers("Secret-Key:AJT_Lbim_0f6bd8a808ea3e9996b3aee1900aa2e8")
@@ -63,7 +70,24 @@ public interface ApiInterface {
     @Headers("Secret-Key:AJT_Lbim_0f6bd8a808ea3e9996b3aee1900aa2e8")
     @POST("logout")
     Call<JsonObject> logout(@Field("userId") String userId,
-                             @Field("token") String token);
+                            @Field("token") String token);
+
+    @Multipart
+    @Headers("Secret-Key:AJT_Lbim_0f6bd8a808ea3e9996b3aee1900aa2e8")
+    @POST("updateProfile")
+    Call<UpdateProfilePojo> updateProfile(@PartMap HashMap<String, RequestBody> hashMap);
+
+
+    @FormUrlEncoded
+    @Headers("Secret-Key:AJT_Lbim_0f6bd8a808ea3e9996b3aee1900aa2e8")
+    @POST("submitHours")
+    Call<SubmitHourPojo> submithour(@Field("jobId") String jobId,
+                                    @Field("userId") String userId,
+                                    @Field("taskId") String taskId,
+                                    @Field("startTime") String startTime,
+                                    @Field("endTime") String endTime,
+                                    @Field("hours") String hours,
+                                    @Field("notes") String notes);
 
 
 }

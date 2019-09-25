@@ -36,6 +36,7 @@ import android.view.MenuItem;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.gson.JsonObject;
+import com.squareup.picasso.Picasso;
 
 import androidx.drawerlayout.widget.DrawerLayout;
 
@@ -54,6 +55,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import de.hdodenhof.circleimageview.CircleImageView;
 import io.paperdb.Paper;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -61,7 +63,8 @@ import retrofit2.Response;
 
 public class DashboardActivity extends BaseActivityk
         implements NavigationView.OnNavigationItemSelectedListener {
-    TextView contactus,terms,privacy,logout,nav_name,change_pass;
+    TextView contactus,terms,privacy,logout,nav_name,change_pass,tv_profile;
+    CircleImageView nav_image;
     String login_Username;
      JobsFragment fragment;
     FragmentManager manager;
@@ -84,6 +87,7 @@ public class DashboardActivity extends BaseActivityk
         label_alljobs=findViewById(R.id.label_alljobs);
         change_pass=findViewById(R.id.changepassword);
         alljobs_arrow=findViewById(R.id.alljobs_arrow);
+        tv_profile=findViewById(R.id.profile);
         horizontalScrollView=findViewById(R.id.horizontal_scroll);
         int[] image_array = new int[]{R.mipmap.all_jobs,R.mipmap.in_progess,R.mipmap.upcpming_jobs,R.mipmap.past_jobs,R.mipmap.rejected_jobs,R.mipmap.completed_jobs};
         String[] category_name = new String[]{"All jobs","In Progress","Upcoming Jobs","Past jobs","Rejected jobs","Completed jobs"};
@@ -92,6 +96,7 @@ public class DashboardActivity extends BaseActivityk
         NavigationView navigationView = findViewById(R.id.nav_view);
         login_Username=Paper.book().read(Constants.FIRSTNAME,"john")+" "+Paper.book().read(Constants.LASTNAME,"Doe");
         nav_name=findViewById(R.id.nav_name);
+        nav_image=findViewById(R.id.nav_imageView);
         contactus=findViewById(R.id.contactus);
         terms=findViewById(R.id.terms);
         privacy=findViewById(R.id.privacy);
@@ -99,6 +104,14 @@ public class DashboardActivity extends BaseActivityk
         Typeface custom_font = Typeface.createFromAsset(getApplicationContext().getAssets(), "fonts/Montserrat-Medium.ttf");
         nav_name.setTypeface(custom_font);
         nav_name.setText(login_Username);
+        String imageUrl=Paper.book().read(Constants.USERIMAGE);
+        if (!imageUrl.isEmpty()) {
+            Picasso.with(getApplicationContext()).load(imageUrl).placeholder(R.drawable.demoprofile).error(R.drawable.demoprofile).into(nav_image);
+        } else {
+            Picasso.with(getApplicationContext()).load(R.drawable.demoprofile).into(nav_image);
+
+        }
+
         ArrayList<TextView> textViewList=new ArrayList<>();
         ArrayList<ImageView> category_imgview=new ArrayList<>();
         ArrayList<View> category_view=new ArrayList<>();
@@ -133,6 +146,17 @@ public class DashboardActivity extends BaseActivityk
         drawer.addDrawerListener(toggle);
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
+
+        tv_profile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(DashboardActivity.this,UpdateProfileActivity.class);
+                startActivity(intent);
+                drawer.closeDrawer(GravityCompat.START);
+
+            }
+        });
+
 
         contactus.setOnClickListener(new View.OnClickListener() {
             @Override

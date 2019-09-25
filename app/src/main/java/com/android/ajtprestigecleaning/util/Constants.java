@@ -8,6 +8,7 @@ public class Constants {
     public static final String USERNAME="username";
     public static final String FIRSTNAME="firstname";
     public static final String LASTNAME="lastname";
+    public static final String USERIMAGE="userimage";
     public static final String ISLOGIN="false";
     public static final String DEVICETOKEN="devicetoken";
 
