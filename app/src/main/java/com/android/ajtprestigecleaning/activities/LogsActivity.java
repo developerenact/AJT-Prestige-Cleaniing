@@ -57,12 +57,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static com.android.ajtprestigecleaning.activities.BaseActivityk.customDialog;
-import static com.android.ajtprestigecleaning.activities.BaseActivityk.hideLoader;
-import static com.android.ajtprestigecleaning.activities.BaseActivityk.isNetworkConnected;
-import static com.android.ajtprestigecleaning.activities.BaseActivityk.showLoader;
 
-public class LogsActivity extends AppCompatActivity {
+public class LogsActivity extends BaseActivityk {
     Dialog dialog;
     ImageView add_logs, back;
     Uri selectedUri;
@@ -73,9 +69,8 @@ public class LogsActivity extends AppCompatActivity {
     EditText et_note;
     Button submit;
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_logs);
         checkpermission();
         add_logs = findViewById(R.id.add_logs_btn);
         back = findViewById(R.id.back);
@@ -92,6 +87,11 @@ public class LogsActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    @Override
+    protected int getLayoutResourceId() {
+        return R.layout.activity_logs;
     }
 
     public void openBottomdialog() {

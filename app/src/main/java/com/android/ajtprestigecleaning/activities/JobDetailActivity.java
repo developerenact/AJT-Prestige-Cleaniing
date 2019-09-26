@@ -111,7 +111,6 @@ public class JobDetailActivity extends BaseActivityk implements AdapterView.OnIt
 
             }
         });
-
         // Creating adapter for spinner
 
 
@@ -124,23 +123,6 @@ public class JobDetailActivity extends BaseActivityk implements AdapterView.OnIt
             }
         });
 
-/*
-        for (int i=0;i<category_name.length;i++) {
-            View main_view = LayoutInflater.from(this).inflate(R.layout.categoty_layout, null);
-            LinearLayout categoryMainLayout = main_view.findViewById(R.id.categoryMainLayout);
-
-            final ImageView cat_img = main_view.findViewById(R.id.img);
-            TextView cat_text = main_view.findViewById(R.id.text);
-            cat_text.setText(category_name[i]);
-            cat_img.setImageResource(image_array[i]);
-            textViewList.add(cat_text);
-            category_imgview.add(cat_img);
-            category_view.add(main_view);
-            hsvLayout.addView(main_view);
-
-
-        }
-*/
 
 
         navigation.setOnClickListener(new View.OnClickListener() {
@@ -251,6 +233,7 @@ public class JobDetailActivity extends BaseActivityk implements AdapterView.OnIt
                 public void onResponse(Call<SubmitHourPojo> call, Response<SubmitHourPojo> response) {
                     if (response.isSuccessful()) {
                         hideLoader();
+                        dialog.dismiss();
 
                     } else {
                         hideLoader();
@@ -281,7 +264,7 @@ public class JobDetailActivity extends BaseActivityk implements AdapterView.OnIt
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
         Date startDate = null;
         try {
-            startDate = simpleDateFormat.parse(starttime);
+            startDate = simpleDateFormat.parse(starttime);;
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -379,7 +362,24 @@ public class JobDetailActivity extends BaseActivityk implements AdapterView.OnIt
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                submit(et_from.getText().toString(),et_to.getText().toString(),et_note.getText().toString());
+
+                if(et_from.getText().toString().isEmpty()){
+                    et_from.requestFocus();
+                }
+                else if(et_to.getText().toString().isEmpty()){
+
+                    et_to.requestFocus();
+
+                }
+
+                else if(et_note.getText().toString().isEmpty()){
+                    et_note.setError("Please write note");
+
+                }
+                else{
+                    submit(et_from.getText().toString(),et_to.getText().toString(),et_note.getText().toString());
+
+                }
             }
         });
         dialog.show();
