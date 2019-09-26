@@ -52,7 +52,7 @@ public class SignInFragment extends Fragment {
     TextView label_forgot_pass,label_welcome;
     EditText et_email, et_pass;
     ImageView login;
-    String refreshedToken;
+    String refreshedToken="";
     public SignInFragment() {
         // Required empty public constructor
     }

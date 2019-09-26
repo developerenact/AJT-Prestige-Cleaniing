@@ -1,6 +1,7 @@
 package com.android.ajtprestigecleaning.apiServices;
 
 
+import com.android.ajtprestigecleaning.model.AddLogPojo.AddLogPojo;
 import com.android.ajtprestigecleaning.model.ChangePasswordPojo.ChangePasswordPojo;
 import com.android.ajtprestigecleaning.model.JobDetailPojo.JobDetailPojo;
 import com.android.ajtprestigecleaning.model.JobListPojo.JobListPojo;
@@ -88,6 +89,12 @@ public interface ApiInterface {
                                     @Field("endTime") String endTime,
                                     @Field("hours") String hours,
                                     @Field("notes") String notes);
+
+    @Multipart
+    @Headers("Secret-Key:AJT_Lbim_0f6bd8a808ea3e9996b3aee1900aa2e8")
+    @POST("addLogs")
+    Call<AddLogPojo> addLogs(@PartMap HashMap<String, RequestBody> hashMap);
+
 
 
 }

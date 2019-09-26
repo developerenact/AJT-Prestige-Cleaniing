@@ -278,6 +278,27 @@
         </androidx.appcompat.widget.LinearLayoutCompat>
 
 
+        <HorizontalScrollView
+            android:id="@+id/tasks_hsv"
+            app:layout_constraintTop_toBottomOf="@id/startjob_loghours"
+            android:layout_width="match_parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:layout_marginTop="8dp"
+            android:scrollbarThumbHorizontal="@android:color/transparent"
+            android:layout_height="wrap_content">
+            <LinearLayout
+                android:id="@+id/hsvLinearLayout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:background="@color/orange"
+                android:layout_marginLeft="32dp"
+                android:orientation="horizontal"
+
+                ></LinearLayout>
+        </HorizontalScrollView>
+
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <include layout="@layout/log_hours"/>

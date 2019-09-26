@@ -5,21 +5,33 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.Dialog;
+import android.app.TimePickerDialog;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.icu.text.SimpleDateFormat;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.android.ajtprestigecleaning.R;
@@ -34,10 +46,13 @@ import com.android.ajtprestigecleaning.model.SubmitHourPojo.SubmitHourPojo;
 import com.android.ajtprestigecleaning.util.Constants;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
+import java.text.ParseException;
 import java.time.Duration;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -57,20 +72,15 @@ public class JobDetailActivity extends BaseActivityk implements AdapterView.OnIt
     String jobId = "";
     String lat = "";
     String lng = "";
-    BottomSheetBehavior behavior;
-    CoordinatorLayout coordinatorLayout;
-    LinearLayout bottomsheet;
     Spinner spinner;
-    ArrayAdapter<String> dataAdapter;
     List<String> tasks;
     List<String> taskid;
     TextView task_categoty;
-    EditText et_from_hour,et_from_min,et_to_hour,et_to_min,et_note;
-    TextView dots,dots2;
-    Button submit;
-    String starttime="";
-    String endtime="";
     String taskId="";
+    Dialog dialog;
+    CustomAdapter customAdapter;
+    HorizontalScrollView horizontalScrollView;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,36 +94,27 @@ public class JobDetailActivity extends BaseActivityk implements AdapterView.OnIt
         task = findViewById(R.id.desc);
         approx_hour = findViewById(R.id.approx_hour);
         date = findViewById(R.id.date_time);
+        spinner=findViewById(R.id.spinner);
         recyclerView = findViewById(R.id.task_recyclerview);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         desc = findViewById(R.id.description);
         tv_log_hour = findViewById(R.id.tv_log_hour);
-        coordinatorLayout = findViewById(R.id.coordinator_layout);
-        bottomsheet = findViewById(R.id.bottom_sheet);
-        spinner = findViewById(R.id.spinner);
-        task_categoty = findViewById(R.id.category);
-        submit=findViewById(R.id.submit);
-        et_from_hour=findViewById(R.id.et_from_hour);
-        et_from_min=findViewById(R.id.et_from_min);
-        et_to_hour=findViewById(R.id.et_to_hour);
-        et_to_min=findViewById(R.id.et_to_min);
-        et_note=findViewById(R.id.et_note);
-        dots=findViewById(R.id.dots);
-        dots2=findViewById(R.id.dots2);
-        behavior = BottomSheetBehavior.from(bottomsheet);
+        horizontalScrollView=findViewById(R.id.tasks_hsv);
         spinner.setOnItemSelectedListener(this);
         tasks = new ArrayList<String>();
         taskid = new ArrayList<String>();
         tv_log_hour.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+                showIosDialog();
 
             }
         });
 
         // Creating adapter for spinner
+
+
 
 
         back.setOnClickListener(new View.OnClickListener() {
@@ -122,15 +123,25 @@ public class JobDetailActivity extends BaseActivityk implements AdapterView.OnIt
                 finish();
             }
         });
-        submit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                starttime=et_from_hour.getText().toString()+":"+et_from_min.getText().toString()+" AM";
-                endtime=et_to_hour.getText().toString()+":"+et_to_min.getText().toString()+" PM";
-                submit(starttime,endtime);
 
-            }
-        });
+/*
+        for (int i=0;i<category_name.length;i++) {
+            View main_view = LayoutInflater.from(this).inflate(R.layout.categoty_layout, null);
+            LinearLayout categoryMainLayout = main_view.findViewById(R.id.categoryMainLayout);
+
+            final ImageView cat_img = main_view.findViewById(R.id.img);
+            TextView cat_text = main_view.findViewById(R.id.text);
+            cat_text.setText(category_name[i]);
+            cat_img.setImageResource(image_array[i]);
+            textViewList.add(cat_text);
+            category_imgview.add(cat_img);
+            category_view.add(main_view);
+            hsvLayout.addView(main_view);
+
+
+        }
+*/
+
 
         navigation.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -146,6 +157,9 @@ public class JobDetailActivity extends BaseActivityk implements AdapterView.OnIt
             }
         });
     }
+
+
+
 
     @Override
     protected int getLayoutResourceId() {
@@ -179,7 +193,7 @@ public class JobDetailActivity extends BaseActivityk implements AdapterView.OnIt
                                 taskid.add(response.body().getData().getTasks().get(i).getId());
 
                             }
-                            CustomAdapter customAdapter=new CustomAdapter(getApplicationContext(),tasks,taskid);
+                            customAdapter=new CustomAdapter(getApplicationContext(),tasks,taskid);
                             spinner.setAdapter(customAdapter);
 
 
@@ -227,16 +241,15 @@ public class JobDetailActivity extends BaseActivityk implements AdapterView.OnIt
     }
 
 
-    public void submit(String starttime,String endtime) {
+    public void submit(String starttime,String endtime,String note) {
         showLoader(JobDetailActivity.this);
         if (isNetworkConnected(JobDetailActivity.this)) {
             ApiInterface service = BaseUrl.CreateService(ApiInterface.class);
-            Call<SubmitHourPojo> call = service.submithour(jobId,Paper.book().read(Constants.USERID,"2"),taskId,starttime,endtime,timeDiff(starttime,endtime),et_note.getText().toString());
+            Call<SubmitHourPojo> call = service.submithour(jobId,Paper.book().read(Constants.USERID,"2"),taskId,starttime,endtime,timeDiff(starttime,endtime),note);
             call.enqueue(new Callback<SubmitHourPojo>() {
                 @Override
                 public void onResponse(Call<SubmitHourPojo> call, Response<SubmitHourPojo> response) {
                     if (response.isSuccessful()) {
-                        Toast.makeText(JobDetailActivity.this, response.body().getData().getHours(), Toast.LENGTH_SHORT).show();
                         hideLoader();
 
                     } else {
@@ -263,20 +276,116 @@ public class JobDetailActivity extends BaseActivityk implements AdapterView.OnIt
     }
 
 
+
     public String timeDiff(String starttime,String endtime){
-        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("h:m a", Locale.ENGLISH);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
+        Date startDate = null;
+        try {
+            startDate = simpleDateFormat.parse(starttime);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        Date endDate = null;
+        try {
+            endDate = simpleDateFormat.parse(endtime);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
-        LocalTime start = LocalTime.parse(starttime, timeFormatter);
-        LocalTime end = LocalTime.parse(endtime, timeFormatter);
-
-        Duration diff = Duration.between(start, end);
-
-        long hours = diff.toHours();
-        long minutes = diff.minusHours(hours).toMinutes();
-        return String.format("%02d:%02d", hours, minutes);
-
+        long difference = endDate.getTime() - startDate.getTime();
+        if(difference<0)
+        {
+            Date dateMax = null;
+            try {
+                dateMax = simpleDateFormat.parse("24:00");
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            Date dateMin = null;
+            try {
+                dateMin = simpleDateFormat.parse("00:00");
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            difference=(dateMax.getTime() -startDate.getTime() )+(endDate.getTime()-dateMin.getTime());
+        }
+        int days = (int) (difference / (1000*60*60*24));
+        int hours = (int) ((difference - (1000*60*60*24*days)) / (1000*60*60));
+        int min = (int) (difference - (1000*60*60*24*days) - (1000*60*60*hours)) / (1000*60);
+        Log.i("log_tag","Hours: "+hours+", Mins: "+min);
+            return hours+":"+min;
     }
 
+
+    public void showIosDialog(){
+        dialog = new Dialog(this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setCancelable(false);
+        dialog.setContentView(R.layout.log_hours);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        Window window = dialog.getWindow();
+        window.setGravity(Gravity.BOTTOM);
+        dialog.setCancelable(true);
+        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        spinner=dialog.findViewById(R.id.spinner);
+       // customAdapter=new CustomAdapter(getApplicationContext(),tasks,taskid);
+        spinner.setAdapter(customAdapter);
+        final EditText et_from=dialog.findViewById(R.id.et_from);
+        final EditText et_to=dialog.findViewById(R.id.et_to);
+        final EditText et_note=dialog.findViewById(R.id.et_note);
+        et_from.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+                Calendar mcurrentTime = Calendar.getInstance();
+                int hour = mcurrentTime.get(Calendar.HOUR_OF_DAY);
+                int minute = mcurrentTime.get(Calendar.MINUTE);
+                TimePickerDialog mTimePicker;
+                mTimePicker = new TimePickerDialog(JobDetailActivity.this, new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
+                        et_from.setText( selectedHour +"  "+ ":"+"  " + selectedMinute);
+                    }
+                }, hour, minute, true);//Yes 24 hour time
+                mTimePicker.setTitle("Select Time");
+                mTimePicker.show();
+
+            }
+        });
+
+        et_to.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+                Calendar mcurrentTime = Calendar.getInstance();
+                int hour = mcurrentTime.get(Calendar.HOUR_OF_DAY);
+                int minute = mcurrentTime.get(Calendar.MINUTE);
+                TimePickerDialog mTimePicker;
+                mTimePicker = new TimePickerDialog(JobDetailActivity.this, new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
+                        et_to.setText( selectedHour +"  "+ ":"+"  " + selectedMinute);
+                    }
+                }, hour, minute, true);//Yes 24 hour time
+                mTimePicker.setTitle("Select Time");
+                mTimePicker.show();
+
+            }
+        });
+
+        Button submit=dialog.findViewById(R.id.submit);
+        submit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                submit(et_from.getText().toString(),et_to.getText().toString(),et_note.getText().toString());
+            }
+        });
+        dialog.show();
+
+
+    }
 
 
 }

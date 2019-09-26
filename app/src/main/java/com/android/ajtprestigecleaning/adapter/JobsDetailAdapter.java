@@ -5,12 +5,14 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.ajtprestigecleaning.R;
 import com.android.ajtprestigecleaning.activities.JobDetailActivity;
+import com.android.ajtprestigecleaning.activities.LogsActivity;
 import com.android.ajtprestigecleaning.model.JobDetailPojo.Task;
 import com.android.ajtprestigecleaning.model.JobModel;
 
@@ -43,6 +45,14 @@ public class JobsDetailAdapter extends RecyclerView.Adapter<JobsDetailAdapter.Vi
     @Override
     public void onBindViewHolder(final JobsDetailAdapter.ViewHolder holder, final int position) {
         holder.task.setText(results.get(position).getName());
+        holder.circle.setImageResource(R.mipmap.uncheck_circle);
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(context, LogsActivity.class);
+                context.startActivity(intent);
+            }
+        });
 
 
 
@@ -55,16 +65,19 @@ public class JobsDetailAdapter extends RecyclerView.Adapter<JobsDetailAdapter.Vi
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         TextView task;
+        ImageView circle;
 
         public ViewHolder(View itemView) {
             super(itemView);
             task = itemView.findViewById(R.id.task);
+            circle = itemView.findViewById(R.id.uncheck_circle);
 
 
 
         }
-    }
 
+
+    }
 
 
 
