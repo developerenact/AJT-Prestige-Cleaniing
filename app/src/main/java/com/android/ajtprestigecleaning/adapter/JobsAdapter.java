@@ -20,6 +20,7 @@ import com.android.ajtprestigecleaning.model.JobDetailPojo.Task;
 import com.android.ajtprestigecleaning.model.JobListPojo.Datum;
 import com.android.ajtprestigecleaning.model.JobModel;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -79,6 +80,7 @@ public class JobsAdapter extends RecyclerView.Adapter<JobsAdapter.ViewHolder> {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(context, JobDetailActivity.class);
+                intent.putExtra("sampleObject", (Serializable) results.get(position));
                 intent.putExtra("jobId",results.get(position).getId());
                 context.startActivity(intent);
             }

@@ -63,10 +63,10 @@ import retrofit2.Response;
 
 public class DashboardActivity extends BaseActivityk
         implements NavigationView.OnNavigationItemSelectedListener {
-    TextView contactus,terms,privacy,logout,nav_name,change_pass,tv_profile;
+    TextView contactus, terms, privacy, logout, nav_name, change_pass, tv_profile;
     CircleImageView nav_image;
     String login_Username;
-     JobsFragment fragment;
+    JobsFragment fragment;
     FragmentManager manager;
     FrameLayout frameLayout;
     LinearLayout hsvLayout;
@@ -75,36 +75,37 @@ public class DashboardActivity extends BaseActivityk
     Activity activity;
     Dialog dialog;
     HorizontalScrollView horizontalScrollView;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        frameLayout=findViewById(R.id.frame);
+        frameLayout = findViewById(R.id.frame);
         checkpermission();
-        hsvLayout=findViewById(R.id.hsvLinearLayout);
-        activity=DashboardActivity.this;
-        label_alljobs=findViewById(R.id.label_alljobs);
-        change_pass=findViewById(R.id.changepassword);
-        alljobs_arrow=findViewById(R.id.alljobs_arrow);
-        tv_profile=findViewById(R.id.profile);
-        horizontalScrollView=findViewById(R.id.horizontal_scroll);
-        int[] image_array = new int[]{R.mipmap.all_jobs,R.mipmap.in_progess,R.mipmap.upcpming_jobs,R.mipmap.past_jobs,R.mipmap.rejected_jobs,R.mipmap.completed_jobs};
-        String[] category_name = new String[]{"All jobs","In Progress","Upcoming Jobs","Past jobs","Rejected jobs","Completed jobs"};
+        hsvLayout = findViewById(R.id.hsvLinearLayout);
+        activity = DashboardActivity.this;
+        label_alljobs = findViewById(R.id.label_alljobs);
+        change_pass = findViewById(R.id.changepassword);
+        alljobs_arrow = findViewById(R.id.alljobs_arrow);
+        tv_profile = findViewById(R.id.profile);
+        horizontalScrollView = findViewById(R.id.horizontal_scroll);
+        int[] image_array = new int[]{R.mipmap.all_jobs, R.mipmap.in_progess, R.mipmap.upcpming_jobs, R.mipmap.past_jobs, R.mipmap.rejected_jobs, R.mipmap.completed_jobs};
+        String[] category_name = new String[]{"All jobs", "In Progress", "Upcoming Jobs", "Past jobs", "Rejected jobs", "Completed jobs"};
         if (manager == null) manager = getSupportFragmentManager();
         final DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
-        login_Username=Paper.book().read(Constants.FIRSTNAME,"john")+" "+Paper.book().read(Constants.LASTNAME,"Doe");
-        nav_name=findViewById(R.id.nav_name);
-        nav_image=findViewById(R.id.nav_imageView);
-        contactus=findViewById(R.id.contactus);
-        terms=findViewById(R.id.terms);
-        privacy=findViewById(R.id.privacy);
-        logout=findViewById(R.id.logout);
+        login_Username = Paper.book().read(Constants.FIRSTNAME, "john") + " " + Paper.book().read(Constants.LASTNAME, "Doe");
+        nav_name = findViewById(R.id.nav_name);
+        nav_image = findViewById(R.id.nav_imageView);
+        contactus = findViewById(R.id.contactus);
+        terms = findViewById(R.id.terms);
+        privacy = findViewById(R.id.privacy);
+        logout = findViewById(R.id.logout);
         Typeface custom_font = Typeface.createFromAsset(getApplicationContext().getAssets(), "fonts/Montserrat-Medium.ttf");
         nav_name.setTypeface(custom_font);
         nav_name.setText(login_Username);
-        String imageUrl=Paper.book().read(Constants.USERIMAGE);
+        String imageUrl = Paper.book().read(Constants.USERIMAGE);
         if (!imageUrl.isEmpty()) {
             Picasso.with(getApplicationContext()).load(imageUrl).placeholder(R.drawable.demoprofile).error(R.drawable.demoprofile).into(nav_image);
         } else {
@@ -112,10 +113,10 @@ public class DashboardActivity extends BaseActivityk
 
         }
 
-        ArrayList<TextView> textViewList=new ArrayList<>();
-        ArrayList<ImageView> category_imgview=new ArrayList<>();
-        ArrayList<View> category_view=new ArrayList<>();
-        for (int i=0;i<category_name.length;i++) {
+        ArrayList<TextView> textViewList = new ArrayList<>();
+        ArrayList<ImageView> category_imgview = new ArrayList<>();
+        ArrayList<View> category_view = new ArrayList<>();
+        for (int i = 0; i < category_name.length; i++) {
             View main_view = LayoutInflater.from(this).inflate(R.layout.categoty_layout, null);
             LinearLayout categoryMainLayout = main_view.findViewById(R.id.categoryMainLayout);
 
@@ -133,7 +134,7 @@ public class DashboardActivity extends BaseActivityk
             main_view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    fragment.getjobs(finalI,activity);
+                    fragment.getjobs(finalI, activity);
 
 
                 }
@@ -150,7 +151,7 @@ public class DashboardActivity extends BaseActivityk
         tv_profile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(DashboardActivity.this,UpdateProfileActivity.class);
+                Intent intent = new Intent(DashboardActivity.this, UpdateProfileActivity.class);
                 startActivity(intent);
                 drawer.closeDrawer(GravityCompat.START);
 
@@ -159,9 +160,11 @@ public class DashboardActivity extends BaseActivityk
 
 
         contactus.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(DashboardActivity.this,ContactUsActivity.class);
+              //  changeBackground(contactus);
+                Intent intent = new Intent(DashboardActivity.this, ContactUsActivity.class);
                 startActivity(intent);
                 drawer.closeDrawer(GravityCompat.START);
 
@@ -171,7 +174,7 @@ public class DashboardActivity extends BaseActivityk
         change_pass.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(DashboardActivity.this,ChangePasswordActivity.class);
+                Intent intent = new Intent(DashboardActivity.this, ChangePasswordActivity.class);
                 startActivity(intent);
                 drawer.closeDrawer(GravityCompat.START);
 
@@ -181,11 +184,10 @@ public class DashboardActivity extends BaseActivityk
         label_alljobs.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(horizontalScrollView.getVisibility()==View.VISIBLE){
+                if (horizontalScrollView.getVisibility() == View.VISIBLE) {
                     horizontalScrollView.setVisibility(View.GONE);
                     alljobs_arrow.setImageResource(R.mipmap.small_white_arrow);
-                }
-                else {
+                } else {
                     horizontalScrollView.setVisibility(View.VISIBLE);
                     alljobs_arrow.setImageResource(R.mipmap.small_white_arrow_up);
                 }
@@ -197,11 +199,10 @@ public class DashboardActivity extends BaseActivityk
         alljobs_arrow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(horizontalScrollView.getVisibility()==View.VISIBLE){
+                if (horizontalScrollView.getVisibility() == View.VISIBLE) {
                     horizontalScrollView.setVisibility(View.GONE);
                     alljobs_arrow.setImageResource(R.mipmap.small_white_arrow);
-                }
-                else {
+                } else {
                     horizontalScrollView.setVisibility(View.VISIBLE);
                     alljobs_arrow.setImageResource(R.mipmap.small_white_arrow_up);
                 }
@@ -214,7 +215,7 @@ public class DashboardActivity extends BaseActivityk
         terms.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(DashboardActivity.this,TermsActivity.class);
+                Intent intent = new Intent(DashboardActivity.this, TermsActivity.class);
                 startActivity(intent);
                 drawer.closeDrawer(GravityCompat.START);
 
@@ -225,7 +226,7 @@ public class DashboardActivity extends BaseActivityk
         privacy.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(DashboardActivity.this,PrivacyActivity.class);
+                Intent intent = new Intent(DashboardActivity.this, PrivacyActivity.class);
                 startActivity(intent);
                 drawer.closeDrawer(GravityCompat.START);
             }
@@ -234,20 +235,19 @@ public class DashboardActivity extends BaseActivityk
         logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               showIosDialog();
+                showIosDialog();
 
 
             }
         });
 
         fragment = new JobsFragment();
-        manager.beginTransaction().add(R.id.frame,fragment).commit();
-        fragment.getjobs(0,activity);
+        manager.beginTransaction().add(R.id.frame, fragment).commit();
+        fragment.getjobs(0, activity);
 
 
         BottomNavigationView bottomNavigationView = (BottomNavigationView)
                 findViewById(R.id.bottom_navigation);
-
 
 
         bottomNavigationView.setOnNavigationItemSelectedListener(
@@ -257,9 +257,9 @@ public class DashboardActivity extends BaseActivityk
                         item.setChecked(true);
                         switch (item.getItemId()) {
                             case R.id.jobs:
-                               fragment = new JobsFragment();
-                                manager.beginTransaction().replace(R.id.frame,fragment).commit();
-                                fragment.getjobs(0,activity);
+                                fragment = new JobsFragment();
+                                manager.beginTransaction().replace(R.id.frame, fragment).commit();
+                                fragment.getjobs(0, activity);
                                 break;
                             case R.id.reports:
                                 break;
@@ -302,7 +302,6 @@ public class DashboardActivity extends BaseActivityk
     }
 
 
-
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
@@ -335,7 +334,7 @@ public class DashboardActivity extends BaseActivityk
 
     }
 
-    public void showIosDialog(){
+    public void showIosDialog() {
         dialog = new Dialog(this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setCancelable(false);
@@ -396,7 +395,7 @@ public class DashboardActivity extends BaseActivityk
         showLoader(DashboardActivity.this);
         if (isNetworkConnected(DashboardActivity.this)) {
             ApiInterface service = BaseUrl.CreateService(ApiInterface.class);
-            Call<JsonObject> call = service.logout(Paper.book().read(Constants.USERID,""), FirebaseInstanceId.getInstance().getToken());
+            Call<JsonObject> call = service.logout(Paper.book().read(Constants.USERID, ""), FirebaseInstanceId.getInstance().getToken());
             call.enqueue(new Callback<JsonObject>() {
                 @Override
                 public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
@@ -433,6 +432,12 @@ public class DashboardActivity extends BaseActivityk
 
     }
 
-
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    public void changeBackground(TextView textView) {
+        textView.setBackground(getResources().getDrawable(R.drawable.profile_border));
+        textView.setTextColor(getResources().getColor(R.color.white));
+        textView.setPadding(8, 16, 64, 16);
+        textView.getCompoundDrawables()[0].setTint(getResources().getColor(R.color.white));
+    }
 
 }

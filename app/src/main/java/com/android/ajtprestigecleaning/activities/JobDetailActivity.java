@@ -1,7 +1,6 @@
 package com.android.ajtprestigecleaning.activities;
 
 import androidx.annotation.RequiresApi;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -17,18 +16,14 @@ import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -41,20 +36,19 @@ import com.android.ajtprestigecleaning.apiServices.ApiInterface;
 import com.android.ajtprestigecleaning.apiServices.BaseUrl;
 import com.android.ajtprestigecleaning.model.ChangePasswordPojo.ChangePasswordPojo;
 import com.android.ajtprestigecleaning.model.JobDetailPojo.JobDetailPojo;
-import com.android.ajtprestigecleaning.model.JobDetailPojo.Task;
+import com.android.ajtprestigecleaning.model.JobListPojo.Datum;
 import com.android.ajtprestigecleaning.model.SubmitHourPojo.SubmitHourPojo;
+import com.android.ajtprestigecleaning.model.UpdateJobStatusPojo.UpdateJobStatusPojo;
 import com.android.ajtprestigecleaning.util.Constants;
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.gson.JsonObject;
 
 import java.text.ParseException;
-import java.time.Duration;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import io.paperdb.Paper;
 import retrofit2.Call;
@@ -64,28 +58,31 @@ import retrofit2.Response;
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class JobDetailActivity extends BaseActivityk implements AdapterView.OnItemSelectedListener {
     ImageView back, navigation;
-    TextView id, location, task, date, desc, approx_hour, tv_log_hour;
+    TextView id, location, task, date, desc, approx_hour, tv_log_hour,tv_end_job;
     RecyclerView recyclerView;
     RecyclerView.LayoutManager layoutManager;
     JobsDetailAdapter adapter;
-    JobDetailPojo jobDetailPojo;
     String jobId = "";
     String lat = "";
     String lng = "";
     Spinner spinner;
     List<String> tasks;
     List<String> taskid;
-    TextView task_categoty;
     String taskId="";
     Dialog dialog;
     CustomAdapter customAdapter;
     HorizontalScrollView horizontalScrollView;
+    String starttime="";
+    String endtime="";
+    Datum datum;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        final Intent intent = getIntent();
-        jobId = intent.getStringExtra("jobId");
+       final Intent intent = getIntent();
+       jobId = intent.getStringExtra("jobId");
+        datum = (Datum) intent.getSerializableExtra("sampleObject");
         jobDetail();
         back = findViewById(R.id.back);
         id = findViewById(R.id.id_number);
@@ -100,10 +97,13 @@ public class JobDetailActivity extends BaseActivityk implements AdapterView.OnIt
         recyclerView.setLayoutManager(layoutManager);
         desc = findViewById(R.id.description);
         tv_log_hour = findViewById(R.id.tv_log_hour);
+        tv_end_job = findViewById(R.id.tv_end_job);
         horizontalScrollView=findViewById(R.id.tasks_hsv);
         spinner.setOnItemSelectedListener(this);
         tasks = new ArrayList<String>();
         taskid = new ArrayList<String>();
+      //  getDatafromIntent();
+
         tv_log_hour.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -111,8 +111,18 @@ public class JobDetailActivity extends BaseActivityk implements AdapterView.OnIt
 
             }
         });
-        // Creating adapter for spinner
+        
+        tv_end_job.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                updateJobStatus();
+            }
+        });
+        
+         // Creating adapter for spinner
 
+        String date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
+       // Toast.makeText(this, date, Toast.LENGTH_SHORT).show();
 
 
 
@@ -223,16 +233,19 @@ public class JobDetailActivity extends BaseActivityk implements AdapterView.OnIt
     }
 
 
-    public void submit(String starttime,String endtime,String note) {
+    public void submit(long starttime,long endtime,String note) {
         showLoader(JobDetailActivity.this);
         if (isNetworkConnected(JobDetailActivity.this)) {
             ApiInterface service = BaseUrl.CreateService(ApiInterface.class);
-            Call<SubmitHourPojo> call = service.submithour(jobId,Paper.book().read(Constants.USERID,"2"),taskId,starttime,endtime,timeDiff(starttime,endtime),note);
+            Call<SubmitHourPojo> call = service.submithour(jobId,Paper.book().read(Constants.USERID,"2"),taskId,starttime,endtime,endtime-starttime,note);
             call.enqueue(new Callback<SubmitHourPojo>() {
                 @Override
                 public void onResponse(Call<SubmitHourPojo> call, Response<SubmitHourPojo> response) {
                     if (response.isSuccessful()) {
                         hideLoader();
+                        Log.e("start",response.body().getData().getStartTime()+"");
+                        Log.e("end",response.body().getData().getEndTime()+"");
+                        Log.e("diff",response.body().getData().getHours()+"");
                         dialog.dismiss();
 
                     } else {
@@ -260,44 +273,20 @@ public class JobDetailActivity extends BaseActivityk implements AdapterView.OnIt
 
 
 
-    public String timeDiff(String starttime,String endtime){
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
-        Date startDate = null;
-        try {
-            startDate = simpleDateFormat.parse(starttime);;
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        Date endDate = null;
-        try {
-            endDate = simpleDateFormat.parse(endtime);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+/*
+    public String timeDiff(long starttime,long endtime){
+        long diffTime = endtime - starttime;
+        String elapsedtime = new SimpleDateFormat("HH:mm:ss").format(Long.parseLong(String.valueOf(diffTime)));
+        String periodAsHH_MM_SS = String.format("%02d:%02d:%02d",
+                TimeUnit.MILLISECONDS.toHours(diffTime),
+                TimeUnit.MILLISECONDS.toMinutes(diffTime) % TimeUnit.HOURS.toMinutes(1),
+                TimeUnit.MILLISECONDS.toSeconds(diffTime) % TimeUnit.MINUTES.toSeconds(1));
 
-        long difference = endDate.getTime() - startDate.getTime();
-        if(difference<0)
-        {
-            Date dateMax = null;
-            try {
-                dateMax = simpleDateFormat.parse("24:00");
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-            Date dateMin = null;
-            try {
-                dateMin = simpleDateFormat.parse("00:00");
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-            difference=(dateMax.getTime() -startDate.getTime() )+(endDate.getTime()-dateMin.getTime());
-        }
-        int days = (int) (difference / (1000*60*60*24));
-        int hours = (int) ((difference - (1000*60*60*24*days)) / (1000*60*60));
-        int min = (int) (difference - (1000*60*60*24*days) - (1000*60*60*hours)) / (1000*60);
-        Log.i("log_tag","Hours: "+hours+", Mins: "+min);
-            return hours+":"+min;
+        System.out.println("Duration in hh:mm:ss is: "+periodAsHH_MM_SS);
+
+            return elapsedtime;
     }
+*/
 
 
     public void showIosDialog(){
@@ -322,13 +311,19 @@ public class JobDetailActivity extends BaseActivityk implements AdapterView.OnIt
             public void onClick(View v) {
                 // TODO Auto-generated method stub
                 Calendar mcurrentTime = Calendar.getInstance();
-                int hour = mcurrentTime.get(Calendar.HOUR_OF_DAY);
-                int minute = mcurrentTime.get(Calendar.MINUTE);
+                mcurrentTime.add(Calendar.MONTH, +1);
+                final int hour = mcurrentTime.get(Calendar.HOUR_OF_DAY);
+                final int minute = mcurrentTime.get(Calendar.MINUTE);
+                final int day = mcurrentTime.get(Calendar.DAY_OF_MONTH);
+                final int month = mcurrentTime.get(Calendar.MONTH);
+                final int year = mcurrentTime.get(Calendar.YEAR);
                 TimePickerDialog mTimePicker;
                 mTimePicker = new TimePickerDialog(JobDetailActivity.this, new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
                         et_from.setText( selectedHour +"  "+ ":"+"  " + selectedMinute);
+                        starttime=day+"-"+month+"-"+year+" "+selectedHour+":"+selectedMinute;
+
                     }
                 }, hour, minute, true);//Yes 24 hour time
                 mTimePicker.setTitle("Select Time");
@@ -343,13 +338,18 @@ public class JobDetailActivity extends BaseActivityk implements AdapterView.OnIt
             public void onClick(View v) {
                 // TODO Auto-generated method stub
                 Calendar mcurrentTime = Calendar.getInstance();
+                mcurrentTime.add(Calendar.MONTH, +1);
                 int hour = mcurrentTime.get(Calendar.HOUR_OF_DAY);
                 int minute = mcurrentTime.get(Calendar.MINUTE);
+                final int day = mcurrentTime.get(Calendar.DAY_OF_MONTH);
+                final int month = mcurrentTime.get(Calendar.MONTH);
+                final int year = mcurrentTime.get(Calendar.YEAR);
                 TimePickerDialog mTimePicker;
                 mTimePicker = new TimePickerDialog(JobDetailActivity.this, new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
                         et_to.setText( selectedHour +"  "+ ":"+"  " + selectedMinute);
+                        endtime=day+"-"+month+"-"+year+" "+selectedHour+":"+selectedMinute;
                     }
                 }, hour, minute, true);//Yes 24 hour time
                 mTimePicker.setTitle("Select Time");
@@ -377,7 +377,8 @@ public class JobDetailActivity extends BaseActivityk implements AdapterView.OnIt
 
                 }
                 else{
-                    submit(et_from.getText().toString(),et_to.getText().toString(),et_note.getText().toString());
+                       // timeDiff(stringToTimeStamp(starttime),stringToTimeStamp(endtime));
+                    submit(stringToTimeStamp(starttime),stringToTimeStamp(endtime),et_note.getText().toString());
 
                 }
             }
@@ -387,5 +388,74 @@ public class JobDetailActivity extends BaseActivityk implements AdapterView.OnIt
 
     }
 
+
+    public long stringToTimeStamp(String time){
+        SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm");
+        Date date = null;
+        try {
+            date = (Date)formatter.parse(time);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        long output=date.getTime()/1000L;
+        String str=Long.toString(output);
+        long timestamp = Long.parseLong(str) * 1000;
+
+        System.out.println("Today is " +timestamp);
+        return timestamp;
+    }
+
+
+    public void updateJobStatus() {
+        showLoader(JobDetailActivity.this);
+        if (isNetworkConnected(JobDetailActivity.this)) {
+            ApiInterface service = BaseUrl.CreateService(ApiInterface.class);
+            Call<UpdateJobStatusPojo> call = service.updateJobStatus(jobId,Paper.book().read(Constants.USERID, "1"),"5");
+            call.enqueue(new Callback<UpdateJobStatusPojo>() {
+                @Override
+                public void onResponse(Call<UpdateJobStatusPojo> call, Response<UpdateJobStatusPojo> response) {
+                    if (response.isSuccessful()) {
+                        hideLoader();
+
+                    } else {
+                        hideLoader();
+                        Toast.makeText(JobDetailActivity.this, getApplicationContext().getString(R.string.something_wrong), Toast.LENGTH_LONG).show();
+
+
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<UpdateJobStatusPojo> call, Throwable t) {
+                    hideLoader();
+                    Log.d("otp", t.getMessage());
+                    Toast.makeText(JobDetailActivity.this, getApplicationContext().getString(R.string.something_wrong), Toast.LENGTH_LONG).show();
+                }
+            });
+        } else {
+            hideLoader();
+            customDialog(JobDetailActivity.this, getApplicationContext().getString(R.string.no_internet));
+
+        }
+
+    }
+
+
+    public void getDatafromIntent(){
+        final Intent intent = getIntent();
+        jobId = intent.getStringExtra("jobId");
+        datum = (Datum) intent.getSerializableExtra("sampleObject");
+        lat = datum.getLatitude();
+        lng = datum.getLongitude();
+        id.setText("Id number / #" + datum.getId());
+        location.setText(datum.getAddress());
+        task.setText(datum.getName());
+        date.setText(convertDate(datum.getCreatedAt(), "dd-MM-yyyy | hh.mm aa"));
+        desc.setText(datum.getDescription());
+      //  approx_hour.setText(response.body().getData().getHoursDaily() + " " + "Hours");
+      //  adapter = new JobsDetailAdapter(response.body().getData().getTasks(), JobDetailActivity.this);
+      //  recyclerView.setAdapter(adapter);
+
+    }
 
 }

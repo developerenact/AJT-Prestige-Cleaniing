@@ -254,6 +254,7 @@
             app:layout_constraintRight_toRightOf="parent">
 
             <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_end_job"
                 android:layout_width="110dp"
                 android:layout_height="wrap_content"
                 android:background="@drawable/end_job_bg"

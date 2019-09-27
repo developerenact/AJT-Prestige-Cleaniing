@@ -59,6 +59,7 @@
         <activity
             android:name=".activities.DashboardActivity"
             android:label=""
+            android:hardwareAccelerated="true"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity

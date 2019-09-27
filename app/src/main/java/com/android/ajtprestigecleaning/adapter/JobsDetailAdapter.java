@@ -32,7 +32,6 @@ public class JobsDetailAdapter extends RecyclerView.Adapter<JobsDetailAdapter.Vi
         this.results = results;
         this.context = context;
 
-
     }
 
 
@@ -53,8 +52,6 @@ public class JobsDetailAdapter extends RecyclerView.Adapter<JobsDetailAdapter.Vi
                 context.startActivity(intent);
             }
         });
-
-
 
     }
 

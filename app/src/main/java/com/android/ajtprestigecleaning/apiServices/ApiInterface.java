@@ -2,6 +2,7 @@ package com.android.ajtprestigecleaning.apiServices;
 
 
 import com.android.ajtprestigecleaning.model.AddLogPojo.AddLogPojo;
+import com.android.ajtprestigecleaning.model.AllJobsPojo.AllJobsPojo;
 import com.android.ajtprestigecleaning.model.ChangePasswordPojo.ChangePasswordPojo;
 import com.android.ajtprestigecleaning.model.JobDetailPojo.JobDetailPojo;
 import com.android.ajtprestigecleaning.model.JobListPojo.JobListPojo;
@@ -9,6 +10,7 @@ import com.android.ajtprestigecleaning.model.LoginPojo.LoginPojo;
 import com.android.ajtprestigecleaning.model.RegisterPojo.RegisterPojo;
 import com.android.ajtprestigecleaning.model.ResetPassword.ResetPassword;
 import com.android.ajtprestigecleaning.model.SubmitHourPojo.SubmitHourPojo;
+import com.android.ajtprestigecleaning.model.UpdateJobStatusPojo.UpdateJobStatusPojo;
 import com.android.ajtprestigecleaning.model.UpdateProfilePojo.UpdateProfilePojo;
 import com.google.gson.JsonObject;
 
@@ -85,9 +87,9 @@ public interface ApiInterface {
     Call<SubmitHourPojo> submithour(@Field("jobId") String jobId,
                                     @Field("userId") String userId,
                                     @Field("taskId") String taskId,
-                                    @Field("startTime") String startTime,
-                                    @Field("endTime") String endTime,
-                                    @Field("hours") String hours,
+                                    @Field("startTime") long startTime,
+                                    @Field("endTime") long endTime,
+                                    @Field("hours") long hours,
                                     @Field("notes") String notes);
 
     @Multipart
@@ -96,5 +98,11 @@ public interface ApiInterface {
     Call<AddLogPojo> addLogs(@PartMap HashMap<String, RequestBody> hashMap);
 
 
+    @FormUrlEncoded
+    @Headers("Secret-Key:AJT_Lbim_0f6bd8a808ea3e9996b3aee1900aa2e8")
+    @POST("updateJobStatus")
+    Call<UpdateJobStatusPojo> updateJobStatus(@Field("jobId") String jobId,
+                                              @Field("userId") String userId,
+                                              @Field("status") String status);
 
 }
