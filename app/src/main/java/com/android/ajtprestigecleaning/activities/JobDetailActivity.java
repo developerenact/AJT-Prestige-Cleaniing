@@ -34,9 +34,9 @@ import com.android.ajtprestigecleaning.adapter.CustomAdapter;
 import com.android.ajtprestigecleaning.adapter.JobsDetailAdapter;
 import com.android.ajtprestigecleaning.apiServices.ApiInterface;
 import com.android.ajtprestigecleaning.apiServices.BaseUrl;
+import com.android.ajtprestigecleaning.model.AllJobsPojo.Datum;
 import com.android.ajtprestigecleaning.model.ChangePasswordPojo.ChangePasswordPojo;
 import com.android.ajtprestigecleaning.model.JobDetailPojo.JobDetailPojo;
-import com.android.ajtprestigecleaning.model.JobListPojo.Datum;
 import com.android.ajtprestigecleaning.model.SubmitHourPojo.SubmitHourPojo;
 import com.android.ajtprestigecleaning.model.UpdateJobStatusPojo.UpdateJobStatusPojo;
 import com.android.ajtprestigecleaning.util.Constants;
@@ -83,7 +83,7 @@ public class JobDetailActivity extends BaseActivityk implements AdapterView.OnIt
        final Intent intent = getIntent();
        jobId = intent.getStringExtra("jobId");
         datum = (Datum) intent.getSerializableExtra("sampleObject");
-        jobDetail();
+      //  jobDetail();
         back = findViewById(R.id.back);
         id = findViewById(R.id.id_number);
         navigation = findViewById(R.id.navigation);
@@ -102,7 +102,7 @@ public class JobDetailActivity extends BaseActivityk implements AdapterView.OnIt
         spinner.setOnItemSelectedListener(this);
         tasks = new ArrayList<String>();
         taskid = new ArrayList<String>();
-      //  getDatafromIntent();
+        getDatafromIntent();
 
         tv_log_hour.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -158,6 +158,7 @@ public class JobDetailActivity extends BaseActivityk implements AdapterView.OnIt
         return R.layout.activity_job_detail;
     }
 
+/*
     public void jobDetail() {
         showLoader(JobDetailActivity.this);
         if (isNetworkConnected(JobDetailActivity.this)) {
@@ -216,6 +217,7 @@ public class JobDetailActivity extends BaseActivityk implements AdapterView.OnIt
         }
 
     }
+*/
 
     public static String convertDate(String dateInMilliseconds, String dateFormat) {
         return DateFormat.format(dateFormat, Long.parseLong(dateInMilliseconds)).toString();
@@ -452,9 +454,17 @@ public class JobDetailActivity extends BaseActivityk implements AdapterView.OnIt
         task.setText(datum.getName());
         date.setText(convertDate(datum.getCreatedAt(), "dd-MM-yyyy | hh.mm aa"));
         desc.setText(datum.getDescription());
-      //  approx_hour.setText(response.body().getData().getHoursDaily() + " " + "Hours");
-      //  adapter = new JobsDetailAdapter(response.body().getData().getTasks(), JobDetailActivity.this);
-      //  recyclerView.setAdapter(adapter);
+      //  approx_hour.setText(datum.getHoursDaily().get(0) + " " + "Hours");
+        adapter = new JobsDetailAdapter(datum, JobDetailActivity.this);
+       recyclerView.setAdapter(adapter);
+
+        for (int i = 0; i < datum.getCheckList().size(); i++) {
+            tasks.add(datum.getCheckList().get(i).getName());
+            taskid.add(datum.getCheckList().get(i).getId());
+
+        }
+        customAdapter=new CustomAdapter(getApplicationContext(),tasks,taskid);
+        spinner.setAdapter(customAdapter);
 
     }
 

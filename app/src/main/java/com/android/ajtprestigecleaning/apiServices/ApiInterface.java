@@ -54,7 +54,7 @@ public interface ApiInterface {
     @FormUrlEncoded
     @Headers("Secret-Key:AJT_Lbim_0f6bd8a808ea3e9996b3aee1900aa2e8")
     @POST("jobs")
-    Call<JobListPojo> getjobs(@Field("userId") int userId,
+    Call<AllJobsPojo> getjobs(@Field("userId") int userId,
                               @Field("state") int State);
 
     @FormUrlEncoded

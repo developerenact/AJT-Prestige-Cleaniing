@@ -1,34 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="130dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@drawable/task_hsv_bg"
     android:orientation="vertical"
+    android:layout_marginTop="4dp"
+    android:layout_marginBottom="4dp"
     android:padding="12dp">
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/note_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textColor="@color/black"
+        android:textSize="14sp"
         android:text="Note:" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:layout_below="@id/note_label"
         android:id="@+id/note_text"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_toLeftOf="@+id/log_img"
+        android:textColor="@color/black"
+        android:gravity="start"
+        android:layout_alignParentLeft="true"
         android:layout_marginTop="8dp"
         android:layout_marginRight="12dp"
-        android:layout_height="wrap_content"
-        android:text="dfhjfdghjdfjkdfhjfggfjgffhhdhdgfjgfgfdhjfdhfghjfghjfghjfgkfghgffghfgfgjfgjgfjkdfhjfdfdgjfgjfgjhfgjhfgj"
-        />
+        android:textSize="14sp"
+        android:layout_height="wrap_content"/>
 
-    <androidx.appcompat.widget.AppCompatImageView
+    <com.comix.rounded.RoundedCornerImageView
         android:id="@+id/log_img"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         android:src="@mipmap/ic_launcher"
-
-        android:layout_alignParentRight="true"/>
+        android:layout_alignParentRight="true"
+        app:cornerBottomDisable="false"
+        android:layout_marginRight="12dp"
+        app:cornerColor="@color/white"
+        app:cornerTopDisable="false"
+        app:cornerLeftDisable="false"
+        android:background="@color/white"
+        app:cornerRightDisable="false"
+        app:cornerRadius="8dp"/>
 
 </RelativeLayout>

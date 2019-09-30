@@ -221,6 +221,15 @@
 
         </androidx.recyclerview.widget.RecyclerView>
 
+        <View
+            android:id="@+id/view1"
+            android:layout_width="1dp"
+            android:layout_height="36dp"
+            android:layout_marginLeft="48dp"
+            android:background="@color/grey"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/task_recyclerview" />
+
         <androidx.appcompat.widget.LinearLayoutCompat
             android:id="@+id/startjob_layout"
             android:layout_width="wrap_content"

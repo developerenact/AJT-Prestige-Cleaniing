@@ -24,6 +24,7 @@ import com.android.ajtprestigecleaning.adapter.JobsAdapter;
 import com.android.ajtprestigecleaning.adapter.JobsDetailAdapter;
 import com.android.ajtprestigecleaning.apiServices.ApiInterface;
 import com.android.ajtprestigecleaning.apiServices.BaseUrl;
+import com.android.ajtprestigecleaning.model.AllJobsPojo.AllJobsPojo;
 import com.android.ajtprestigecleaning.model.JobDetailPojo.JobDetailPojo;
 import com.android.ajtprestigecleaning.model.JobListPojo.JobListPojo;
 import com.android.ajtprestigecleaning.model.JobModel;
@@ -91,10 +92,10 @@ public class JobsFragment extends Fragment {
         showLoader(activity);
         if (isNetworkConnected(activity)) {
             ApiInterface service = BaseUrl.CreateService(ApiInterface.class);
-            Call<JobListPojo> call = service.getjobs(2, state);
-            call.enqueue(new Callback<JobListPojo>() {
+            Call<AllJobsPojo> call = service.getjobs(2, state);
+            call.enqueue(new Callback<AllJobsPojo>() {
                 @Override
-                public void onResponse(Call<JobListPojo> call, Response<JobListPojo> response) {
+                public void onResponse(Call<AllJobsPojo> call, Response<AllJobsPojo> response) {
                     if (response.isSuccessful()) {
                         if (response.body().getStatus() == 0) {
                             hideLoader();
@@ -136,7 +137,7 @@ public class JobsFragment extends Fragment {
                 }
 
                 @Override
-                public void onFailure(Call<JobListPojo> call, Throwable t) {
+                public void onFailure(Call<AllJobsPojo> call, Throwable t) {
                     hideLoader();
                     Log.d("otp", t.getMessage());
                     Toast.makeText(getContext(), getActivity().getString(R.string.something_wrong), Toast.LENGTH_LONG).show();

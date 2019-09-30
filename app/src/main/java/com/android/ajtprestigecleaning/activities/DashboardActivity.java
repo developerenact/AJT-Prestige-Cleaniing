@@ -328,6 +328,30 @@ public class DashboardActivity extends BaseActivityk
     }
 
 
+    public boolean onItemSelected(TextView textView){
+        textView.setSelected(true);
+        int id = textView.getId();
+
+        if (id == R.id.profile) {
+
+        } else if (id == R.id.contactus) {
+
+        } else if (id == R.id.about) {
+
+        } else if (id == R.id.privacy) {
+
+        } else if (id == R.id.terms) {
+
+        } else if (id == R.id.changepassword) {
+
+        }
+
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
+
     @Override
     protected void onDestroy() {
         super.onDestroy();

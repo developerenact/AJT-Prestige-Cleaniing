@@ -16,8 +16,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.ajtprestigecleaning.R;
 import com.android.ajtprestigecleaning.activities.JobDetailActivity;
+import com.android.ajtprestigecleaning.model.AllJobsPojo.Datum;
 import com.android.ajtprestigecleaning.model.JobDetailPojo.Task;
-import com.android.ajtprestigecleaning.model.JobListPojo.Datum;
 import com.android.ajtprestigecleaning.model.JobModel;
 
 import java.io.Serializable;

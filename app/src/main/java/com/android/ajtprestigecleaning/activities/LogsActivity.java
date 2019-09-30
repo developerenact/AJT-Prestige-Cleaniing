@@ -4,6 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.app.Activity;
@@ -25,6 +27,7 @@ import android.provider.MediaStore;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -32,13 +35,18 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.android.ajtprestigecleaning.R;
+import com.android.ajtprestigecleaning.adapter.JobsDetailAdapter;
+import com.android.ajtprestigecleaning.adapter.TaskLogsAdapter;
 import com.android.ajtprestigecleaning.apiServices.ApiInterface;
 import com.android.ajtprestigecleaning.apiServices.BaseUrl;
 import com.android.ajtprestigecleaning.model.AddLogPojo.AddLogPojo;
+import com.android.ajtprestigecleaning.model.AllJobsPojo.CheckList;
+import com.android.ajtprestigecleaning.model.AllJobsPojo.Datum;
 import com.android.ajtprestigecleaning.model.UpdateProfilePojo.UpdateProfilePojo;
 import com.android.ajtprestigecleaning.util.Constants;
 import com.squareup.picasso.Picasso;
@@ -68,12 +76,30 @@ public class LogsActivity extends BaseActivityk {
     LinearLayout linearLayout;
     EditText et_note;
     Button submit;
+    RecyclerView recyclerView;
+    RecyclerView.LayoutManager layoutManager;
+    TaskLogsAdapter adapter;
+    CheckList checkList;
+    Datum datum;
+    TextView tv_log_name,tv_log_desc;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         checkpermission();
+        final Intent intent = getIntent();
+        checkList = (CheckList) intent.getSerializableExtra("Logs");
+        datum = (Datum) intent.getSerializableExtra("Alldata");
+        recyclerView = findViewById(R.id.logs_recycle);
+        tv_log_name = findViewById(R.id.log_name);
+        tv_log_desc = findViewById(R.id.log_desc);
+        tv_log_name.setText(checkList.getName());
+        tv_log_desc.setText(datum.getDescription());
+       adapter = new TaskLogsAdapter(checkList.getLogs(), LogsActivity.this);
+      recyclerView.setAdapter(adapter);
         add_logs = findViewById(R.id.add_logs_btn);
         back = findViewById(R.id.back);
+        layoutManager = new LinearLayoutManager(this);
+       recyclerView.setLayoutManager(layoutManager);
         add_logs.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -86,6 +112,13 @@ public class LogsActivity extends BaseActivityk {
                 finish();
             }
         });
+
+
+
+
+
+
+
 
     }
 
@@ -117,7 +150,13 @@ public class LogsActivity extends BaseActivityk {
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addLog("1","2","1",et_note.getText().toString(),file);
+                if(et_note.getText().toString().isEmpty()){
+                    et_note.setError("Please enter note");
+                }
+                else{
+                    addLog(datum.getId(),"2",checkList.getId(),et_note.getText().toString(),file);
+                    adapter.update();
+                }
             }
         });
 

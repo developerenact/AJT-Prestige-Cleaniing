@@ -39,9 +39,9 @@ public class Datum implements Serializable
     @SerializedName("checkList")
     @Expose
     private List<CheckList> checkList = null;
-    @SerializedName("hoursDaily")
+   /* @SerializedName("hoursDaily")
     @Expose
-    private List<Object> hoursDaily = null;
+    private List<Object> hoursDaily = null;*/
     @SerializedName("notes")
     @Expose
     private String notes;
@@ -133,13 +133,13 @@ public class Datum implements Serializable
         this.checkList = checkList;
     }
 
-    public List<Object> getHoursDaily() {
+   /* public List<Object> getHoursDaily() {
         return hoursDaily;
     }
 
     public void setHoursDaily(List<Object> hoursDaily) {
         this.hoursDaily = hoursDaily;
-    }
+    }*/
 
     public String getNotes() {
         return notes;
