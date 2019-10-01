@@ -14,8 +14,6 @@ import com.android.ajtprestigecleaning.activities.LogsActivity;
 import com.android.ajtprestigecleaning.model.AllJobsPojo.Datum;
 import java.io.Serializable;
 
-
-
 public class JobsDetailAdapter extends RecyclerView.Adapter<JobsDetailAdapter.ViewHolder> {
     Datum data;
     private final Context context;
