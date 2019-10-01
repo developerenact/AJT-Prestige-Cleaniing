@@ -42,13 +42,13 @@ public class JobsDetailAdapter extends RecyclerView.Adapter<JobsDetailAdapter.Vi
         int text_num = 0;
         int img_num = 0;
         for (int i = 0; i < data.getCheckList().get(position).getLogs().size(); i++) {
-            if (!data.getCheckList().get(position).getLogs().get(position).getText().isEmpty()) {
+            if (!data.getCheckList().get(position).getLogs().get(i).getText().isEmpty()) {
                 text_num += 1;
             }
         }
 
         for (int j = 0; j < data.getCheckList().get(position).getLogs().size(); j++) {
-            if (!data.getCheckList().get(position).getLogs().get(position).getImage().equals(" ")) {
+            if (!data.getCheckList().get(position).getLogs().get(j).getImage().equals( "")) {
                 img_num += 1;
             }
         }

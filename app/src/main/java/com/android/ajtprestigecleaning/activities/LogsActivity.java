@@ -94,8 +94,8 @@ public class LogsActivity extends BaseActivityk {
         tv_log_desc = findViewById(R.id.log_desc);
         tv_log_name.setText(checkList.getName());
         tv_log_desc.setText(datum.getDescription());
-       adapter = new TaskLogsAdapter(checkList.getLogs(), LogsActivity.this);
-      recyclerView.setAdapter(adapter);
+        adapter = new TaskLogsAdapter(checkList.getLogs(), LogsActivity.this);
+        recyclerView.setAdapter(adapter);
         add_logs = findViewById(R.id.add_logs_btn);
         back = findViewById(R.id.back);
         layoutManager = new LinearLayoutManager(this);
@@ -155,7 +155,8 @@ public class LogsActivity extends BaseActivityk {
                 }
                 else{
                     addLog(datum.getId(),"2",checkList.getId(),et_note.getText().toString(),file);
-                    adapter.update();
+
+                    adapter.notifyDataSetChanged();
                 }
             }
         });

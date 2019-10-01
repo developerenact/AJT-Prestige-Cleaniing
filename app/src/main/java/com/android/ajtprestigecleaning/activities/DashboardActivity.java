@@ -63,7 +63,7 @@ import retrofit2.Response;
 
 public class DashboardActivity extends BaseActivityk
         implements NavigationView.OnNavigationItemSelectedListener {
-    TextView contactus, terms, privacy, logout, nav_name, change_pass, tv_profile;
+    TextView nav_contactus, nav_terms, nav_privacy, nav_logout, nav_name, nav_change_pass, nav_profile,nav_workhistory,nav_settings,nav_about,nav_help;
     CircleImageView nav_image;
     String login_Username;
     JobsFragment fragment;
@@ -86,9 +86,13 @@ public class DashboardActivity extends BaseActivityk
         hsvLayout = findViewById(R.id.hsvLinearLayout);
         activity = DashboardActivity.this;
         label_alljobs = findViewById(R.id.label_alljobs);
-        change_pass = findViewById(R.id.changepassword);
+        nav_change_pass = findViewById(R.id.changepassword);
         alljobs_arrow = findViewById(R.id.alljobs_arrow);
-        tv_profile = findViewById(R.id.profile);
+        nav_profile = findViewById(R.id.profile);
+        nav_workhistory=findViewById(R.id.work_history);
+        nav_settings=findViewById(R.id.settings);
+        nav_about=findViewById(R.id.about);
+        nav_help=findViewById(R.id.help);
         horizontalScrollView = findViewById(R.id.horizontal_scroll);
         int[] image_array = new int[]{R.mipmap.all_jobs, R.mipmap.in_progess, R.mipmap.upcpming_jobs, R.mipmap.past_jobs, R.mipmap.rejected_jobs, R.mipmap.completed_jobs};
         String[] category_name = new String[]{"All jobs", "In Progress", "Upcoming Jobs", "Past jobs", "Rejected jobs", "Completed jobs"};
@@ -98,10 +102,10 @@ public class DashboardActivity extends BaseActivityk
         login_Username = Paper.book().read(Constants.FIRSTNAME, "john") + " " + Paper.book().read(Constants.LASTNAME, "Doe");
         nav_name = findViewById(R.id.nav_name);
         nav_image = findViewById(R.id.nav_imageView);
-        contactus = findViewById(R.id.contactus);
-        terms = findViewById(R.id.terms);
-        privacy = findViewById(R.id.privacy);
-        logout = findViewById(R.id.logout);
+        nav_contactus = findViewById(R.id.contactus);
+        nav_terms = findViewById(R.id.terms);
+        nav_privacy = findViewById(R.id.privacy);
+        nav_logout = findViewById(R.id.logout);
         Typeface custom_font = Typeface.createFromAsset(getApplicationContext().getAssets(), "fonts/Montserrat-Medium.ttf");
         nav_name.setTypeface(custom_font);
         nav_name.setText(login_Username);
@@ -148,9 +152,19 @@ public class DashboardActivity extends BaseActivityk
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
 
-        tv_profile.setOnClickListener(new View.OnClickListener() {
+        nav_profile.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
             public void onClick(View v) {
+                selectItem(nav_profile);
+                unSelectItem(nav_workhistory);
+                unSelectItem(nav_change_pass);
+                unSelectItem(nav_settings);
+                unSelectItem(nav_contactus);
+                unSelectItem(nav_about);
+                unSelectItem(nav_help);
+                unSelectItem(nav_terms);
+                unSelectItem(nav_privacy);
                 Intent intent = new Intent(DashboardActivity.this, UpdateProfileActivity.class);
                 startActivity(intent);
                 drawer.closeDrawer(GravityCompat.START);
@@ -159,11 +173,19 @@ public class DashboardActivity extends BaseActivityk
         });
 
 
-        contactus.setOnClickListener(new View.OnClickListener() {
+        nav_contactus.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
             public void onClick(View v) {
-              //  changeBackground(contactus);
+                selectItem(nav_contactus);
+                unSelectItem(nav_workhistory);
+                unSelectItem(nav_change_pass);
+                unSelectItem(nav_settings);
+                unSelectItem(nav_profile);
+                unSelectItem(nav_about);
+                unSelectItem(nav_help);
+                unSelectItem(nav_terms);
+                unSelectItem(nav_privacy);
                 Intent intent = new Intent(DashboardActivity.this, ContactUsActivity.class);
                 startActivity(intent);
                 drawer.closeDrawer(GravityCompat.START);
@@ -171,15 +193,100 @@ public class DashboardActivity extends BaseActivityk
             }
         });
 
-        change_pass.setOnClickListener(new View.OnClickListener() {
+        nav_change_pass.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
             public void onClick(View v) {
+                selectItem(nav_change_pass);
+                unSelectItem(nav_workhistory);
+                unSelectItem(nav_profile);
+                unSelectItem(nav_settings);
+                unSelectItem(nav_contactus);
+                unSelectItem(nav_about);
+                unSelectItem(nav_help);
+                unSelectItem(nav_terms);
+                unSelectItem(nav_privacy);
                 Intent intent = new Intent(DashboardActivity.this, ChangePasswordActivity.class);
                 startActivity(intent);
                 drawer.closeDrawer(GravityCompat.START);
 
             }
         });
+
+        nav_workhistory.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+            @Override
+            public void onClick(View v) {
+                selectItem(nav_workhistory);
+                unSelectItem(nav_profile);
+                unSelectItem(nav_settings);
+                unSelectItem(nav_contactus);
+                unSelectItem(nav_about);
+                unSelectItem(nav_change_pass);
+                unSelectItem(nav_help);
+                unSelectItem(nav_terms);
+                unSelectItem(nav_privacy);
+
+
+            }
+        });
+
+        nav_settings.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+            @Override
+            public void onClick(View v) {
+                selectItem(nav_settings);
+                unSelectItem(nav_profile);
+                unSelectItem(nav_workhistory);
+                unSelectItem(nav_change_pass);
+                unSelectItem(nav_contactus);
+                unSelectItem(nav_about);
+                unSelectItem(nav_help);
+                unSelectItem(nav_terms);
+                unSelectItem(nav_privacy);
+
+
+            }
+        });
+
+        nav_about.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+            @Override
+            public void onClick(View v) {
+                selectItem(nav_about);
+                unSelectItem(nav_profile);
+                unSelectItem(nav_workhistory);
+                unSelectItem(nav_contactus);
+                unSelectItem(nav_settings);
+                unSelectItem(nav_change_pass);
+                unSelectItem(nav_help);
+                unSelectItem(nav_terms);
+                unSelectItem(nav_privacy);
+
+
+            }
+        });
+
+        nav_help.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+            @Override
+            public void onClick(View v) {
+                selectItem(nav_help);
+                unSelectItem(nav_profile);
+                unSelectItem(nav_workhistory);
+                unSelectItem(nav_contactus);
+                unSelectItem(nav_settings);
+                unSelectItem(nav_change_pass);
+                unSelectItem(nav_about);
+                unSelectItem(nav_terms);
+                unSelectItem(nav_privacy);
+
+
+            }
+        });
+
+
+
 
         label_alljobs.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -212,9 +319,19 @@ public class DashboardActivity extends BaseActivityk
         });
 
 
-        terms.setOnClickListener(new View.OnClickListener() {
+        nav_terms.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
             public void onClick(View v) {
+                selectItem(nav_terms);
+                unSelectItem(nav_workhistory);
+                unSelectItem(nav_change_pass);
+                unSelectItem(nav_settings);
+                unSelectItem(nav_contactus);
+                unSelectItem(nav_about);
+                unSelectItem(nav_help);
+                unSelectItem(nav_profile);
+                unSelectItem(nav_privacy);
                 Intent intent = new Intent(DashboardActivity.this, TermsActivity.class);
                 startActivity(intent);
                 drawer.closeDrawer(GravityCompat.START);
@@ -223,16 +340,26 @@ public class DashboardActivity extends BaseActivityk
         });
 
 
-        privacy.setOnClickListener(new View.OnClickListener() {
+        nav_privacy.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
             public void onClick(View v) {
+                selectItem(nav_privacy);
+                unSelectItem(nav_workhistory);
+                unSelectItem(nav_change_pass);
+                unSelectItem(nav_settings);
+                unSelectItem(nav_contactus);
+                unSelectItem(nav_about);
+                unSelectItem(nav_help);
+                unSelectItem(nav_terms);
+                unSelectItem(nav_profile);
                 Intent intent = new Intent(DashboardActivity.this, PrivacyActivity.class);
                 startActivity(intent);
                 drawer.closeDrawer(GravityCompat.START);
             }
         });
 
-        logout.setOnClickListener(new View.OnClickListener() {
+        nav_logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showIosDialog();
@@ -326,31 +453,6 @@ public class DashboardActivity extends BaseActivityk
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-
-
-    public boolean onItemSelected(TextView textView){
-        textView.setSelected(true);
-        int id = textView.getId();
-
-        if (id == R.id.profile) {
-
-        } else if (id == R.id.contactus) {
-
-        } else if (id == R.id.about) {
-
-        } else if (id == R.id.privacy) {
-
-        } else if (id == R.id.terms) {
-
-        } else if (id == R.id.changepassword) {
-
-        }
-
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
-    }
-
 
     @Override
     protected void onDestroy() {
@@ -457,11 +559,20 @@ public class DashboardActivity extends BaseActivityk
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    public void changeBackground(TextView textView) {
+    public void selectItem(TextView textView) {
         textView.setBackground(getResources().getDrawable(R.drawable.profile_border));
         textView.setTextColor(getResources().getColor(R.color.white));
-        textView.setPadding(8, 16, 64, 16);
         textView.getCompoundDrawables()[0].setTint(getResources().getColor(R.color.white));
     }
+
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    public void unSelectItem(TextView textView) {
+        textView.setBackground(null);
+        textView.setTextColor(getResources().getColor(R.color.draweritemcolour));
+       // textView.setPadding(12, 12, 64, 12);
+        textView.getCompoundDrawables()[0].setTint(getResources().getColor(R.color.draweritemcolour));
+
+    }
+
 
 }

@@ -66,17 +66,10 @@ public class TaskLogsAdapter extends RecyclerView.Adapter<TaskLogsAdapter.ViewHo
             note_img = itemView.findViewById(R.id.log_img);
 
 
-
         }
 
 
     }
-
-    public void update(){
-        notifyDataSetChanged();
-
-    }
-
 
 
 }
