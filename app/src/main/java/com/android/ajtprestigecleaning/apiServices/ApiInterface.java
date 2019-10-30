@@ -1,11 +1,9 @@
 package com.android.ajtprestigecleaning.apiServices;
 
-
 import com.android.ajtprestigecleaning.model.AddLogPojo.AddLogPojo;
-import com.android.ajtprestigecleaning.model.AllJobsPojo.AllJobsPojo;
+import com.android.ajtprestigecleaning.model.AllLogsPojo.AllLogsPojo;
 import com.android.ajtprestigecleaning.model.ChangePasswordPojo.ChangePasswordPojo;
-import com.android.ajtprestigecleaning.model.JobDetailPojo.JobDetailPojo;
-import com.android.ajtprestigecleaning.model.JobListPojo.JobListPojo;
+import com.android.ajtprestigecleaning.model.JobsPojo.JobsPojo;
 import com.android.ajtprestigecleaning.model.LoginPojo.LoginPojo;
 import com.android.ajtprestigecleaning.model.RegisterPojo.RegisterPojo;
 import com.android.ajtprestigecleaning.model.ResetPassword.ResetPassword;
@@ -54,13 +52,13 @@ public interface ApiInterface {
     @FormUrlEncoded
     @Headers("Secret-Key:AJT_Lbim_0f6bd8a808ea3e9996b3aee1900aa2e8")
     @POST("jobs")
-    Call<AllJobsPojo> getjobs(@Field("userId") int userId,
-                              @Field("state") int State);
+    Call<JobsPojo> getjobs(@Field("userId") int userId,
+                           @Field("state") int State);
 
-    @FormUrlEncoded
+  /*  @FormUrlEncoded
     @Headers("Secret-Key:AJT_Lbim_0f6bd8a808ea3e9996b3aee1900aa2e8")
     @POST("jobDetail")
-    Call<JobDetailPojo> getjobDetail(@Field("jobId") int jobId);
+    Call<JobDetailPojo> getjobDetail(@Field("jobId") int jobId);*/
 
     @FormUrlEncoded
     @Headers("Secret-Key:AJT_Lbim_0f6bd8a808ea3e9996b3aee1900aa2e8")
@@ -104,5 +102,25 @@ public interface ApiInterface {
     Call<UpdateJobStatusPojo> updateJobStatus(@Field("jobId") String jobId,
                                               @Field("userId") String userId,
                                               @Field("status") String status);
+
+    @FormUrlEncoded
+    @Headers("Secret-Key:AJT_Lbim_0f6bd8a808ea3e9996b3aee1900aa2e8")
+    @POST("updateTaskStatus")
+    Call<JsonObject> updateTask(@Field("jobId") String jobId,
+                                              @Field("userId") String userId,
+                                              @Field("taskId") String taskId);
+
+    @FormUrlEncoded
+    @Headers("Secret-Key:AJT_Lbim_0f6bd8a808ea3e9996b3aee1900aa2e8")
+    @POST("jobTaskDetail")
+    Call<AllLogsPojo> allLogs(@Field("userId") String userId,
+                                 @Field("jobId") String jobId,
+                                 @Field("taskId") String taskId);
+
+
+    @Multipart
+    @Headers("Authorization:z673qhUDegF2Ek3Tvhcf")
+    @POST("vinFromImage")
+    Call<String> demo(@PartMap HashMap<String, RequestBody> hashMap);
 
 }

@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="90dp"
+    android:layout_height="wrap_content"
+    android:minHeight="100dp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@drawable/task_hsv_bg"
     android:orientation="vertical"
-    android:layout_marginBottom="4dp"
+    android:layout_marginBottom="10dp"
     android:padding="12dp">
 
     <androidx.appcompat.widget.AppCompatTextView
@@ -20,24 +21,29 @@
         android:layout_below="@id/note_label"
         android:id="@+id/note_text"
         android:layout_width="match_parent"
-        android:layout_toLeftOf="@+id/log_img"
-        android:textColor="@color/black"
+        android:layout_toLeftOf="@+id/frame"
         android:gravity="start"
         android:layout_alignParentLeft="true"
+        android:textColor="@color/lightblack"
         android:layout_marginTop="8dp"
-        android:layout_marginRight="12dp"
         android:textSize="12sp"
         android:layout_height="wrap_content"/>
 
-    <com.comix.rounded.RoundedCornerImageView
-        android:id="@+id/log_img"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:src="@drawable/demoprofile"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="12dp"
-        app:cornerColor="@color/white"
-        android:background="@color/white"
-        app:cornerRadius="6dp"/>
+        <com.google.android.material.circularreveal.cardview.CircularRevealCardView
+            android:id="@+id/card"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_alignParentRight="true"
+            app:cardCornerRadius="8dp">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/log_img"
+                android:scaleType="centerCrop"/>
+
+
+
+        </com.google.android.material.circularreveal.cardview.CircularRevealCardView>
 
 </RelativeLayout>

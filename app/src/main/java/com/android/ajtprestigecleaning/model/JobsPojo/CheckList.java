@@ -1,5 +1,5 @@
 
-package com.android.ajtprestigecleaning.model.AllJobsPojo;
+package com.android.ajtprestigecleaning.model.JobsPojo;
 
 import java.io.Serializable;
 import java.util.List;
@@ -12,13 +12,6 @@ public class CheckList implements Serializable
     @SerializedName("id")
     @Expose
     private String id;
-    @SerializedName("name")
-    @Expose
-    private String name;
-    @SerializedName("logs")
-    @Expose
-    private List<Log> logs = null;
-    private final static long serialVersionUID = -8497580189759174104L;
 
     public String getId() {
         return id;
@@ -28,6 +21,14 @@ public class CheckList implements Serializable
         this.id = id;
     }
 
+    @SerializedName("name")
+    @Expose
+    private String name;
+    @SerializedName("tasks")
+    @Expose
+    private List<Task> tasks = null;
+    private final static long serialVersionUID = 1217699824203367910L;
+
     public String getName() {
         return name;
     }
@@ -36,12 +37,12 @@ public class CheckList implements Serializable
         this.name = name;
     }
 
-    public List<Log> getLogs() {
-        return logs;
+    public List<Task> getTasks() {
+        return tasks;
     }
 
-    public void setLogs(List<Log> logs) {
-        this.logs = logs;
+    public void setTasks(List<Task> tasks) {
+        this.tasks = tasks;
     }
 
 }

@@ -1,8 +1,11 @@
 package com.android.ajtprestigecleaning.activities;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Window;
@@ -13,13 +16,13 @@ import com.android.ajtprestigecleaning.util.Constants;
 
 import io.paperdb.Paper;
 
-public class SplashActivity extends BaseActivityk {
+public class SplashActivity extends BaseActivity {
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
+        getWindow().setStatusBarColor(ContextCompat.getColor(getApplicationContext(),R.color.white));
         new Handler().postDelayed(new Runnable(){
             @Override
             public void run() {
@@ -34,15 +37,12 @@ public class SplashActivity extends BaseActivityk {
                     finish();
                 }
 
-
-
-
             }
         }, 3000);
     }
 
     @Override
-    protected int getLayoutResourceId() {
+    public int getLayoutResourceId() {
         /*requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);*/

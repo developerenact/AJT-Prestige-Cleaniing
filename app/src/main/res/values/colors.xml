@@ -18,5 +18,7 @@
     <color name="darkgray">#EFECED</color>
     <color name="draweritemcolour">#919191</color>
     <color name="grey2">#B6B6B6</color>
+    <color name="unselectcategory">#FBCCBE</color>
+    <color name="selectedcircle">#B64908</color>
 
 </resources>

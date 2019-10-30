@@ -14,8 +14,10 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.provider.Settings;
+import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -29,7 +31,7 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public abstract class BaseActivityk extends AppCompatActivity {
     public static KProgressHUD kProgressHUD;
-
+    public static Dialog progressBar;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -65,18 +67,47 @@ public abstract class BaseActivityk extends AppCompatActivity {
 
 
     public static void showLoader(Activity activity) {
-
-        kProgressHUD = new KProgressHUD(activity).create(activity)
+       kProgressHUD = new KProgressHUD(activity).create(activity)
                 .setStyle(KProgressHUD.Style.SPIN_INDETERMINATE)
                 .setCancellable(true)
                 .setAnimationSpeed(2)
                 .setDimAmount(0.5f)
                 .show();
+
     }
 
     public static void hideLoader() {
         kProgressHUD.dismiss();
 
+    }
+
+    public void showProgress(){
+        if (progressBar == null) {
+            initLoader();
+        }
+
+        if(progressBar.isShowing()){
+            hideProgress();
+        }
+
+        try {
+            if (!isFinishing()) {
+                progressBar.show();
+            }
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+
+    }
+
+
+    public void hideProgress(){
+
+        if (progressBar == null) {
+            initLoader();
+        }
+        progressBar.dismiss();
     }
 
     @Override
@@ -108,6 +139,20 @@ public abstract class BaseActivityk extends AppCompatActivity {
 
 
     }
+
+
+
+    public void initLoader(){
+        progressBar = new Dialog(this);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        progressBar.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        progressBar.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        progressBar.setContentView(R.layout.loader_layout);
+        progressBar.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        progressBar.getWindow().setGravity(Gravity.CENTER);
+        progressBar.setCancelable(false);
+    }
+
 
 
 }

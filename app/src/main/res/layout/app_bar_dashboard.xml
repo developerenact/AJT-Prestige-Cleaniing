@@ -61,7 +61,7 @@
 
         </androidx.appcompat.widget.Toolbar>
 
-        <HorizontalScrollView
+       <!-- <HorizontalScrollView
             android:id="@+id/horizontal_scroll"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -78,12 +78,34 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
-                android:layout_marginLeft="56dp"
+                android:layout_marginLeft="32dp"
                 android:background="@color/orange"
                 android:orientation="horizontal"
 
-                ></LinearLayout>
+                />
+        </HorizontalScrollView>-->
+
+        <HorizontalScrollView
+            android:id="@+id/horizontal_scroll"
+            android:layout_width="match_parent"
+            android:layout_marginBottom="4dp"
+            android:layout_height="wrap_content"
+            android:background="@color/orange"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:visibility="gone"
+            android:scrollbarThumbHorizontal="@android:color/transparent">
+            <LinearLayout
+                android:id="@+id/hsvLinearLayout"
+                android:orientation="horizontal"
+                android:gravity="left"
+                android:layout_width="match_parent"
+                android:background="@color/orange"
+                android:layout_marginLeft="-4dp"
+                android:layout_height="match_parent">
+            </LinearLayout>
         </HorizontalScrollView>
+
 
     </com.google.android.material.appbar.AppBarLayout>
 

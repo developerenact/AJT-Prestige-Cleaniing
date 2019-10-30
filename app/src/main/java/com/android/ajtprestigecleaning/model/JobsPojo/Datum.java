@@ -1,17 +1,42 @@
 
-package com.android.ajtprestigecleaning.model.JobDetailPojo;
+package com.android.ajtprestigecleaning.model.JobsPojo;
 
 import java.io.Serializable;
 import java.util.List;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Data implements Serializable
-{
+public class Datum implements Serializable {
 
     @SerializedName("id")
     @Expose
     private String id;
+
+
+
+    private boolean isHeader;
+
+
+
+    private String headerName;
+
+    public boolean getHeader() {
+        return isHeader;
+    }
+
+    public void setHeader(boolean header) {
+        isHeader = header;
+    }
+
+    public String getHeaderName() {
+        return headerName;
+    }
+
+    public void setHeaderName(String headerName) {
+        this.headerName = headerName;
+    }
+
     @SerializedName("name")
     @Expose
     private String name;
@@ -36,28 +61,74 @@ public class Data implements Serializable
     @SerializedName("endDateTime")
     @Expose
     private String endDateTime;
+    @SerializedName("checkList")
+    @Expose
+    private List<CheckList> checkList = null;
     @SerializedName("hoursDaily")
     @Expose
     private String hoursDaily;
+    @SerializedName("hours")
+    @Expose
+    private List<Hour> hours = null;
     @SerializedName("notes")
     @Expose
     private String notes;
-    @SerializedName("status")
+
+    @SerializedName("jobStatus")
     @Expose
-    private String status;
+    private String jobStatus;
+
+    public String getJobStatus() {
+        return jobStatus;
+    }
+
+    public void setJobStatus(String jobStatus) {
+        this.jobStatus = jobStatus;
+    }
+
+    @SerializedName("price")
+    @Expose
+    private String price;
+
+    @SerializedName("jobType")
+    @Expose
+    private String jobType;
+
+    @SerializedName("carpets")
+    @Expose
+    private String carpets;
+
+    public String getPrice() {
+        return price;
+    }
+
+    public void setPrice(String price) {
+        this.price = price;
+    }
+
+    public String getJobType() {
+        return jobType;
+    }
+
+    public void setJobType(String jobType) {
+        this.jobType = jobType;
+    }
+
+    public String getCarpets() {
+        return carpets;
+    }
+
+    public void setCarpets(String carpets) {
+        this.carpets = carpets;
+    }
+
     @SerializedName("createdAt")
     @Expose
     private String createdAt;
-    @SerializedName("checkListId")
+    @SerializedName("updatedAt")
     @Expose
-    private String checkListId;
-    @SerializedName("checkListName")
-    @Expose
-    private String checkListName;
-    @SerializedName("tasks")
-    @Expose
-    private List<Task> tasks = null;
-    private final static long serialVersionUID = 4376370251689197304L;
+    private String updatedAt;
+    private final static long serialVersionUID = 707689893806533950L;
 
     public String getId() {
         return id;
@@ -131,12 +202,28 @@ public class Data implements Serializable
         this.endDateTime = endDateTime;
     }
 
+    public List<CheckList> getCheckList() {
+        return checkList;
+    }
+
+    public void setCheckList(List<CheckList> checkList) {
+        this.checkList = checkList;
+    }
+
     public String getHoursDaily() {
         return hoursDaily;
     }
 
     public void setHoursDaily(String hoursDaily) {
         this.hoursDaily = hoursDaily;
+    }
+
+    public List<Hour> getHours() {
+        return hours;
+    }
+
+    public void setHours(List<Hour> hours) {
+        this.hours = hours;
     }
 
     public String getNotes() {
@@ -147,14 +234,6 @@ public class Data implements Serializable
         this.notes = notes;
     }
 
-    public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
-    }
-
     public String getCreatedAt() {
         return createdAt;
     }
@@ -163,28 +242,12 @@ public class Data implements Serializable
         this.createdAt = createdAt;
     }
 
-    public String getCheckListId() {
-        return checkListId;
+    public String getUpdatedAt() {
+        return updatedAt;
     }
 
-    public void setCheckListId(String checkListId) {
-        this.checkListId = checkListId;
-    }
-
-    public String getCheckListName() {
-        return checkListName;
-    }
-
-    public void setCheckListName(String checkListName) {
-        this.checkListName = checkListName;
-    }
-
-    public List<Task> getTasks() {
-        return tasks;
-    }
-
-    public void setTasks(List<Task> tasks) {
-        this.tasks = tasks;
+    public void setUpdatedAt(String updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
 }

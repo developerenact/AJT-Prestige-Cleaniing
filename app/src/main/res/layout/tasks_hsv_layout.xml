@@ -1,12 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     android:id="@+id/categoryMainLayout"
+    android:orientation="vertical" >
+
+<LinearLayout
+    android:layout_width="match_parent"
     android:layout_height="80dp"
     android:background="@drawable/task_hsv_bg"
     android:weightSum="3"
     android:orientation="horizontal"
     android:gravity="center">
+
 <LinearLayout
     android:layout_width="match_parent"
     android:padding="8dp"
@@ -61,7 +67,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="From:"/>
+                android:text="To:"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -102,5 +108,5 @@
             />
     </LinearLayout>
 
-
+  </LinearLayout>
 </LinearLayout>

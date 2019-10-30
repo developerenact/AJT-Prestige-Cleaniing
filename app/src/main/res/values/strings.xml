@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">AJT Prestige Cleaning</string>
+    <string name="app_name">AJT</string>
     <string name="sign_up">Sign Up</string>
     <string name="welcome_back">Welcome</string>
 
@@ -42,7 +42,7 @@
     <string name="phone_length_validation">Please enter valid phone number</string>
     <string name="emptypassword_validation">Please enter your password</string>
     <string name="password_length_validation">Password should be greater than 6</string>
-    <string name="no_internet">Pleasr check your Internet Connection</string>
+    <string name="no_internet">Please check your Internet Connection</string>
     <string name="something_wrong">Something went wrong</string>
     <string name="old_password_validation">Please enter your Old Password</string>
     <string name="new_pass_validation">Please enter New Password</string>
@@ -54,4 +54,8 @@
     <string name="past_jobs">Past Jobs</string>
     <string name="rejected_jobs">Rejected Jobs</string>
     <string name="completed_jobs">Completed Jobs</string>
+    <string name="choose_start_time">Choose start time</string>
+    <string name="choose_end_time">Choose End time</string>
+    <string name="time_should_not_same">Start time and End time should not be same</string>
+    <string name="write_note">Please write note</string>
 </resources>

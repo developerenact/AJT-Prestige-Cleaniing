@@ -1,13 +1,17 @@
 package com.android.ajtprestigecleaning.activities;
 
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.icu.text.SimpleDateFormat;
 import android.net.Uri;
@@ -16,6 +20,7 @@ import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -24,19 +29,21 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.android.ajtprestigecleaning.R;
-import com.android.ajtprestigecleaning.adapter.CustomAdapter;
+import com.android.ajtprestigecleaning.adapter.SpinnerAdapter;
 import com.android.ajtprestigecleaning.adapter.JobsDetailAdapter;
 import com.android.ajtprestigecleaning.apiServices.ApiInterface;
 import com.android.ajtprestigecleaning.apiServices.BaseUrl;
-import com.android.ajtprestigecleaning.model.AllJobsPojo.Datum;
-import com.android.ajtprestigecleaning.model.ChangePasswordPojo.ChangePasswordPojo;
-import com.android.ajtprestigecleaning.model.JobDetailPojo.JobDetailPojo;
+import com.android.ajtprestigecleaning.model.HoursModel;
+import com.android.ajtprestigecleaning.model.JobsPojo.Datum;
+import com.android.ajtprestigecleaning.model.JobsPojo.Hour;
+import com.android.ajtprestigecleaning.model.JobsPojo.Task;
 import com.android.ajtprestigecleaning.model.SubmitHourPojo.SubmitHourPojo;
 import com.android.ajtprestigecleaning.model.UpdateJobStatusPojo.UpdateJobStatusPojo;
 import com.android.ajtprestigecleaning.util.Constants;
@@ -48,7 +55,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.TimeUnit;
 
 import io.paperdb.Paper;
 import retrofit2.Call;
@@ -56,34 +62,49 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 @RequiresApi(api = Build.VERSION_CODES.O)
-public class JobDetailActivity extends BaseActivityk implements AdapterView.OnItemSelectedListener {
+public class JobDetailActivity extends BaseActivity implements AdapterView.OnItemSelectedListener {
     ImageView back, navigation;
-    TextView id, location, task, date, desc, approx_hour, tv_log_hour,tv_end_job;
+    TextView id, location, task, date, desc, approx_hour, tv_log_hour, tv_end_job, tv_job_type, tv_job_price,tv_carpets,tv_notes;
     RecyclerView recyclerView;
     RecyclerView.LayoutManager layoutManager;
     JobsDetailAdapter adapter;
     String jobId = "";
     String lat = "";
-    String lng = "";
     Spinner spinner;
-    List<String> tasks;
-    List<String> taskid;
-    String taskId="";
+    String lng = "";
+    int pos;
+    String str_taskId = "";
+    String str_taskname = "";
+    String str_checklistid = "";
     Dialog dialog;
-    CustomAdapter customAdapter;
+    SpinnerAdapter customAdapter;
     HorizontalScrollView horizontalScrollView;
-    String starttime="";
-    String endtime="";
+    LinearLayout hsv_linear_layout;
+    LinearLayoutCompat start_job_layout, log_hours_layout;
+    String starttime = "";
+    String endtime = "";
     Datum datum;
-
-
+    List<Hour> hoursModelList;
+    Hour hour;
+    List<Task> tasks;
+    List<String> checklistId;
+    View view;
+    LinearLayout.LayoutParams layoutParams;
+    EditText et_note;
+    int checkklist_position = -1;
+    int task_position = -1;
+    ImageView startjob;
+    String jobstatus = "";
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-       final Intent intent = getIntent();
-       jobId = intent.getStringExtra("jobId");
+        final Intent intent = getIntent();
+        jobId = intent.getStringExtra("jobId");
         datum = (Datum) intent.getSerializableExtra("sampleObject");
-      //  jobDetail();
+        //  jobDetail();
+        hour=new Hour();
+
+
         back = findViewById(R.id.back);
         id = findViewById(R.id.id_number);
         navigation = findViewById(R.id.navigation);
@@ -91,17 +112,24 @@ public class JobDetailActivity extends BaseActivityk implements AdapterView.OnIt
         task = findViewById(R.id.desc);
         approx_hour = findViewById(R.id.approx_hour);
         date = findViewById(R.id.date_time);
-        spinner=findViewById(R.id.spinner);
+        startjob = findViewById(R.id.img_start_job);
+        //  spinner=findViewById(R.id.spinner);
         recyclerView = findViewById(R.id.task_recyclerview);
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         desc = findViewById(R.id.description);
         tv_log_hour = findViewById(R.id.tv_log_hour);
         tv_end_job = findViewById(R.id.tv_end_job);
-        horizontalScrollView=findViewById(R.id.tasks_hsv);
-        spinner.setOnItemSelectedListener(this);
-        tasks = new ArrayList<String>();
-        taskid = new ArrayList<String>();
+        tv_job_price = findViewById(R.id.tv_job_price);
+        hsv_linear_layout = findViewById(R.id.taskshsvLinearLayout);
+        start_job_layout = findViewById(R.id.startjob_layout);
+        log_hours_layout = findViewById(R.id.startjob_loghours);
+        tv_carpets=findViewById(R.id.carpets);
+        tv_notes=findViewById(R.id.notes);
+        //  spinner.setOnItemSelectedListener(this);
+        tasks = new ArrayList<Task>();
+        hoursModelList = new ArrayList<Hour>();
+        checklistId = new ArrayList<String>();
         getDatafromIntent();
 
         tv_log_hour.setOnClickListener(new View.OnClickListener() {
@@ -111,19 +139,64 @@ public class JobDetailActivity extends BaseActivityk implements AdapterView.OnIt
 
             }
         });
-        
+
         tv_end_job.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                updateJobStatus();
+                jobstatus = "5";
+                updateJobStatus(jobstatus);
             }
         });
-        
-         // Creating adapter for spinner
+
+        startjob.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                jobstatus = "1";
+                updateJobStatus(jobstatus);
+            }
+        });
+
+            logHours();
+        /*LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        for (int i = 0; i < hoursModelList.size(); i++) {
+            view = inflater.inflate(R.layout.task_time_item, null, false);
+            layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            layoutParams.setMargins(0, 8, 0, 8);
+            view.setLayoutParams(layoutParams);
+            TextView name = view.findViewById(R.id.name);
+            Typeface custom_font = Typeface.createFromAsset(getApplicationContext().getAssets(), "fonts/Montserrat-Medium.ttf");
+            name.setTypeface(custom_font);
+            TextView from = view.findViewById(R.id.from);
+            TextView to = view.findViewById(R.id.to);
+            TextView total = view.findViewById(R.id.total);
+            name.setText(hoursModelList.get(i).getTaskName());
+            try {
+                from.setText(convertToTime(hoursModelList.get(i).getStartTime()));
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            try {
+                to.setText(convertToTime(hoursModelList.get(i).getEndTime()));
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            try {
+
+                total.setText(convertSecondsToHMmSs(Long.parseLong(hoursModelList.get(i).getHours())));
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            hsv_linear_layout.addView(view);
+
+        }*/
+
 
         String date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
-       // Toast.makeText(this, date, Toast.LENGTH_SHORT).show();
-
+        // Toast.makeText(this, date, Toast.LENGTH_SHORT).show();
 
 
         back.setOnClickListener(new View.OnClickListener() {
@@ -132,7 +205,6 @@ public class JobDetailActivity extends BaseActivityk implements AdapterView.OnIt
                 finish();
             }
         });
-
 
 
         navigation.setOnClickListener(new View.OnClickListener() {
@@ -148,76 +220,18 @@ public class JobDetailActivity extends BaseActivityk implements AdapterView.OnIt
 
             }
         });
+
+
     }
 
 
 
 
     @Override
-    protected int getLayoutResourceId() {
+    public int getLayoutResourceId() {
         return R.layout.activity_job_detail;
     }
 
-/*
-    public void jobDetail() {
-        showLoader(JobDetailActivity.this);
-        if (isNetworkConnected(JobDetailActivity.this)) {
-            ApiInterface service = BaseUrl.CreateService(ApiInterface.class);
-            Call<JobDetailPojo> call = service.getjobDetail(Integer.parseInt(jobId));
-            call.enqueue(new Callback<JobDetailPojo>() {
-                @Override
-                public void onResponse(Call<JobDetailPojo> call, Response<JobDetailPojo> response) {
-                    if (response.isSuccessful()) {
-                        hideLoader();
-
-                        if (response.body().getStatus() == 0) {
-                            lat = response.body().getData().getLatitude();
-                            lng = response.body().getData().getLongitude();
-                            id.setText("Id number / #" + response.body().getData().getId());
-                            location.setText(response.body().getData().getAddress());
-                            task.setText(response.body().getData().getName());
-                            date.setText(convertDate(response.body().getData().getCreatedAt(), "dd-MM-yyyy | hh.mm aa"));
-                            desc.setText(response.body().getData().getDescription());
-                            approx_hour.setText(response.body().getData().getHoursDaily() + " " + "Hours");
-                            adapter = new JobsDetailAdapter(response.body().getData().getTasks(), JobDetailActivity.this);
-                            recyclerView.setAdapter(adapter);
-                            for (int i = 0; i < response.body().getData().getTasks().size(); i++) {
-                                tasks.add(response.body().getData().getTasks().get(i).getName());
-                                taskid.add(response.body().getData().getTasks().get(i).getId());
-
-                            }
-                            customAdapter=new CustomAdapter(getApplicationContext(),tasks,taskid);
-                            spinner.setAdapter(customAdapter);
-
-
-                        } else {
-
-                        }
-
-
-                    } else {
-                        hideLoader();
-                        Toast.makeText(JobDetailActivity.this, getApplicationContext().getString(R.string.something_wrong), Toast.LENGTH_LONG).show();
-
-
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<JobDetailPojo> call, Throwable t) {
-                    hideLoader();
-                    Log.d("otp", t.getMessage());
-                    Toast.makeText(JobDetailActivity.this, getApplicationContext().getString(R.string.something_wrong), Toast.LENGTH_LONG).show();
-                }
-            });
-        } else {
-            hideLoader();
-            customDialog(JobDetailActivity.this, getApplicationContext().getString(R.string.no_internet));
-
-        }
-
-    }
-*/
 
     public static String convertDate(String dateInMilliseconds, String dateFormat) {
         return DateFormat.format(dateFormat, Long.parseLong(dateInMilliseconds)).toString();
@@ -226,7 +240,14 @@ public class JobDetailActivity extends BaseActivityk implements AdapterView.OnIt
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-         taskId=taskid.get(position);
+        ((LinearLayout) parent.getChildAt(0)).setGravity(Gravity.CENTER);
+        pos = position;
+        str_taskId = tasks.get(position).getId();
+        str_checklistid = checklistId.get(position);
+        str_taskname=tasks.get(position).getName();
+        Log.e("selected", checklistId.get(position));
+        pos = position;
+
     }
 
     @Override
@@ -235,23 +256,38 @@ public class JobDetailActivity extends BaseActivityk implements AdapterView.OnIt
     }
 
 
-    public void submit(long starttime,long endtime,String note) {
-        showLoader(JobDetailActivity.this);
-        if (isNetworkConnected(JobDetailActivity.this)) {
+    public void submit(long starttime, long endtime, final String note) {
+        //showLoader(JobDetailActivity.this);
+         showProgress();
+        if (isNetworkAvailable()) {
             ApiInterface service = BaseUrl.CreateService(ApiInterface.class);
-            Call<SubmitHourPojo> call = service.submithour(jobId,Paper.book().read(Constants.USERID,"2"),taskId,starttime,endtime,endtime-starttime,note);
+            Call<SubmitHourPojo> call = service.submithour(jobId, "2", str_taskId, starttime, endtime, endtime - starttime, note);
             call.enqueue(new Callback<SubmitHourPojo>() {
                 @Override
                 public void onResponse(Call<SubmitHourPojo> call, Response<SubmitHourPojo> response) {
                     if (response.isSuccessful()) {
-                        hideLoader();
-                        Log.e("start",response.body().getData().getStartTime()+"");
-                        Log.e("end",response.body().getData().getEndTime()+"");
-                        Log.e("diff",response.body().getData().getHours()+"");
+                        //hideLoader();
                         dialog.dismiss();
+                        hideProgress();
+                        Log.e("start", response.body().getData().getStartTime() + "");
+                        Log.e("end", response.body().getData().getEndTime() + "");
+                        Log.e("diff", response.body().getData().getHours() + "");
+                        updateTaskStatus();
+
+                        hour.setEndTime(response.body().getData().getEndTime());
+                        hour.setStartTime(response.body().getData().getStartTime());
+                        hour.setHours(response.body().getData().getHours());
+                        hour.setTaskName(str_taskname);
+                        hoursModelList.add(hour);
+                        if(view.getParent() != null) {
+                            ((ViewGroup)view.getParent()).removeView(view);
+                            // <- fix
+                        }
+                        logHours();
 
                     } else {
-                        hideLoader();
+                       // hideLoader();
+                         hideProgress();
                         Toast.makeText(JobDetailActivity.this, getApplicationContext().getString(R.string.something_wrong), Toast.LENGTH_LONG).show();
 
 
@@ -260,38 +296,22 @@ public class JobDetailActivity extends BaseActivityk implements AdapterView.OnIt
 
                 @Override
                 public void onFailure(Call<SubmitHourPojo> call, Throwable t) {
-                    hideLoader();
+                   // hideLoader();
+                    hideProgress();
                     Log.d("otp", t.getMessage());
                     Toast.makeText(JobDetailActivity.this, getApplicationContext().getString(R.string.something_wrong), Toast.LENGTH_LONG).show();
                 }
             });
         } else {
-            hideLoader();
-            customDialog(JobDetailActivity.this, getApplicationContext().getString(R.string.no_internet));
+           //hideLoader();
+              hideProgress();
+            customDialog( getApplicationContext().getString(R.string.no_internet),JobDetailActivity.this);
 
         }
 
     }
 
-
-
-/*
-    public String timeDiff(long starttime,long endtime){
-        long diffTime = endtime - starttime;
-        String elapsedtime = new SimpleDateFormat("HH:mm:ss").format(Long.parseLong(String.valueOf(diffTime)));
-        String periodAsHH_MM_SS = String.format("%02d:%02d:%02d",
-                TimeUnit.MILLISECONDS.toHours(diffTime),
-                TimeUnit.MILLISECONDS.toMinutes(diffTime) % TimeUnit.HOURS.toMinutes(1),
-                TimeUnit.MILLISECONDS.toSeconds(diffTime) % TimeUnit.MINUTES.toSeconds(1));
-
-        System.out.println("Duration in hh:mm:ss is: "+periodAsHH_MM_SS);
-
-            return elapsedtime;
-    }
-*/
-
-
-    public void showIosDialog(){
+    public void showIosDialog() {
         dialog = new Dialog(this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setCancelable(false);
@@ -301,12 +321,13 @@ public class JobDetailActivity extends BaseActivityk implements AdapterView.OnIt
         window.setGravity(Gravity.BOTTOM);
         dialog.setCancelable(true);
         dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        spinner=dialog.findViewById(R.id.spinner);
-       // customAdapter=new CustomAdapter(getApplicationContext(),tasks,taskid);
+        spinner = dialog.findViewById(R.id.spinner);
+        spinner.setOnItemSelectedListener(this);
+        customAdapter = new SpinnerAdapter(getApplicationContext(), tasks, checklistId);
         spinner.setAdapter(customAdapter);
-        final EditText et_from=dialog.findViewById(R.id.et_from);
-        final EditText et_to=dialog.findViewById(R.id.et_to);
-        final EditText et_note=dialog.findViewById(R.id.et_note);
+        final TextView et_from = dialog.findViewById(R.id.et_from);
+        final TextView et_to = dialog.findViewById(R.id.et_to);
+        et_note = dialog.findViewById(R.id.et_note);
         et_from.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -323,8 +344,8 @@ public class JobDetailActivity extends BaseActivityk implements AdapterView.OnIt
                 mTimePicker = new TimePickerDialog(JobDetailActivity.this, new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
-                        et_from.setText( selectedHour +"  "+ ":"+"  " + selectedMinute);
-                        starttime=day+"-"+month+"-"+year+" "+selectedHour+":"+selectedMinute;
+                        et_from.setText(selectedHour + "  " + ":" + "  " + selectedMinute);
+                        starttime = day + "-" + month + "-" + year + " " + selectedHour + ":" + selectedMinute;
 
                     }
                 }, hour, minute, true);//Yes 24 hour time
@@ -350,8 +371,8 @@ public class JobDetailActivity extends BaseActivityk implements AdapterView.OnIt
                 mTimePicker = new TimePickerDialog(JobDetailActivity.this, new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
-                        et_to.setText( selectedHour +"  "+ ":"+"  " + selectedMinute);
-                        endtime=day+"-"+month+"-"+year+" "+selectedHour+":"+selectedMinute;
+                        et_to.setText(selectedHour + "  " + ":" + "  " + selectedMinute);
+                        endtime = day + "-" + month + "-" + year + " " + selectedHour + ":" + selectedMinute;
                     }
                 }, hour, minute, true);//Yes 24 hour time
                 mTimePicker.setTitle("Select Time");
@@ -360,67 +381,182 @@ public class JobDetailActivity extends BaseActivityk implements AdapterView.OnIt
             }
         });
 
-        Button submit=dialog.findViewById(R.id.submit);
+        Button submit = dialog.findViewById(R.id.submit);
         submit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                if(et_from.getText().toString().isEmpty()){
-                    et_from.requestFocus();
-                }
-                else if(et_to.getText().toString().isEmpty()){
+                if (et_from.getText().toString().isEmpty()) {
+                    customDialog( getApplicationContext().getString(R.string.choose_start_time),JobDetailActivity.this);
+                } else if (et_to.getText().toString().isEmpty()) {
 
-                    et_to.requestFocus();
+                    customDialog( getApplicationContext().getString(R.string.choose_end_time),JobDetailActivity.this);
 
-                }
 
-                else if(et_note.getText().toString().isEmpty()){
-                    et_note.setError("Please write note");
+                } else if (et_from.getText().toString().equals(et_to.getText().toString())) {
+                    customDialog( getApplicationContext().getString(R.string.time_should_not_same),JobDetailActivity.this);
+                } else if (et_note.getText().toString().isEmpty()) {
+                    et_note.setError(getApplicationContext().getString(R.string.write_note));
+                    et_note.requestFocus();
 
-                }
-                else{
-                       // timeDiff(stringToTimeStamp(starttime),stringToTimeStamp(endtime));
-                    submit(stringToTimeStamp(starttime),stringToTimeStamp(endtime),et_note.getText().toString());
+                } else {
+                    // timeDiff(stringToTimeStamp(starttime),stringToTimeStamp(endtime));
+                    // updateTaskStatus();
+                    submit(stringToTimeStamp(starttime), stringToTimeStamp(endtime), et_note.getText().toString());
 
                 }
             }
         });
         dialog.show();
 
-
     }
 
 
-    public long stringToTimeStamp(String time){
+    public long stringToTimeStamp(String time) {
         SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy HH:mm");
         Date date = null;
         try {
-            date = (Date)formatter.parse(time);
+            date = (Date) formatter.parse(time);
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        long output=date.getTime()/1000L;
-        String str=Long.toString(output);
+        long output = date.getTime() / 1000L;
+        String str = Long.toString(output);
         long timestamp = Long.parseLong(str) * 1000;
-
-        System.out.println("Today is " +timestamp);
+        System.out.println("Today is " + timestamp);
         return timestamp;
     }
 
 
-    public void updateJobStatus() {
-        showLoader(JobDetailActivity.this);
-        if (isNetworkConnected(JobDetailActivity.this)) {
+    public void updateJobStatus(String status) {
+       // showLoader(JobDetailActivity.this);
+        showProgress();
+        if (isNetworkAvailable()) {
             ApiInterface service = BaseUrl.CreateService(ApiInterface.class);
-            Call<UpdateJobStatusPojo> call = service.updateJobStatus(jobId,Paper.book().read(Constants.USERID, "1"),"5");
+            Call<UpdateJobStatusPojo> call = service.updateJobStatus(jobId, "2", status);
             call.enqueue(new Callback<UpdateJobStatusPojo>() {
                 @Override
                 public void onResponse(Call<UpdateJobStatusPojo> call, Response<UpdateJobStatusPojo> response) {
                     if (response.isSuccessful()) {
-                        hideLoader();
+                       // hideLoader();
+                        hideProgress();
+                        if (response.body().getStatus() == 0) {
+                            if (jobstatus.equals("1")) {
+                                start_job_layout.setVisibility(View.GONE);
+                                log_hours_layout.setVisibility(View.VISIBLE);
+                            } else {
+                                start_job_layout.setVisibility(View.GONE);
+                                log_hours_layout.setVisibility(View.GONE);
+
+                            }
+                        } else {
+                            Toast.makeText(JobDetailActivity.this, getApplicationContext().getString(R.string.something_wrong), Toast.LENGTH_LONG).show();
+
+                        }
 
                     } else {
-                        hideLoader();
+                       // hideLoader();
+                        hideProgress();
+                        Toast.makeText(JobDetailActivity.this, getApplicationContext().getString(R.string.something_wrong), Toast.LENGTH_LONG).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<UpdateJobStatusPojo> call, Throwable t) {
+                   // hideLoader();
+                    hideProgress();
+                    Log.d("otp", t.getMessage());
+                    Toast.makeText(JobDetailActivity.this, getApplicationContext().getString(R.string.something_wrong), Toast.LENGTH_LONG).show();
+                }
+            });
+        } else {
+           // hideLoader();
+             hideProgress();
+            customDialog(getApplicationContext().getString(R.string.no_internet),JobDetailActivity.this);
+
+        }
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    public void getDatafromIntent() {
+        final Intent intent = getIntent();
+        jobId = intent.getStringExtra("jobId");
+        datum = (Datum) intent.getSerializableExtra("sampleObject");
+        lat = datum.getLatitude();
+        lng = datum.getLongitude();
+        id.setText("Id number / #" + datum.getId() + " /" + " " + datum.getJobType());
+        location.setText(datum.getAddress());
+        task.setText(datum.getName());
+        if(!datum.getPrice().isEmpty()){
+            tv_job_price.setText(datum.getPrice());
+
+        }
+        else
+        {
+            tv_job_price.setText("N/A");
+        }
+        date.setText(convertDate(datum.getCreatedAt(), "dd-MM-yyyy | hh.mm aa"));
+        desc.setText(datum.getDescription());
+        approx_hour.setText(datum.getHoursDaily() + " Hours");
+        tv_carpets.setText(datum.getCarpets());
+        tv_notes.setText(datum.getNotes());
+        if (datum.getJobStatus().equals("2")) {
+            log_hours_layout.setVisibility(View.GONE);
+            start_job_layout.setVisibility(View.VISIBLE);
+        } else if (datum.getJobStatus().equals("1")) {
+            log_hours_layout.setVisibility(View.VISIBLE);
+            start_job_layout.setVisibility(View.GONE);
+        } else {
+            log_hours_layout.setVisibility(View.GONE);
+            start_job_layout.setVisibility(View.GONE);
+        }
+
+        adapter = new JobsDetailAdapter(datum, JobDetailActivity.this);
+        recyclerView.setAdapter(adapter);
+
+        for (int i = 0; i < datum.getHours().size(); i++) {
+            hoursModelList.add(datum.getHours().get(i));
+
+        }
+
+        if (datum.getCheckList().size() > 0) {
+            for (int i = 0; i < datum.getCheckList().size(); i++) {
+                for (int j = 0; j < datum.getCheckList().get(i).getTasks().size(); j++) {
+                    if (datum.getCheckList().get(i).getTasks() != null) {
+                        tasks.add(datum.getCheckList().get(i).getTasks().get(j));
+                        checklistId.add(datum.getCheckList().get(i).getId());
+                    }
+                }
+
+            }
+        }
+
+    }
+
+    public void updateTaskStatus() {
+        //showLoader(JobDetailActivity.this);
+        // showProgress();
+        if (isNetworkAvailable()) {
+            ApiInterface service = BaseUrl.CreateService(ApiInterface.class);
+            Call<JsonObject> call = service.updateTask(jobId, "2", str_taskId);
+            call.enqueue(new Callback<JsonObject>() {
+                @Override
+                public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
+                    if (response.isSuccessful()) {
+                       // hideLoader();
+                        hideProgress();
+                        changeStatus(str_checklistid, str_taskId);
+
+
+                    } else {
+                        //hideLoader();
+                        hideProgress();
+
                         Toast.makeText(JobDetailActivity.this, getApplicationContext().getString(R.string.something_wrong), Toast.LENGTH_LONG).show();
 
 
@@ -428,44 +564,154 @@ public class JobDetailActivity extends BaseActivityk implements AdapterView.OnIt
                 }
 
                 @Override
-                public void onFailure(Call<UpdateJobStatusPojo> call, Throwable t) {
-                    hideLoader();
+                public void onFailure(Call<JsonObject> call, Throwable t) {
+                   // hideLoader();
+                     hideProgress();
                     Log.d("otp", t.getMessage());
                     Toast.makeText(JobDetailActivity.this, getApplicationContext().getString(R.string.something_wrong), Toast.LENGTH_LONG).show();
                 }
             });
         } else {
-            hideLoader();
-            customDialog(JobDetailActivity.this, getApplicationContext().getString(R.string.no_internet));
+           // hideLoader();
+             hideProgress();
+            customDialog( getApplicationContext().getString(R.string.no_internet),JobDetailActivity.this);
 
         }
 
     }
 
+    public String convertSecondsToHMmSs(long milliseconds) {
+        long s = (int) (milliseconds / 1000) % 60;
+        long m = (int) Math.abs((milliseconds / (1000 * 60)) % 60);
+        long h = (int) Math.abs((milliseconds / (1000 * 60 * 60)) % 24);
+        return String.format("%02d:%02d", h, m);
+    }
 
-    public void getDatafromIntent(){
-        final Intent intent = getIntent();
-        jobId = intent.getStringExtra("jobId");
-        datum = (Datum) intent.getSerializableExtra("sampleObject");
-        lat = datum.getLatitude();
-        lng = datum.getLongitude();
-        id.setText("Id number / #" + datum.getId());
-        location.setText(datum.getAddress());
-        task.setText(datum.getName());
-        date.setText(convertDate(datum.getCreatedAt(), "dd-MM-yyyy | hh.mm aa"));
-        desc.setText(datum.getDescription());
-      //  approx_hour.setText(datum.getHoursDaily().get(0) + " " + "Hours");
-        adapter = new JobsDetailAdapter(datum, JobDetailActivity.this);
-       recyclerView.setAdapter(adapter);
+    public String convertToTime(String dateInMilliseconds) {
 
+        return DateFormat.format("HH:mm", Long.parseLong(dateInMilliseconds)).toString();
+
+    }
+
+    public void showStartButton(int mon, int day, int yr) {
+        Calendar today = Calendar.getInstance();
+        int dayOfMonth = today.get(Calendar.DAY_OF_MONTH);
+        int month = today.get(Calendar.MONTH);
+        int year = today.get(Calendar.YEAR);
+        if (month == mon && dayOfMonth == day && year == yr) {
+            start_job_layout.setVisibility(View.VISIBLE);
+        } else {
+            start_job_layout.setVisibility(View.GONE);
+        }
+
+    }
+
+    public void changeStatus(String checkId, String taskId) {
+        tasks.get(pos).setStatus("0");
+
+        boolean breakkLoop = false;
         for (int i = 0; i < datum.getCheckList().size(); i++) {
-            tasks.add(datum.getCheckList().get(i).getName());
-            taskid.add(datum.getCheckList().get(i).getId());
 
+            String chkListId = datum.getCheckList().get(i).getId();
+            if (breakkLoop) {
+                break;
+            }
+            for (int i1 = 0; i1 < datum.getCheckList().get(i).getTasks().size(); i1++) {
+
+                if (datum.getCheckList().get(i).getTasks().get(i1).getId().equalsIgnoreCase(taskId) && chkListId.equalsIgnoreCase(checkId)) {
+                    datum.getCheckList().get(i).getTasks().get(i1).setStatus("1");
+                    breakkLoop = true;
+                    break;
+                }
+            }
         }
-        customAdapter=new CustomAdapter(getApplicationContext(),tasks,taskid);
-        spinner.setAdapter(customAdapter);
+        // tasks.get(pos).setStatus("0");
+
+        adapter.notifyDataSetChanged();
 
     }
 
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        try {
+            super.onActivityResult(requestCode, resultCode, data);
+
+            if (requestCode == 11 && resultCode == RESULT_OK) {
+                int pos = data.getIntExtra("position", 0);
+                int img_count = data.getIntExtra("img_count", 0);
+                int txt_count = data.getIntExtra("txt_count", 0);
+                String chklistid = data.getStringExtra("checklistId");
+                String taskid = data.getStringExtra("taskId");
+
+
+                boolean breakkLoop = false;
+                for (int i = 0; i < datum.getCheckList().size(); i++) {
+
+                    String chkListId = datum.getCheckList().get(i).getId();
+                    if (breakkLoop) {
+                        break;
+                    }
+                    for (int i1 = 0; i1 < datum.getCheckList().get(i).getTasks().size(); i1++) {
+
+                        if (datum.getCheckList().get(i).getTasks().get(i1).getId().equalsIgnoreCase(taskid) && chkListId.equalsIgnoreCase(chklistid)) {
+                            // datum.getCheckList().get(i).getTasks().get(i1).setImageCount(String.valueOf(Integer.parseInt(tasks.get(pos).getImageCount())+1));
+                            // datum.getCheckList().get(i).getTasks().get(i1).setTextCount(String.valueOf(Integer.parseInt(tasks.get(pos).getTextCount())+1));
+                            datum.getCheckList().get(i).getTasks().get(i1).setImageCount(String.valueOf(Integer.parseInt(datum.getCheckList().get(i).getTasks().get(i1).getImageCount()) + img_count));
+                            datum.getCheckList().get(i).getTasks().get(i1).setTextCount(String.valueOf(Integer.parseInt(datum.getCheckList().get(i).getTasks().get(i1).getTextCount()) + txt_count));
+                            breakkLoop = true;
+                            break;
+                        }
+                    }
+                }
+                // tasks.get(pos).setStatus("0");
+
+                adapter.notifyDataSetChanged();
+
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+    }
+
+    public void logHours() {
+        hsv_linear_layout.removeAllViews();
+        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        for (int i = 0; i < hoursModelList.size(); i++) {
+            view = inflater.inflate(R.layout.task_time_item, null, false);
+            layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            layoutParams.setMargins(0, 8, 0, 8);
+            view.setLayoutParams(layoutParams);
+            TextView name = view.findViewById(R.id.name);
+            Typeface custom_font = Typeface.createFromAsset(getApplicationContext().getAssets(), "fonts/Montserrat-Medium.ttf");
+            name.setTypeface(custom_font);
+            TextView from = view.findViewById(R.id.from);
+            TextView to = view.findViewById(R.id.to);
+            TextView total = view.findViewById(R.id.total);
+            name.setText(hoursModelList.get(i).getTaskName());
+            try {
+                from.setText(convertToTime(hoursModelList.get(i).getStartTime()));
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            try {
+                to.setText(convertToTime(hoursModelList.get(i).getEndTime()));
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            try {
+
+                total.setText(convertSecondsToHMmSs(Long.parseLong(hoursModelList.get(i).getHours())));
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            hsv_linear_layout.addView(view);
+
+        }
+    }
 }

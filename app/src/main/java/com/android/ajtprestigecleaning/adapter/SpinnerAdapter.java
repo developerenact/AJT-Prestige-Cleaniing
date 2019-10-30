@@ -9,25 +9,26 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.ajtprestigecleaning.R;
+import com.android.ajtprestigecleaning.model.JobsPojo.Task;
 
 import java.util.List;
 
-public class CustomAdapter extends BaseAdapter {
+public class SpinnerAdapter extends BaseAdapter {
     Context context;
-    List<String> tasks;
-    List<String> ids;
+    List<Task> task;
+    List<String> checklistId;
     LayoutInflater inflter;
 
-    public CustomAdapter(Context applicationContext, List<String> tasks, List<String> ids) {
+    public SpinnerAdapter(Context applicationContext,List<Task> task,List<String> checklistId) {
         this.context = applicationContext;
-        this.tasks = tasks;
-        this.ids = ids;
+        this.task=task;
+        this.checklistId=checklistId;
         inflter = (LayoutInflater.from(applicationContext));
     }
 
     @Override
     public int getCount() {
-        return ids.size();
+        return task.size();
     }
 
     @Override
@@ -44,7 +45,8 @@ public class CustomAdapter extends BaseAdapter {
     public View getView(int i, View view, ViewGroup viewGroup) {
         view = inflter.inflate(R.layout.spinner_custom_layout, null);
         TextView names = (TextView) view.findViewById(R.id.spinner_textView);
-        names.setText(tasks.get(i));
+        names.setText(task.get(i).getName());
+        view.setPadding(0, view.getPaddingTop(), view.getPaddingRight(), view.getPaddingBottom());
         return view;
     }
 }

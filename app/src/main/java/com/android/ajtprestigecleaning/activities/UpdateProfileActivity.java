@@ -2,11 +2,15 @@ package com.android.ajtprestigecleaning.activities;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
+import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -33,6 +37,7 @@ import com.android.ajtprestigecleaning.apiServices.BaseUrl;
 import com.android.ajtprestigecleaning.model.ResetPassword.ResetPassword;
 import com.android.ajtprestigecleaning.model.UpdateProfilePojo.UpdateProfilePojo;
 import com.android.ajtprestigecleaning.util.Constants;
+import com.bumptech.glide.Glide;
 import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
@@ -50,7 +55,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class UpdateProfileActivity extends BaseActivityk {
+public class UpdateProfileActivity extends BaseActivity {
     ImageView back, update_user, edit;
     EditText et_fname, et_lname, et_phone;
     CircleImageView profile_img;
@@ -58,10 +63,23 @@ public class UpdateProfileActivity extends BaseActivityk {
     Bitmap bitmap;
     File file;
     boolean permissionStatus = false;
+    TextView toolbar_label;
+    CardView btn_card;
+    DialogInterface dialogInterface;
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
 
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);//  set status text dark
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setStatusBarColor(ContextCompat.getColor(UpdateProfileActivity.this, R.color.white));
+        }
         checkpermission();
         back = findViewById(R.id.back);
         profile_img = findViewById(R.id.profile_img);
@@ -69,11 +87,13 @@ public class UpdateProfileActivity extends BaseActivityk {
         et_lname = findViewById(R.id.et_update_lname);
         et_phone = findViewById(R.id.et_update_phone);
         update_user = findViewById(R.id.updateuser);
+        toolbar_label = findViewById(R.id.toolbar_label);
+        btn_card=findViewById(R.id.button_card);
+        Typeface custom_font = Typeface.createFromAsset(getApplicationContext().getAssets(), "fonts/Montserrat-Medium.ttf");
+        toolbar_label.setTypeface(custom_font);
         edit = findViewById(R.id.edt_btn);
         profile_img.setEnabled(false);
         update_user.setEnabled(false);
-
-
         getProfile();
         back.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -98,6 +118,7 @@ public class UpdateProfileActivity extends BaseActivityk {
                 profile_img.setEnabled(true);
                 update_user.setEnabled(true);
                 edit.setVisibility(View.GONE);
+                btn_card.setVisibility(View.VISIBLE);
             }
         });
 
@@ -108,12 +129,16 @@ public class UpdateProfileActivity extends BaseActivityk {
 
                 if (et_fname.getText().toString().isEmpty()) {
                     et_fname.setError(getApplicationContext().getString(R.string.firstname_validation));
+                    et_fname.requestFocus();
                 } else if (et_lname.getText().toString().isEmpty()) {
                     et_lname.setError(getApplicationContext().getString(R.string.lastname_validation));
+                    et_lname.requestFocus();
                 } else if (et_phone.getText().toString().isEmpty()) {
                     et_phone.setError(getApplicationContext().getString(R.string.emptyphone_validation));
+                    et_phone.requestFocus();
                 } else if (et_phone.getText().toString().length() < 10) {
                     et_phone.setError(getApplicationContext().getString(R.string.phone_length_validation));
+                    et_phone.requestFocus();
                 } else {
                     updateProfile(Paper.book().read(Constants.USERID, "2"), et_fname.getText().toString(), et_lname.getText().toString(), et_phone.getText().toString(), file, "en");
                 }
@@ -122,14 +147,14 @@ public class UpdateProfileActivity extends BaseActivityk {
     }
 
     @Override
-    protected int getLayoutResourceId() {
+    public int getLayoutResourceId() {
         return R.layout.activity_update_profile;
     }
 
     private void showAlert() {
         final CharSequence[] charSequence = {"Camera", "Gallery", "Cancel"};
         final AlertDialog.Builder alert = new AlertDialog.Builder(UpdateProfileActivity.this);
-        alert.setCancelable(false);
+        alert.setCancelable(true);
         alert.setTitle("Select Image");
         alert.setItems(charSequence, new DialogInterface.OnClickListener() {
             @Override
@@ -148,13 +173,10 @@ public class UpdateProfileActivity extends BaseActivityk {
     }
 
     private void openGallery() {
-
-
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(Intent.createChooser(intent, "Select File"), 2);
-
 
     }
 
@@ -205,7 +227,12 @@ public class UpdateProfileActivity extends BaseActivityk {
         if (selectedUri != null) {
             try {
                 bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedUri);
-                profile_img.setImageBitmap(bitmap);
+               // profile_img.setImageBitmap(bitmap);
+                Glide.with(UpdateProfileActivity.this)
+                        .load(bitmap)
+                        .placeholder(R.drawable.demoprofile)
+                        .into(profile_img);
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -218,6 +245,7 @@ public class UpdateProfileActivity extends BaseActivityk {
 
         Uri uri = data.getData();
         String path = getRealPathFromURI_API19(uri);
+        //  String path = getRealPathFromUri(UpdateProfileActivity.this,uri);
         file = new File(path);
         selectedUri = Uri.fromFile(file);
 // image.setImageURI(uri);
@@ -225,7 +253,11 @@ public class UpdateProfileActivity extends BaseActivityk {
         if (selectedUri != null) {
             try {
                 bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedUri);
-                profile_img.setImageBitmap(bitmap);
+                // profile_img.setImageBitmap(bitmap);
+                Glide.with(UpdateProfileActivity.this)
+                        .load(bitmap)
+                        .placeholder(R.drawable.demoprofile)
+                        .into(profile_img);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -233,12 +265,14 @@ public class UpdateProfileActivity extends BaseActivityk {
 
     }
 
+
     public String getRealPathFromURI_API19(Uri uri) {
         String filePath = "";
         String wholeID = null;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             wholeID = DocumentsContract.getDocumentId(uri);
         }
+
 // Split at colon, use second item in the array
         String id = wholeID.split(":")[1];
         String[] column = {MediaStore.Images.Media.DATA};
@@ -253,6 +287,8 @@ public class UpdateProfileActivity extends BaseActivityk {
         cursor.close();
         return filePath;
     }
+
+
 
     private void checkpermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -335,17 +371,31 @@ public class UpdateProfileActivity extends BaseActivityk {
         }
 
 
-        showLoader(UpdateProfileActivity.this);
-        if (isNetworkConnected(UpdateProfileActivity.this)) {
+        //  showLoader(UpdateProfileActivity.this);
+        showProgress();
+        if (isNetworkAvailable()) {
             ApiInterface service = BaseUrl.CreateService(ApiInterface.class);
             Call<UpdateProfilePojo> call = service.updateProfile(data);
             call.enqueue(new Callback<UpdateProfilePojo>() {
                 @Override
                 public void onResponse(Call<UpdateProfilePojo> call, Response<UpdateProfilePojo> response) {
                     if (response.isSuccessful()) {
-                        hideLoader();
+                        // hideLoader();
+                        hideProgress();
                         edit.setVisibility(View.VISIBLE);
-                        Picasso.with(getApplicationContext()).load(response.body().getData().getImage()).placeholder(R.drawable.demoprofile).error(R.drawable.demoprofile).into(profile_img);
+                        et_fname.setEnabled(false);
+                        et_lname.setEnabled(false);
+                        et_phone.setEnabled(false);
+                        profile_img.setEnabled(false);
+                        update_user.setEnabled(false);
+                        btn_card.setVisibility(View.GONE);
+                        if (!response.body().getData().getImage().isEmpty()) {
+                            Glide.with(UpdateProfileActivity.this)
+                                    .load(bitmap == null ? response.body().getData().getImage() : bitmap)
+                                    .placeholder(R.drawable.demoprofile)
+                                    .into(profile_img);
+                            //Picasso.with(getApplicationContext()).load(response.body().getData().getImage()).placeholder(R.drawable.demoprofile).error(R.drawable.demoprofile).into(profile_img);
+                        }
                         et_fname.setText(response.body().getData().getFirstName());
                         et_lname.setText(response.body().getData().getLastName());
                         et_phone.setText(response.body().getData().getPhone());
@@ -354,22 +404,26 @@ public class UpdateProfileActivity extends BaseActivityk {
                         Paper.book().write(Constants.LASTNAME, response.body().getData().getLastName());
                         Paper.book().write(Constants.NUMBER, response.body().getData().getPhone());
                     } else {
-                        hideLoader();
+                        // hideLoader();
+                        hideProgress();
                         Toast.makeText(UpdateProfileActivity.this, getApplicationContext().getString(R.string.something_wrong), Toast.LENGTH_LONG).show();
 
                     }
                 }
 
+
                 @Override
                 public void onFailure(Call<UpdateProfilePojo> call, Throwable t) {
-                    hideLoader();
+                    //hideLoader();
+                    hideProgress();
                     Log.d("otp", t.getMessage());
                     Toast.makeText(UpdateProfileActivity.this, "fail", Toast.LENGTH_LONG).show();
                 }
             });
         } else {
-            hideLoader();
-            customDialog(UpdateProfileActivity.this, getApplicationContext().getString(R.string.no_internet));
+            //  hideLoader();
+            hideProgress();
+            customDialog(getApplicationContext().getString(R.string.no_internet), UpdateProfileActivity.this);
 
         }
 
@@ -381,12 +435,9 @@ public class UpdateProfileActivity extends BaseActivityk {
         et_lname.setText(Paper.book().read(Constants.LASTNAME, "Doe"));
         et_phone.setText(Paper.book().read(Constants.NUMBER, "1234567890"));
 
-        if (!imageUrl.isEmpty()) {
-            Picasso.with(getApplicationContext()).load(imageUrl).placeholder(R.drawable.demoprofile).error(R.drawable.demoprofile).into(profile_img);
-        } else {
-            Picasso.with(getApplicationContext()).load(R.drawable.demoprofile).into(profile_img);
 
-        }
+        Glide.with(UpdateProfileActivity.this).load(imageUrl.isEmpty() ? "" : imageUrl).placeholder(R.drawable.demoprofile).into(profile_img);
+        // Picasso.with(getApplicationContext()).load(imageUrl).placeholder(R.drawable.demoprofile).error(R.drawable.demoprofile).into(profile_img);
 
 
     }

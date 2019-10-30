@@ -4,6 +4,8 @@ import android.content.res.Configuration;
 
 
 import com.android.ajtprestigecleaning.R;
+import com.jakewharton.picasso.OkHttp3Downloader;
+import com.squareup.picasso.Picasso;
 
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 
@@ -19,7 +21,12 @@ public class MyCustomApplication extends Application {
                 .build()
         );
 
-
+        Picasso.Builder builder = new Picasso.Builder(this);
+        builder.downloader(new OkHttp3Downloader(this,Integer.MAX_VALUE));
+        Picasso built = builder.build();
+        built.setIndicatorsEnabled(true);
+        built.setLoggingEnabled(true);
+        Picasso.setSingletonInstance(built);
 
 
     }

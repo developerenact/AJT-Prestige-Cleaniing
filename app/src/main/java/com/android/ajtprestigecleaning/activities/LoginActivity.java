@@ -1,12 +1,17 @@
 package com.android.ajtprestigecleaning.activities;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
+
+import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
@@ -19,9 +24,10 @@ import android.widget.Toast;
 import com.android.ajtprestigecleaning.R;
 import com.android.ajtprestigecleaning.fragments.SignInFragment;
 import com.android.ajtprestigecleaning.fragments.SignUpFragment;
+import com.android.ajtprestigecleaning.util.CustomViewPager;
 import com.google.android.material.tabs.TabLayout;
 
-public class LoginActivity extends BaseActivityk {
+public class LoginActivity extends BaseActivity {
     FragmentManager manager;
     SignInFragment signInFragment;
     SignUpFragment signUpFragment;
@@ -32,22 +38,28 @@ public class LoginActivity extends BaseActivityk {
     int pos;
 
     TabLayout tabLayout;
-    ViewPager viewPager;
+    CustomViewPager viewPager;
     PagerAdapter pageAdapter;
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);//  set status text dark
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setStatusBarColor(ContextCompat.getColor(LoginActivity.this,R.color.white));
+        }
         tabLayout=findViewById(R.id.tablayout);
         viewPager=findViewById(R.id.viewpager);
         pageAdapter=new com.android.ajtprestigecleaning.adapter.PagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(pageAdapter);
+        viewPager.setPageEnbled(false);
         tabLayout.setupWithViewPager(viewPager);
 
     }
 
     @Override
-    protected int getLayoutResourceId() {
+    public int getLayoutResourceId() {
 //        requestWindowFeature(Window.FEATURE_NO_TITLE);
 //        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 //                WindowManager.LayoutParams.FLAG_FULLSCREEN);

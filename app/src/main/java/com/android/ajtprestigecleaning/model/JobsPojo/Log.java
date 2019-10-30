@@ -1,5 +1,5 @@
 
-package com.android.ajtprestigecleaning.model.AllJobsPojo;
+package com.android.ajtprestigecleaning.model.JobsPojo;
 
 import java.io.Serializable;
 import com.google.gson.annotations.Expose;
@@ -17,7 +17,7 @@ public class Log implements Serializable
     @SerializedName("image")
     @Expose
     private String image;
-    private final static long serialVersionUID = 4470092876465815816L;
+    private final static long serialVersionUID = -2780927467454900351L;
 
     public String getId() {
         return id;

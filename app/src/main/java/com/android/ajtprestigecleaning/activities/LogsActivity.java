@@ -2,8 +2,10 @@ package com.android.ajtprestigecleaning.activities;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.LinearLayoutCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -17,6 +19,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
@@ -31,6 +34,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -45,19 +49,28 @@ import com.android.ajtprestigecleaning.adapter.TaskLogsAdapter;
 import com.android.ajtprestigecleaning.apiServices.ApiInterface;
 import com.android.ajtprestigecleaning.apiServices.BaseUrl;
 import com.android.ajtprestigecleaning.model.AddLogPojo.AddLogPojo;
-import com.android.ajtprestigecleaning.model.AllJobsPojo.CheckList;
-import com.android.ajtprestigecleaning.model.AllJobsPojo.Datum;
+import com.android.ajtprestigecleaning.model.AllLogsPojo.AllLogsPojo;
+import com.android.ajtprestigecleaning.model.ChangePasswordPojo.ChangePasswordPojo;
+import com.android.ajtprestigecleaning.model.JobsPojo.CheckList;
+import com.android.ajtprestigecleaning.model.JobsPojo.Datum;
+import com.android.ajtprestigecleaning.model.JobsPojo.Task;
 import com.android.ajtprestigecleaning.model.UpdateProfilePojo.UpdateProfilePojo;
 import com.android.ajtprestigecleaning.util.Constants;
+import com.bumptech.glide.Glide;
+import com.google.android.material.circularreveal.cardview.CircularRevealCardView;
 import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 
+import id.zelory.compressor.Compressor;
 import io.paperdb.Paper;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
@@ -66,7 +79,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 
-public class LogsActivity extends BaseActivityk {
+public class LogsActivity extends BaseActivity {
     Dialog dialog;
     ImageView add_logs, back;
     Uri selectedUri;
@@ -80,26 +93,51 @@ public class LogsActivity extends BaseActivityk {
     RecyclerView.LayoutManager layoutManager;
     TaskLogsAdapter adapter;
     CheckList checkList;
+    Task tasks;
     Datum datum;
-    TextView tv_log_name,tv_log_desc;
+    TextView tv_log_name, tv_log_desc, log_label;
+    ArrayList<com.android.ajtprestigecleaning.model.AllLogsPojo.Datum> logs = new ArrayList<>();
+    com.android.ajtprestigecleaning.model.AllLogsPojo.Datum logspojo;
+    int position = -1;
+    int img_count = 0;
+    int txt_count = 0;
+    String checklistId = "";
+    String taskId = "";
+    ImageView log_image;
+    LinearLayout choose_file_layout;
+    CircularRevealCardView log_img_card;
+    File compressedFile;
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         checkpermission();
         final Intent intent = getIntent();
-        checkList = (CheckList) intent.getSerializableExtra("Logs");
+        tasks = (Task) intent.getSerializableExtra("Logs");
         datum = (Datum) intent.getSerializableExtra("Alldata");
+        position = intent.getIntExtra("position", 0);
+        checklistId = intent.getStringExtra("checklistId");
+        taskId = intent.getStringExtra("taskId");
+        allLogsApi();
         recyclerView = findViewById(R.id.logs_recycle);
         tv_log_name = findViewById(R.id.log_name);
         tv_log_desc = findViewById(R.id.log_desc);
-        tv_log_name.setText(checkList.getName());
+        tv_log_name.setText(tasks.getName());
         tv_log_desc.setText(datum.getDescription());
-        adapter = new TaskLogsAdapter(checkList.getLogs(), LogsActivity.this);
-        recyclerView.setAdapter(adapter);
+
         add_logs = findViewById(R.id.add_logs_btn);
+        log_label = findViewById(R.id.log_label);
+
+        Typeface custom_font = Typeface.createFromAsset(getApplicationContext().getAssets(), "fonts/Montserrat-Medium.ttf");
+        log_label.setTypeface(custom_font);
+
+
         back = findViewById(R.id.back);
         layoutManager = new LinearLayoutManager(this);
-       recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.getRecycledViewPool().setMaxRecycledViews(0, 0);
+        logspojo = new com.android.ajtprestigecleaning.model.AllLogsPojo.Datum();
+
         add_logs.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -109,21 +147,15 @@ public class LogsActivity extends BaseActivityk {
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                onBackPressed();
                 finish();
             }
         });
 
-
-
-
-
-
-
-
     }
 
     @Override
-    protected int getLayoutResourceId() {
+    public int getLayoutResourceId() {
         return R.layout.activity_logs;
     }
 
@@ -137,9 +169,12 @@ public class LogsActivity extends BaseActivityk {
         window.setGravity(Gravity.BOTTOM);
         dialog.setCancelable(true);
         dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        linearLayout=dialog.findViewById(R.id.choose_file_layout);
-        et_note=dialog.findViewById(R.id.et_note);
-        submit=dialog.findViewById(R.id.submit);
+        linearLayout = dialog.findViewById(R.id.choose_file_layout);
+        et_note = dialog.findViewById(R.id.et_note);
+        submit = dialog.findViewById(R.id.submit);
+        choose_file_layout = dialog.findViewById(R.id.choose_file_layout);
+        log_image = dialog.findViewById(R.id.log_image);
+        log_img_card = dialog.findViewById(R.id.log_img_card);
         linearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -147,21 +182,27 @@ public class LogsActivity extends BaseActivityk {
             }
         });
 
-        submit.setOnClickListener(new View.OnClickListener() {
+        log_img_card.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(et_note.getText().toString().isEmpty()){
-                    et_note.setError("Please enter note");
-                }
-                else{
-                    addLog(datum.getId(),"2",checkList.getId(),et_note.getText().toString(),file);
-
-                    adapter.notifyDataSetChanged();
-                }
+                showimagePicker();
             }
         });
 
 
+        submit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (et_note.getText().toString().isEmpty()) {
+                    et_note.setError("Please enter note");
+                    et_note.requestFocus();
+                } else {
+                    addLog(datum.getId(), "2", tasks.getId(), et_note.getText().toString(), file);
+
+                }
+            }
+        });
         dialog.show();
 
 
@@ -190,13 +231,10 @@ public class LogsActivity extends BaseActivityk {
     }
 
     private void openGallery() {
-
-
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(Intent.createChooser(intent, "Select File"), 2);
-
 
     }
 
@@ -225,10 +263,12 @@ public class LogsActivity extends BaseActivityk {
     private void getCameraImage(Intent data) {
 
         bitmap = (Bitmap) data.getExtras().get("data");
-//image.setImageBitmap(bitmap);
+        //image.setImageBitmap(bitmap);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.JPEG, 90, outputStream);
-
+        choose_file_layout.setVisibility(View.GONE);
+        log_img_card.setVisibility(View.VISIBLE);
+        log_image.setImageBitmap(bitmap);
         file = new File(Environment.getExternalStorageDirectory(), System.currentTimeMillis() + ".jpg");
         FileOutputStream fo;
         try {
@@ -266,10 +306,30 @@ public class LogsActivity extends BaseActivityk {
         if (selectedUri != null) {
             try {
                 bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), selectedUri);
+                choose_file_layout.setVisibility(View.GONE);
+                log_img_card.setVisibility(View.VISIBLE);
+               // log_image.setImageBitmap(bitmap);
+                Glide.with(LogsActivity.this)
+                        .load(bitmap)
+                        .placeholder(R.drawable.demoprofile)
+                        .into(log_image);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent returnIntent = new Intent();
+        returnIntent.putExtra("position", position);
+        returnIntent.putExtra("img_count", img_count);
+        returnIntent.putExtra("txt_count", txt_count);
+        returnIntent.putExtra("checklistId", checklistId);
+        returnIntent.putExtra("taskId", taskId);
+        setResult(Activity.RESULT_OK, returnIntent);
+        finish();
 
     }
 
@@ -352,62 +412,114 @@ public class LogsActivity extends BaseActivityk {
     }
 
 
+    public void addLog(String jobId, String userId, String taskId, String
+            text, File image) {
 
-
-        public void addLog (String jobId, String userId, String taskId, String
-        text, File image){
-
-            HashMap<String, RequestBody> data = new HashMap<>();
-            RequestBody rb_jobId = RequestBody.create(MediaType.parse("text/plain"), jobId);
-            RequestBody rb_userId = RequestBody.create(MediaType.parse("text/plain"), userId);
-            RequestBody rb_taskId = RequestBody.create(MediaType.parse("text/plain"), taskId);
-            RequestBody rb_text = RequestBody.create(MediaType.parse("text/plain"), text);
-
-            data.put("jobId", rb_jobId);
-            data.put("userId", rb_userId);
-            data.put("taskId", rb_taskId);
-            data.put("text", rb_text);
-
-
-
-
-            if (image != null) {
-                RequestBody rb_img = RequestBody.create(MediaType.parse("image/*"), image);
-                data.put("image\"; filename=\"" + image.getName(), rb_img);
-
-            }
-            showLoader(LogsActivity.this);
-            if (isNetworkConnected(LogsActivity.this)) {
-                ApiInterface service = BaseUrl.CreateService(ApiInterface.class);
-                Call<AddLogPojo> call = service.addLogs(data);
-                call.enqueue(new Callback<AddLogPojo>() {
-                    @Override
-                    public void onResponse(Call<AddLogPojo> call, Response<AddLogPojo> response) {
-                        if (response.isSuccessful()) {
-                            hideLoader();
-                            dialog.dismiss();
-
-                        } else {
-                            hideLoader();
-                            Toast.makeText(LogsActivity.this, getApplicationContext().getString(R.string.something_wrong), Toast.LENGTH_LONG).show();
-
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<AddLogPojo> call, Throwable t) {
-                        hideLoader();
-                        Log.d("otp", t.getMessage());
-                        Toast.makeText(LogsActivity.this, "fail", Toast.LENGTH_LONG).show();
-                    }
-                });
-            } else {
-                hideLoader();
-                customDialog(LogsActivity.this, getApplicationContext().getString(R.string.no_internet));
-
-            }
+       /* HashMap<String, RequestBody> data = new HashMap<>();
+        if (image != null) {
+            RequestBody rb_img = RequestBody.create(MediaType.parse("image/*"), image);
+            data.put("image\"; filename=\"" + image.getName(), rb_img);
 
         }
+
+        showProgress();
+        if (isNetworkAvailable()) {
+            ApiInterface service = BaseUrl.demoCreateService(ApiInterface.class);
+            Call<String> call = service.demo(data);
+
+            call.enqueue(new Callback<String>() {
+                @Override
+                public void onResponse(Call<String> call, Response<String> response) {
+                    hideProgress();
+                }
+
+                @Override
+                public void onFailure(Call<String> call, Throwable t) {
+                    hideProgress();
+                }
+            });
+        } else {
+            // hideLoader();
+            hideProgress();
+            customDialog( getApplicationContext().getString(R.string.no_internet),LogsActivity.this);
+
+        }
+*/
+        HashMap<String, RequestBody> data = new HashMap<>();
+        RequestBody rb_jobId = RequestBody.create(MediaType.parse("text/plain"), jobId);
+        RequestBody rb_userId = RequestBody.create(MediaType.parse("text/plain"), userId);
+        RequestBody rb_taskId = RequestBody.create(MediaType.parse("text/plain"), taskId);
+        RequestBody rb_text = RequestBody.create(MediaType.parse("text/plain"), text);
+
+        data.put("jobId", rb_jobId);
+        data.put("userId", rb_userId);
+        data.put("taskId", rb_taskId);
+        data.put("text", rb_text);
+
+
+        if (image != null) {
+            RequestBody rb_img = RequestBody.create(MediaType.parse("image/*"), image);
+            data.put("image\"; filename=\"" + image.getName(), rb_img);
+
+        }
+        // showLoader(LogsActivity.this);
+        showProgress();
+        if (isNetworkAvailable()) {
+            ApiInterface service = BaseUrl.CreateService(ApiInterface.class);
+            Call<AddLogPojo> call = service.addLogs(data);
+            call.enqueue(new Callback<AddLogPojo>() {
+                @Override
+                public void onResponse(Call<AddLogPojo> call, Response<AddLogPojo> response) {
+                    if (response.isSuccessful()) {
+                        // hideLoader();
+                        hideProgress();
+                        dialog.dismiss();
+                        choose_file_layout.setVisibility(View.VISIBLE);
+                        log_img_card.setVisibility(View.GONE);
+                        logspojo.setText(response.body().getData().getText());
+                        logspojo.setImage(response.body().getData().getImage());
+                        logs.add(logspojo);
+                        adapter.addItems(logs);
+                       // allLogsApi();
+                        if (!response.body().getData().getText().toString().isEmpty()) {
+                            txt_count += 1;
+                        } else {
+                            txt_count += 0;
+
+                        }
+
+                        if (!response.body().getData().getImage().toString().isEmpty()) {
+                            img_count += 1;
+                        } else {
+                            img_count += 0;
+
+                        }
+
+
+                    } else {
+                        //hideLoader();
+                        hideProgress();
+                        Toast.makeText(LogsActivity.this, getApplicationContext().getString(R.string.something_wrong), Toast.LENGTH_LONG).show();
+
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<AddLogPojo> call, Throwable t) {
+                    // hideLoader();
+                    hideProgress();
+                    Log.d("otp", t.getMessage());
+                    Toast.makeText(LogsActivity.this, "fail", Toast.LENGTH_LONG).show();
+                }
+            });
+        } else {
+            // hideLoader();
+            hideProgress();
+            customDialog(getApplicationContext().getString(R.string.no_internet), LogsActivity.this);
+
+        }
+
+    }
 
     public void customImagePicker() {
         dialog = new Dialog(this);
@@ -421,6 +533,46 @@ public class LogsActivity extends BaseActivityk {
 
         dialog.show();
 
+
+    }
+
+    public void allLogsApi() {
+        // showLoader(LogsActivity.this);
+        showProgress();
+        if (isNetworkAvailable()) {
+            ApiInterface service = BaseUrl.CreateService(ApiInterface.class);
+            Call<AllLogsPojo> call = service.allLogs("2", datum.getId(), tasks.getId());
+            call.enqueue(new Callback<AllLogsPojo>() {
+                @Override
+                public void onResponse(Call<AllLogsPojo> call, Response<AllLogsPojo> response) {
+                    if (response.isSuccessful()) {
+                        // hideLoader();
+                        hideProgress();
+                        adapter = new TaskLogsAdapter(response.body().getData(), LogsActivity.this);
+                        recyclerView.setAdapter(adapter);
+                    } else {
+                        //hideLoader();
+                        hideProgress();
+                        Toast.makeText(LogsActivity.this, getApplicationContext().getString(R.string.something_wrong), Toast.LENGTH_LONG).show();
+
+
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<AllLogsPojo> call, Throwable t) {
+                    // hideLoader();
+                    hideProgress();
+                    Log.d("otp", t.getMessage());
+                    Toast.makeText(LogsActivity.this, getApplicationContext().getString(R.string.something_wrong), Toast.LENGTH_LONG).show();
+                }
+            });
+        } else {
+            // hideLoader();
+            hideProgress();
+            customDialog(getApplicationContext().getString(R.string.no_internet), LogsActivity.this);
+
+        }
 
     }
 

@@ -1,12 +1,12 @@
 
-package com.android.ajtprestigecleaning.model.JobListPojo;
+package com.android.ajtprestigecleaning.model.JobsPojo;
 
 import java.io.Serializable;
 import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class JobListPojo implements Serializable
+public class JobsPojo implements Serializable
 {
 
     @SerializedName("status")
@@ -15,7 +15,7 @@ public class JobListPojo implements Serializable
     @SerializedName("data")
     @Expose
     private List<Datum> data = null;
-    private final static long serialVersionUID = 5986333633225267367L;
+    private final static long serialVersionUID = 3547332168616272970L;
 
     public Integer getStatus() {
         return status;

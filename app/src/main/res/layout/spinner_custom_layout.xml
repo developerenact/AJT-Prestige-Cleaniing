@@ -11,10 +11,11 @@
         android:paddingLeft="4dp"
         android:paddingRight="4dp"
         android:layout_marginBottom="2dp"
-        android:textColor="@color/black"
+        android:textColor="@color/draweritemcolour"
         android:layout_marginTop="2dp"
         android:layout_gravity="center"
         android:textSize="16sp"
-        android:text="Custom Text" />
+        android:text="Custom Text"
+        />
 
 </LinearLayout>

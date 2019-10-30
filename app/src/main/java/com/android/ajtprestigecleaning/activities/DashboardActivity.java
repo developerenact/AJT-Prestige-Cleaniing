@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -18,9 +19,10 @@ import com.android.ajtprestigecleaning.adapter.JobsAdapter;
 import com.android.ajtprestigecleaning.apiServices.ApiInterface;
 import com.android.ajtprestigecleaning.apiServices.BaseUrl;
 import com.android.ajtprestigecleaning.fragments.JobsFragment;
-import com.android.ajtprestigecleaning.model.JobListPojo.JobListPojo;
 import com.android.ajtprestigecleaning.model.ResetPassword.ResetPassword;
 import com.android.ajtprestigecleaning.util.Constants;
+import com.bumptech.glide.Glide;
+import com.google.android.gms.maps.model.Dash;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.annotation.NonNull;
@@ -29,8 +31,10 @@ import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 
 import com.google.android.material.navigation.NavigationView;
@@ -61,9 +65,9 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class DashboardActivity extends BaseActivityk
+public class DashboardActivity extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-    TextView nav_contactus, nav_terms, nav_privacy, nav_logout, nav_name, nav_change_pass, nav_profile,nav_workhistory,nav_settings,nav_about,nav_help;
+    TextView nav_contactus, nav_terms, nav_privacy, nav_logout, nav_name, nav_change_pass, nav_profile, nav_workhistory, nav_settings, nav_about, nav_help;
     CircleImageView nav_image;
     String login_Username;
     JobsFragment fragment;
@@ -75,7 +79,33 @@ public class DashboardActivity extends BaseActivityk
     Activity activity;
     Dialog dialog;
     HorizontalScrollView horizontalScrollView;
+    boolean doubleBackToExitPressedOnce = false;
+    int pos = 0;
+    Typeface custom_font;
+    public boolean showFirstTime = true;
+    int state = 0;
+    BottomNavigationView bottomNavigationView;
+    String refreshedToken="null";
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    @Override
+    protected void onResume() {
+        super.onResume();
+        login_Username = Paper.book().read(Constants.FIRSTNAME, "john") + " " + Paper.book().read(Constants.LASTNAME, "Doe");
+        nav_name.setText(login_Username);
+        String imageUrl = Paper.book().read(Constants.USERIMAGE);
+        Glide.with(DashboardActivity.this).load(imageUrl.isEmpty() ? "" : imageUrl).placeholder(R.drawable.demoprofile).into(nav_image);
+        unSelectItem(nav_workhistory);
+        unSelectItem(nav_change_pass);
+        unSelectItem(nav_settings);
+        unSelectItem(nav_profile);
+        unSelectItem(nav_about);
+        unSelectItem(nav_help);
+        unSelectItem(nav_terms);
+        unSelectItem(nav_privacy);
+        unSelectItem(nav_contactus);
+    }
 
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -89,40 +119,35 @@ public class DashboardActivity extends BaseActivityk
         nav_change_pass = findViewById(R.id.changepassword);
         alljobs_arrow = findViewById(R.id.alljobs_arrow);
         nav_profile = findViewById(R.id.profile);
-        nav_workhistory=findViewById(R.id.work_history);
-        nav_settings=findViewById(R.id.settings);
-        nav_about=findViewById(R.id.about);
-        nav_help=findViewById(R.id.help);
+        nav_workhistory = findViewById(R.id.work_history);
+        nav_settings = findViewById(R.id.settings);
+        nav_about = findViewById(R.id.about);
+        refreshedToken = FirebaseInstanceId.getInstance().getToken();
+        nav_help = findViewById(R.id.help);
         horizontalScrollView = findViewById(R.id.horizontal_scroll);
+        bottomNavigationView = (BottomNavigationView)
+                findViewById(R.id.bottom_navigation);
         int[] image_array = new int[]{R.mipmap.all_jobs, R.mipmap.in_progess, R.mipmap.upcpming_jobs, R.mipmap.past_jobs, R.mipmap.rejected_jobs, R.mipmap.completed_jobs};
         String[] category_name = new String[]{"All jobs", "In Progress", "Upcoming Jobs", "Past jobs", "Rejected jobs", "Completed jobs"};
         if (manager == null) manager = getSupportFragmentManager();
         final DrawerLayout drawer = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
-        login_Username = Paper.book().read(Constants.FIRSTNAME, "john") + " " + Paper.book().read(Constants.LASTNAME, "Doe");
         nav_name = findViewById(R.id.nav_name);
         nav_image = findViewById(R.id.nav_imageView);
         nav_contactus = findViewById(R.id.contactus);
         nav_terms = findViewById(R.id.terms);
         nav_privacy = findViewById(R.id.privacy);
         nav_logout = findViewById(R.id.logout);
-        Typeface custom_font = Typeface.createFromAsset(getApplicationContext().getAssets(), "fonts/Montserrat-Medium.ttf");
+        custom_font = Typeface.createFromAsset(getApplicationContext().getAssets(), "fonts/Montserrat-Medium.ttf");
         nav_name.setTypeface(custom_font);
-        nav_name.setText(login_Username);
-        String imageUrl = Paper.book().read(Constants.USERIMAGE);
-        if (!imageUrl.isEmpty()) {
-            Picasso.with(getApplicationContext()).load(imageUrl).placeholder(R.drawable.demoprofile).error(R.drawable.demoprofile).into(nav_image);
-        } else {
-            Picasso.with(getApplicationContext()).load(R.drawable.demoprofile).into(nav_image);
 
-        }
 
-        ArrayList<TextView> textViewList = new ArrayList<>();
-        ArrayList<ImageView> category_imgview = new ArrayList<>();
+        final ArrayList<TextView> textViewList = new ArrayList<>();
+        final ArrayList<ImageView> category_imgview = new ArrayList<>();
         ArrayList<View> category_view = new ArrayList<>();
         for (int i = 0; i < category_name.length; i++) {
             View main_view = LayoutInflater.from(this).inflate(R.layout.categoty_layout, null);
-            LinearLayout categoryMainLayout = main_view.findViewById(R.id.categoryMainLayout);
+            //  LinearLayout categoryMainLayout = main_view.findViewById(R.id.categoryMainLayout);
 
             final ImageView cat_img = main_view.findViewById(R.id.img);
             TextView cat_text = main_view.findViewById(R.id.text);
@@ -138,7 +163,23 @@ public class DashboardActivity extends BaseActivityk
             main_view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    fragment.getjobs(finalI, activity);
+                    fragment.getjobs(finalI, DashboardActivity.this);
+                    state = finalI;
+                    for (TextView tempItemView : textViewList) {
+                        if (textViewList.get(finalI) == tempItemView) {
+                            tempItemView.setTextColor(getResources().getColor(R.color.white));
+                        } else {
+                            tempItemView.setTextColor(getResources().getColor(R.color.unselectcategory));
+                        }
+                    }
+
+                    for (ImageView tempimageView : category_imgview) {
+                        if (category_imgview.get(finalI) == tempimageView) {
+                            tempimageView.setBackground(getResources().getDrawable(R.drawable.selected_circle_bg));
+                        } else {
+                            tempimageView.setBackground(getResources().getDrawable(R.drawable.circle_bg));
+                        }
+                    }
 
 
                 }
@@ -156,7 +197,6 @@ public class DashboardActivity extends BaseActivityk
             @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
             public void onClick(View v) {
-                selectItem(nav_profile);
                 unSelectItem(nav_workhistory);
                 unSelectItem(nav_change_pass);
                 unSelectItem(nav_settings);
@@ -165,6 +205,7 @@ public class DashboardActivity extends BaseActivityk
                 unSelectItem(nav_help);
                 unSelectItem(nav_terms);
                 unSelectItem(nav_privacy);
+                selectItem(nav_profile);
                 Intent intent = new Intent(DashboardActivity.this, UpdateProfileActivity.class);
                 startActivity(intent);
                 drawer.closeDrawer(GravityCompat.START);
@@ -177,7 +218,6 @@ public class DashboardActivity extends BaseActivityk
             @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
             public void onClick(View v) {
-                selectItem(nav_contactus);
                 unSelectItem(nav_workhistory);
                 unSelectItem(nav_change_pass);
                 unSelectItem(nav_settings);
@@ -186,6 +226,7 @@ public class DashboardActivity extends BaseActivityk
                 unSelectItem(nav_help);
                 unSelectItem(nav_terms);
                 unSelectItem(nav_privacy);
+                selectItem(nav_contactus);
                 Intent intent = new Intent(DashboardActivity.this, ContactUsActivity.class);
                 startActivity(intent);
                 drawer.closeDrawer(GravityCompat.START);
@@ -197,7 +238,6 @@ public class DashboardActivity extends BaseActivityk
             @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
             public void onClick(View v) {
-                selectItem(nav_change_pass);
                 unSelectItem(nav_workhistory);
                 unSelectItem(nav_profile);
                 unSelectItem(nav_settings);
@@ -206,6 +246,7 @@ public class DashboardActivity extends BaseActivityk
                 unSelectItem(nav_help);
                 unSelectItem(nav_terms);
                 unSelectItem(nav_privacy);
+                selectItem(nav_change_pass);
                 Intent intent = new Intent(DashboardActivity.this, ChangePasswordActivity.class);
                 startActivity(intent);
                 drawer.closeDrawer(GravityCompat.START);
@@ -217,7 +258,6 @@ public class DashboardActivity extends BaseActivityk
             @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
             public void onClick(View v) {
-                selectItem(nav_workhistory);
                 unSelectItem(nav_profile);
                 unSelectItem(nav_settings);
                 unSelectItem(nav_contactus);
@@ -226,6 +266,7 @@ public class DashboardActivity extends BaseActivityk
                 unSelectItem(nav_help);
                 unSelectItem(nav_terms);
                 unSelectItem(nav_privacy);
+                selectItem(nav_workhistory);
 
 
             }
@@ -235,7 +276,6 @@ public class DashboardActivity extends BaseActivityk
             @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
             public void onClick(View v) {
-                selectItem(nav_settings);
                 unSelectItem(nav_profile);
                 unSelectItem(nav_workhistory);
                 unSelectItem(nav_change_pass);
@@ -244,6 +284,7 @@ public class DashboardActivity extends BaseActivityk
                 unSelectItem(nav_help);
                 unSelectItem(nav_terms);
                 unSelectItem(nav_privacy);
+                selectItem(nav_settings);
 
 
             }
@@ -253,7 +294,6 @@ public class DashboardActivity extends BaseActivityk
             @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
             public void onClick(View v) {
-                selectItem(nav_about);
                 unSelectItem(nav_profile);
                 unSelectItem(nav_workhistory);
                 unSelectItem(nav_contactus);
@@ -262,6 +302,12 @@ public class DashboardActivity extends BaseActivityk
                 unSelectItem(nav_help);
                 unSelectItem(nav_terms);
                 unSelectItem(nav_privacy);
+                selectItem(nav_about);
+                Intent intent = new Intent(DashboardActivity.this, TermsActivity.class);
+                intent.putExtra("url", "https://enacteservices.net/AJT/POST/webLinks/aboutUs.php");
+                intent.putExtra("title", "About");
+                startActivity(intent);
+                drawer.closeDrawer(GravityCompat.START);
 
 
             }
@@ -271,7 +317,6 @@ public class DashboardActivity extends BaseActivityk
             @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
             public void onClick(View v) {
-                selectItem(nav_help);
                 unSelectItem(nav_profile);
                 unSelectItem(nav_workhistory);
                 unSelectItem(nav_contactus);
@@ -280,12 +325,16 @@ public class DashboardActivity extends BaseActivityk
                 unSelectItem(nav_about);
                 unSelectItem(nav_terms);
                 unSelectItem(nav_privacy);
+                selectItem(nav_help);
+                Intent intent = new Intent(DashboardActivity.this, TermsActivity.class);
+                intent.putExtra("url", "https://enacteservices.net/AJT/POST/webLinks/faq.php");
+                intent.putExtra("title", "Help/FAQ");
+                startActivity(intent);
+                drawer.closeDrawer(GravityCompat.START);
 
 
             }
         });
-
-
 
 
         label_alljobs.setOnClickListener(new View.OnClickListener() {
@@ -323,7 +372,6 @@ public class DashboardActivity extends BaseActivityk
             @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
             public void onClick(View v) {
-                selectItem(nav_terms);
                 unSelectItem(nav_workhistory);
                 unSelectItem(nav_change_pass);
                 unSelectItem(nav_settings);
@@ -332,7 +380,10 @@ public class DashboardActivity extends BaseActivityk
                 unSelectItem(nav_help);
                 unSelectItem(nav_profile);
                 unSelectItem(nav_privacy);
+                selectItem(nav_terms);
                 Intent intent = new Intent(DashboardActivity.this, TermsActivity.class);
+                intent.putExtra("url", "https://enacteservices.net/AJT/POST/webLinks/terms.php");
+                intent.putExtra("title", "Terms");
                 startActivity(intent);
                 drawer.closeDrawer(GravityCompat.START);
 
@@ -344,7 +395,6 @@ public class DashboardActivity extends BaseActivityk
             @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
             public void onClick(View v) {
-                selectItem(nav_privacy);
                 unSelectItem(nav_workhistory);
                 unSelectItem(nav_change_pass);
                 unSelectItem(nav_settings);
@@ -353,7 +403,10 @@ public class DashboardActivity extends BaseActivityk
                 unSelectItem(nav_help);
                 unSelectItem(nav_terms);
                 unSelectItem(nav_profile);
-                Intent intent = new Intent(DashboardActivity.this, PrivacyActivity.class);
+                selectItem(nav_privacy);
+                Intent intent = new Intent(DashboardActivity.this, TermsActivity.class);
+                intent.putExtra("url", "https://enacteservices.net/AJT/POST/webLinks/policy.php");
+                intent.putExtra("title", "Privacy Policy");
                 startActivity(intent);
                 drawer.closeDrawer(GravityCompat.START);
             }
@@ -368,14 +421,12 @@ public class DashboardActivity extends BaseActivityk
             }
         });
 
+
         fragment = new JobsFragment();
-        manager.beginTransaction().add(R.id.frame, fragment).commit();
-        fragment.getjobs(0, activity);
-
-
-        BottomNavigationView bottomNavigationView = (BottomNavigationView)
-                findViewById(R.id.bottom_navigation);
-
+        manager.beginTransaction().replace(R.id.frame, fragment).commit();
+        if (fragment != null) {
+            fragment.getjobs(0, DashboardActivity.this);
+        }
 
         bottomNavigationView.setOnNavigationItemSelectedListener(
                 new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -384,9 +435,10 @@ public class DashboardActivity extends BaseActivityk
                         item.setChecked(true);
                         switch (item.getItemId()) {
                             case R.id.jobs:
-                                fragment = new JobsFragment();
                                 manager.beginTransaction().replace(R.id.frame, fragment).commit();
-                                fragment.getjobs(0, activity);
+                                if (fragment != null) {
+                                    fragment.getjobs(0, DashboardActivity.this);
+                                }
                                 break;
                             case R.id.reports:
                                 break;
@@ -399,33 +451,27 @@ public class DashboardActivity extends BaseActivityk
     }
 
     @Override
-    protected int getLayoutResourceId() {
+    public int getLayoutResourceId() {
         return R.layout.activity_dashboard;
     }
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage("Are you sure you want to exit?")
-                    .setCancelable(false)
-                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                        @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
-                        public void onClick(DialogInterface dialog, int id) {
-                            finishAffinity();
-                        }
-                    })
-                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            dialog.cancel();
-                        }
-                    });
-            AlertDialog alert = builder.create();
-            alert.show();
+        if (doubleBackToExitPressedOnce) {
+            super.onBackPressed();
+            return;
         }
+
+        this.doubleBackToExitPressedOnce = true;
+        Toast.makeText(this, "Tap again to exit", Toast.LENGTH_SHORT).show();
+
+        new Handler().postDelayed(new Runnable() {
+
+            @Override
+            public void run() {
+                doubleBackToExitPressedOnce = false;
+            }
+        }, 2000);
     }
 
 
@@ -467,6 +513,7 @@ public class DashboardActivity extends BaseActivityk
         dialog.setContentView(R.layout.logout_dialog);
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         TextView text = (TextView) dialog.findViewById(R.id.ios_text_logout);
+        text.setTypeface(custom_font);
         TextView dialogButton = (TextView) dialog.findViewById(R.id.ios_cancel);
         dialogButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -474,7 +521,6 @@ public class DashboardActivity extends BaseActivityk
                 dialog.dismiss();
             }
         });
-
         TextView dialogButton_logout = (TextView) dialog.findViewById(R.id.ios_logout);
         dialogButton_logout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -518,25 +564,31 @@ public class DashboardActivity extends BaseActivityk
 
 
     public void userLogout() {
-        showLoader(DashboardActivity.this);
-        if (isNetworkConnected(DashboardActivity.this)) {
+        // showLoader(DashboardActivity.this);
+        showProgress();
+        if (isNetworkAvailable()) {
             ApiInterface service = BaseUrl.CreateService(ApiInterface.class);
-            Call<JsonObject> call = service.logout(Paper.book().read(Constants.USERID, ""), FirebaseInstanceId.getInstance().getToken());
+            Call<JsonObject> call = service.logout(Paper.book().read(Constants.USERID, ""), refreshedToken);
             call.enqueue(new Callback<JsonObject>() {
                 @Override
                 public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
                     if (response.isSuccessful()) {
-                        hideLoader();
+                        //  hideLoader();
+                        hideProgress();
                         dialog.dismiss();
                         Paper.book().delete(Constants.ISLOGIN);
                         Paper.book().delete(Constants.USERNAME);
                         Paper.book().delete(Constants.EMAIL);
                         Paper.book().delete(Constants.USERID);
+                        Paper.book().delete(Constants.FIRSTNAME);
+                        Paper.book().delete(Constants.LASTNAME);
+                        Paper.book().delete(Constants.USERIMAGE);
                         Intent intent = new Intent(DashboardActivity.this, LoginActivity.class);
                         startActivity(intent);
                         finish();
                     } else {
-                        hideLoader();
+                        // hideLoader();
+                        hideProgress();
                         Toast.makeText(DashboardActivity.this, getApplicationContext().getString(R.string.something_wrong), Toast.LENGTH_LONG).show();
 
 
@@ -545,14 +597,16 @@ public class DashboardActivity extends BaseActivityk
 
                 @Override
                 public void onFailure(Call<JsonObject> call, Throwable t) {
-                    hideLoader();
+                    // hideLoader();
+                    hideProgress();
                     Log.d("otp", t.getMessage());
                     Toast.makeText(DashboardActivity.this, getApplicationContext().getString(R.string.something_wrong), Toast.LENGTH_LONG).show();
                 }
             });
         } else {
-            hideLoader();
-            customDialog(DashboardActivity.this, getApplicationContext().getString(R.string.no_internet));
+            //  hideLoader();
+            hideProgress();
+            customDialog(getApplicationContext().getString(R.string.no_internet), DashboardActivity.this);
 
         }
 
@@ -569,9 +623,13 @@ public class DashboardActivity extends BaseActivityk
     public void unSelectItem(TextView textView) {
         textView.setBackground(null);
         textView.setTextColor(getResources().getColor(R.color.draweritemcolour));
-       // textView.setPadding(12, 12, 64, 12);
+        // textView.setPadding(12, 12, 64, 12);
         textView.getCompoundDrawables()[0].setTint(getResources().getColor(R.color.draweritemcolour));
 
+    }
+
+    public void updateadapter() {
+        fragment.update(state);
     }
 
 

@@ -32,6 +32,8 @@
                 android:layout_height="wrap_content"
                 app:layout_constraintRight_toRightOf="parent"
                 app:tabIndicatorFullWidth="false"
+                app:tabPaddingBottom="-16dp"
+                android:layout_marginTop="4dp"
                 app:tabTextAppearance="@style/CustomTextAppearanceTab"
                 app:layout_constraintTop_toTopOf="parent"
                 app:tabIndicatorColor="@color/underlineblack"
@@ -50,7 +52,7 @@
             </com.google.android.material.tabs.TabLayout>
 
 
-            <androidx.viewpager.widget.ViewPager
+            <com.android.ajtprestigecleaning.util.CustomViewPager
                 android:id="@+id/viewpager"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
@@ -61,7 +63,7 @@
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/logo">
 
-            </androidx.viewpager.widget.ViewPager>
+            </com.android.ajtprestigecleaning.util.CustomViewPager>
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

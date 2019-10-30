@@ -13,7 +13,7 @@ public class UpdateJobStatusPojo implements Serializable
     private Integer status;
     @SerializedName("data")
     @Expose
-    private Data data;
+    private String data;
     private final static long serialVersionUID = 6630877678955576105L;
 
     public Integer getStatus() {
@@ -24,11 +24,11 @@ public class UpdateJobStatusPojo implements Serializable
         this.status = status;
     }
 
-    public Data getData() {
+    public String getData() {
         return data;
     }
 
-    public void setData(Data data) {
+    public void setData(String data) {
         this.data = data;
     }
 
