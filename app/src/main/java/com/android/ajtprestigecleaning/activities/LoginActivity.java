@@ -56,6 +56,27 @@ public class LoginActivity extends BaseActivity {
         viewPager.setPageEnbled(false);
         tabLayout.setupWithViewPager(viewPager);
 
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                if(position==1)
+                {
+                   SignUpFragment signUpFragment= (SignUpFragment) pageAdapter.instantiateItem(viewPager,position);
+                   signUpFragment.refreshScroll();
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+
     }
 
     @Override
