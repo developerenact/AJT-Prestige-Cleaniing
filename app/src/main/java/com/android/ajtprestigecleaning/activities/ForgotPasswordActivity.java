@@ -96,7 +96,7 @@ public class ForgotPasswordActivity extends BaseActivity {
                     if (response.isSuccessful()) {
                      // hideLoader();
                         hideProgress();
-                        customDialog( response.body().getMessage(),ForgotPasswordActivity.this);
+                        forgotPassCustomDialog( response.body().getMessage(),ForgotPasswordActivity.this);
                     } else {
                        // hideLoader();
                        hideProgress();

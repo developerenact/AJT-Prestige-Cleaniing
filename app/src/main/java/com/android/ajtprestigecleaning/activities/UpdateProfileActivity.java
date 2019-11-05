@@ -64,7 +64,6 @@ public class UpdateProfileActivity extends BaseActivity {
     File file;
     boolean permissionStatus = false;
     TextView toolbar_label;
-    CardView btn_card;
     DialogInterface dialogInterface;
     @Override
     public void onBackPressed() {
@@ -88,7 +87,6 @@ public class UpdateProfileActivity extends BaseActivity {
         et_phone = findViewById(R.id.et_update_phone);
         update_user = findViewById(R.id.updateuser);
         toolbar_label = findViewById(R.id.toolbar_label);
-        btn_card=findViewById(R.id.button_card);
         Typeface custom_font = Typeface.createFromAsset(getApplicationContext().getAssets(), "fonts/Montserrat-Medium.ttf");
         toolbar_label.setTypeface(custom_font);
         edit = findViewById(R.id.edt_btn);
@@ -118,7 +116,7 @@ public class UpdateProfileActivity extends BaseActivity {
                 profile_img.setEnabled(true);
                 update_user.setEnabled(true);
                 edit.setVisibility(View.GONE);
-                btn_card.setVisibility(View.VISIBLE);
+                update_user.setVisibility(View.VISIBLE);
             }
         });
 
@@ -388,7 +386,7 @@ public class UpdateProfileActivity extends BaseActivity {
                         et_phone.setEnabled(false);
                         profile_img.setEnabled(false);
                         update_user.setEnabled(false);
-                        btn_card.setVisibility(View.GONE);
+                        update_user.setVisibility(View.GONE);
                         if (!response.body().getData().getImage().isEmpty()) {
                             Glide.with(UpdateProfileActivity.this)
                                     .load(bitmap == null ? response.body().getData().getImage() : bitmap)

@@ -320,7 +320,8 @@ public class JobDetailActivity extends BaseActivity implements AdapterView.OnIte
                 mTimePicker = new TimePickerDialog(JobDetailActivity.this, new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
-                        et_from.setText(selectedHour + "  " + ":" + "  " + selectedMinute);
+                       // et_from.setText(selectedHour + "  " + ":" + "  " + selectedMinute);
+                        et_from.setText(String.format("%02d  :  %02d", selectedHour, selectedMinute));
                         starttime = day + "-" + month + "-" + year + " " + selectedHour + ":" + selectedMinute;
 
                         final Calendar calendar = Calendar.getInstance();
@@ -357,7 +358,8 @@ public class JobDetailActivity extends BaseActivity implements AdapterView.OnIte
                 mTimePicker = new TimePickerDialog(JobDetailActivity.this, new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
-                        et_to.setText(selectedHour + "  " + ":" + "  " + selectedMinute);
+                       // et_to.setText(selectedHour + "  " + ":" + "  " + selectedMinute);
+                        et_to.setText(String.format("%02d  :  %02d", selectedHour, selectedMinute));
                         endtime = day + "-" + month + "-" + year + " " + selectedHour + ":" + selectedMinute;
 
 

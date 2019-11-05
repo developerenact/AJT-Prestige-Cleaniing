@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -47,6 +48,7 @@ public class SignUpFragment extends Fragment {
     TextView label_member,lebel_info,label_welcome;
     EditText et_email, et_username, et_pass, et_phone,et_fname,et_lname;
     ImageView signup;
+    ScrollView scrollView;
 
     public SignUpFragment() {
         // Required empty public constructor
@@ -68,6 +70,7 @@ public class SignUpFragment extends Fragment {
         et_fname = view.findViewById(R.id.et_fname);
         et_lname = view.findViewById(R.id.et_lname);
         signup = view.findViewById(R.id.signup);
+        scrollView=view.findViewById(R.id.scroll);
         Typeface custom_font = Typeface.createFromAsset(getContext().getAssets(), "fonts/Montserrat-Medium.ttf");
         label_member.setTypeface(custom_font);
 
@@ -193,6 +196,12 @@ public class SignUpFragment extends Fragment {
             Log.e("MD5", e.getLocalizedMessage());
             return null;
         }
+    }
+
+    public void refreshScroll(){
+      if(scrollView!=null)  scrollView.fullScroll(View.FOCUS_UP);
+
+
     }
 
 

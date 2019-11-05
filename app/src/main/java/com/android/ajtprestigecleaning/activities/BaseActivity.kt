@@ -7,6 +7,7 @@ import android.app.Dialog
 import android.app.ProgressDialog
 import android.content.Context
 import android.content.DialogInterface
+import android.content.Intent
 import android.content.IntentFilter
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -192,6 +193,28 @@ abstract class BaseActivity : AppCompatActivity() {
 
     }
 */
+
+
+    fun forgotPassCustomDialog(message: String, context: Context) {
+
+        val dialog = Dialog(context)
+        dialog.setContentView(R.layout.forgotpass_dialog);
+        dialog.getWindow().setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT));
+        dialog.setTitle("Title...");
+        dialog.setCancelable(false)
+        val ok = dialog.findViewById(R.id.ios_ok) as TextView
+        val text = dialog.findViewById(R.id.ios_text_logout) as TextView
+        text.text = message
+
+        ok.setOnClickListener {
+            finish()
+        }
+
+        dialog.show()
+
+    }
+
+
 
 
 }

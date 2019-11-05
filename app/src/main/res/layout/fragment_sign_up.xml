@@ -10,8 +10,10 @@
     android:background="@color/white">
 
     <ScrollView
+        android:id="@+id/scroll"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:scrollbars="none"
         android:paddingBottom="8dp"
         android:fillViewport="true">
 
@@ -212,30 +214,24 @@
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/card"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:cardCornerRadius="8dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginRight="2dp"
-                card_view:cardElevation="4dp"
-                android:elevation="4dp"
-                android:layout_marginBottom="8dp"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/linear_layout">
 
                 <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/signup"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:padding="20dp"
+                    android:padding="24dp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginRight="2dp"
+                    android:background="@drawable/shadow_background"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/linear_layout"
                     app:srcCompat="@mipmap/arrow" />
 
-            </com.google.android.material.card.MaterialCardView>
+
 
             <View
-                app:layout_constraintTop_toBottomOf="@id/card"
+                app:layout_constraintTop_toBottomOf="@id/signup"
                 app:layout_constraintLeft_toLeftOf="parent"
                 android:layout_width="match_parent"
                 android:layout_marginTop="4dp"

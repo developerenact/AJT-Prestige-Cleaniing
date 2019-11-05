@@ -11,9 +11,12 @@ import androidx.viewpager.widget.ViewPager;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.AssetManager;
+import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
@@ -25,6 +28,7 @@ import com.android.ajtprestigecleaning.R;
 import com.android.ajtprestigecleaning.fragments.SignInFragment;
 import com.android.ajtprestigecleaning.fragments.SignUpFragment;
 import com.android.ajtprestigecleaning.util.CustomViewPager;
+import com.android.ajtprestigecleaning.util.TabLayoutEx;
 import com.google.android.material.tabs.TabLayout;
 
 public class LoginActivity extends BaseActivity {
@@ -37,7 +41,7 @@ public class LoginActivity extends BaseActivity {
     FragmentTransaction fragmentTransaction;
     int pos;
 
-    TabLayout tabLayout;
+    TabLayoutEx tabLayout;
     CustomViewPager viewPager;
     PagerAdapter pageAdapter;
 
@@ -55,6 +59,8 @@ public class LoginActivity extends BaseActivity {
         viewPager.setAdapter(pageAdapter);
         viewPager.setPageEnbled(false);
         tabLayout.setupWithViewPager(viewPager);
+        tabLayout.setIndicatorWidth(50);
+        changeTabsFont();
 
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
@@ -64,11 +70,13 @@ public class LoginActivity extends BaseActivity {
 
             @Override
             public void onPageSelected(int position) {
+
                 if(position==1)
                 {
                    SignUpFragment signUpFragment= (SignUpFragment) pageAdapter.instantiateItem(viewPager,position);
                    signUpFragment.refreshScroll();
                 }
+
             }
 
             @Override
@@ -98,4 +106,23 @@ public class LoginActivity extends BaseActivity {
         }
 
     }
+
+    private void changeTabsFont() {
+        ViewGroup vg = (ViewGroup) tabLayout.getChildAt(0);
+        int tabsCount = vg.getChildCount();
+        for (int j = 0; j < tabsCount; j++) {
+            ViewGroup vgTab = (ViewGroup) vg.getChildAt(j);
+            int tabChildsCount = vgTab.getChildCount();
+            for (int i = 0; i < tabChildsCount; i++) {
+                View tabViewChild = vgTab.getChildAt(i);
+                if (tabViewChild instanceof TextView) {
+                    AssetManager mgr = getApplicationContext().getAssets();
+                    Typeface tf = Typeface.createFromAsset(mgr, "fonts/Montserrat-Medium.ttf");//Font file in /assets
+                    ((TextView) tabViewChild).setTypeface(tf);
+                }
+            }
+        }
+    }
+
+
 }
