@@ -189,27 +189,10 @@
             android:text="Change Password"/>
 
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/settings"
-            app:layout_constraintTop_toBottomOf="@id/changepassword"
-            android:layout_width="wrap_content"
-            android:paddingTop="4dp"
-            android:paddingBottom="4dp"
-            android:layout_marginTop="8dp"
-            android:minWidth="150dp"
-            android:textSize="14sp"
-            android:paddingRight="12dp"
-            app:layout_constraintLeft_toLeftOf="parent"
-            android:drawableLeft="@mipmap/settings"
-            android:paddingLeft="8dp"
-            android:textColor="@color/draweritemcolour"
-            android:drawablePadding="12dp"
-            android:layout_height="wrap_content"
-            android:text="Settings"/>
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/contactus"
-            app:layout_constraintTop_toBottomOf="@id/settings"
+            app:layout_constraintTop_toBottomOf="@id/changepassword"
             android:layout_width="wrap_content"
             android:minWidth="150dp"
             android:paddingTop="4dp"

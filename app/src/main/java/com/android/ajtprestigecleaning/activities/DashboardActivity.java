@@ -47,6 +47,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentManager;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.view.View;
 import android.view.Window;
@@ -82,6 +83,7 @@ public class DashboardActivity extends BaseActivity
     boolean doubleBackToExitPressedOnce = false;
     int pos = 0;
     Typeface custom_font;
+    SwipeRefreshLayout swipeRefreshLayout;
     public boolean showFirstTime = true;
     int state = 0;
     BottomNavigationView bottomNavigationView;
@@ -96,7 +98,6 @@ public class DashboardActivity extends BaseActivity
         Glide.with(DashboardActivity.this).load(imageUrl.isEmpty() ? "" : imageUrl).placeholder(R.drawable.demoprofile).into(nav_image);
         unSelectItem(nav_workhistory);
         unSelectItem(nav_change_pass);
-        unSelectItem(nav_settings);
         unSelectItem(nav_profile);
         unSelectItem(nav_about);
         unSelectItem(nav_help);
@@ -112,6 +113,7 @@ public class DashboardActivity extends BaseActivity
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         frameLayout = findViewById(R.id.frame);
+        swipeRefreshLayout=findViewById(R.id.pullToRefresh);
         checkpermission();
         hsvLayout = findViewById(R.id.hsvLinearLayout);
         activity = DashboardActivity.this;
@@ -120,7 +122,6 @@ public class DashboardActivity extends BaseActivity
         alljobs_arrow = findViewById(R.id.alljobs_arrow);
         nav_profile = findViewById(R.id.profile);
         nav_workhistory = findViewById(R.id.work_history);
-        nav_settings = findViewById(R.id.settings);
         nav_about = findViewById(R.id.about);
         refreshedToken = FirebaseInstanceId.getInstance().getToken();
         nav_help = findViewById(R.id.help);
@@ -141,6 +142,13 @@ public class DashboardActivity extends BaseActivity
         custom_font = Typeface.createFromAsset(getApplicationContext().getAssets(), "fonts/Montserrat-Medium.ttf");
         nav_name.setTypeface(custom_font);
 
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                fragment.getjobs(state, DashboardActivity.this);
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        });
 
         final ArrayList<TextView> textViewList = new ArrayList<>();
         final ArrayList<ImageView> category_imgview = new ArrayList<>();
@@ -163,8 +171,28 @@ public class DashboardActivity extends BaseActivity
             main_view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    fragment.getjobs(finalI, DashboardActivity.this);
-                    state = finalI;
+                    switch (finalI){
+                        case 0:
+                            state=0;
+                            break;
+                        case 1:
+                            state=Constants.INPROGRESS;
+                            break;
+                        case 2:
+                            state=Constants.UPCOMING;
+                            break;
+                        case 3:
+                            state=Constants.PAST;
+                            break;
+                        case 4:
+                            state=Constants.REJECTED;
+                            break;
+                        case 5:
+                            state=Constants.COMPLETED;
+                            break;
+                    }
+                    fragment.getjobs(state, DashboardActivity.this);
+                   // state = finalI;
                     for (TextView tempItemView : textViewList) {
                         if (textViewList.get(finalI) == tempItemView) {
                             tempItemView.setTextColor(getResources().getColor(R.color.white));
@@ -199,7 +227,6 @@ public class DashboardActivity extends BaseActivity
             public void onClick(View v) {
                 unSelectItem(nav_workhistory);
                 unSelectItem(nav_change_pass);
-                unSelectItem(nav_settings);
                 unSelectItem(nav_contactus);
                 unSelectItem(nav_about);
                 unSelectItem(nav_help);
@@ -220,7 +247,6 @@ public class DashboardActivity extends BaseActivity
             public void onClick(View v) {
                 unSelectItem(nav_workhistory);
                 unSelectItem(nav_change_pass);
-                unSelectItem(nav_settings);
                 unSelectItem(nav_profile);
                 unSelectItem(nav_about);
                 unSelectItem(nav_help);
@@ -240,7 +266,6 @@ public class DashboardActivity extends BaseActivity
             public void onClick(View v) {
                 unSelectItem(nav_workhistory);
                 unSelectItem(nav_profile);
-                unSelectItem(nav_settings);
                 unSelectItem(nav_contactus);
                 unSelectItem(nav_about);
                 unSelectItem(nav_help);
@@ -259,7 +284,6 @@ public class DashboardActivity extends BaseActivity
             @Override
             public void onClick(View v) {
                 unSelectItem(nav_profile);
-                unSelectItem(nav_settings);
                 unSelectItem(nav_contactus);
                 unSelectItem(nav_about);
                 unSelectItem(nav_change_pass);
@@ -267,28 +291,13 @@ public class DashboardActivity extends BaseActivity
                 unSelectItem(nav_terms);
                 unSelectItem(nav_privacy);
                 selectItem(nav_workhistory);
-
-
-            }
-        });
-
-        nav_settings.setOnClickListener(new View.OnClickListener() {
-            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-            @Override
-            public void onClick(View v) {
-                unSelectItem(nav_profile);
-                unSelectItem(nav_workhistory);
-                unSelectItem(nav_change_pass);
-                unSelectItem(nav_contactus);
-                unSelectItem(nav_about);
-                unSelectItem(nav_help);
-                unSelectItem(nav_terms);
-                unSelectItem(nav_privacy);
-                selectItem(nav_settings);
-
+                Intent intent = new Intent(DashboardActivity.this, WorkHistoryActivity.class);
+                startActivity(intent);
+                drawer.closeDrawer(GravityCompat.START);
 
             }
         });
+
 
         nav_about.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -297,7 +306,6 @@ public class DashboardActivity extends BaseActivity
                 unSelectItem(nav_profile);
                 unSelectItem(nav_workhistory);
                 unSelectItem(nav_contactus);
-                unSelectItem(nav_settings);
                 unSelectItem(nav_change_pass);
                 unSelectItem(nav_help);
                 unSelectItem(nav_terms);
@@ -320,7 +328,6 @@ public class DashboardActivity extends BaseActivity
                 unSelectItem(nav_profile);
                 unSelectItem(nav_workhistory);
                 unSelectItem(nav_contactus);
-                unSelectItem(nav_settings);
                 unSelectItem(nav_change_pass);
                 unSelectItem(nav_about);
                 unSelectItem(nav_terms);
@@ -374,7 +381,6 @@ public class DashboardActivity extends BaseActivity
             public void onClick(View v) {
                 unSelectItem(nav_workhistory);
                 unSelectItem(nav_change_pass);
-                unSelectItem(nav_settings);
                 unSelectItem(nav_contactus);
                 unSelectItem(nav_about);
                 unSelectItem(nav_help);
@@ -397,7 +403,6 @@ public class DashboardActivity extends BaseActivity
             public void onClick(View v) {
                 unSelectItem(nav_workhistory);
                 unSelectItem(nav_change_pass);
-                unSelectItem(nav_settings);
                 unSelectItem(nav_contactus);
                 unSelectItem(nav_about);
                 unSelectItem(nav_help);
@@ -568,7 +573,7 @@ public class DashboardActivity extends BaseActivity
         showProgress();
         if (isNetworkAvailable()) {
             ApiInterface service = BaseUrl.CreateService(ApiInterface.class);
-            Call<JsonObject> call = service.logout(Paper.book().read(Constants.USERID, ""), refreshedToken);
+            Call<JsonObject> call = service.logout(Paper.book().read(Constants.USERID, "2"), refreshedToken);
             call.enqueue(new Callback<JsonObject>() {
                 @Override
                 public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {

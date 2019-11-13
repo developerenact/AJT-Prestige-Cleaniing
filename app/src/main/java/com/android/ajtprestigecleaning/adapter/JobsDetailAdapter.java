@@ -49,59 +49,53 @@ public class JobsDetailAdapter extends RecyclerView.Adapter<JobsDetailAdapter.Vi
             @Override
             public void onClick(View view) {
 
-                if(isopen[0]){
+                if (isopen[0]) {
                     holder.subitems.setVisibility(View.VISIBLE);
                     holder.plus.setImageResource(R.mipmap.small_minus);
-                    isopen[0] =false;
-                }
-                else{
+                    isopen[0] = false;
+                } else {
                     holder.subitems.setVisibility(View.GONE);
                     holder.plus.setImageResource(R.mipmap.small_plus);
-                    isopen[0] =true;
+                    isopen[0] = true;
                 }
 
             }
         });
 
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        try{
+        try {
             holder.subitems.removeAllViews();
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
 
         }
 
         for (int i = 0; i < data.getCheckList().get(position).getTasks().size(); i++) {
             View view = inflater.inflate(R.layout.sub_timeline_itemview, null, false);
             TextView name = view.findViewById(R.id.sub_task);
-            ImageView checkimg=view.findViewById(R.id.uncheck_circle);
+            ImageView checkimg = view.findViewById(R.id.uncheck_circle);
             TextView tv_note_count = view.findViewById(R.id.tv_text_count);
             TextView tv_camera_count = view.findViewById(R.id.tv_img_count);
-            LinearLayoutCompat camera_count = view.findViewById(R.id.camera_count);
-            LinearLayoutCompat note_count = view.findViewById(R.id.note_count);
+            LinearLayoutCompat camera_count = view.findViewById(R.id.unread_layout);
+            LinearLayoutCompat note_count = view.findViewById(R.id.unread_layout2);
             name.setText(data.getCheckList().get(position).getTasks().get(i).getName());
-            if(data.getCheckList().get(position).getTasks().get(i).getStatus().equals("1")){
+            if (data.getCheckList().get(position).getTasks().get(i).getStatus().equals("1")) {
                 checkimg.setImageResource(R.mipmap.checked_circle);
-            }
-            else{
+            } else {
                 checkimg.setImageResource(R.mipmap.uncheck_circle);
 
             }
 
 
-
-            if(!data.getCheckList().get(position).getTasks().get(i).getImageCount().isEmpty()){
+            if (!data.getCheckList().get(position).getTasks().get(i).getImageCount().isEmpty()) {
                 tv_camera_count.setText(data.getCheckList().get(position).getTasks().get(i).getImageCount());
-            }
-            else{
+
+            } else {
                 camera_count.setVisibility(View.GONE);
             }
 
-            if(!data.getCheckList().get(position).getTasks().get(i).getTextCount().isEmpty()){
+            if (!data.getCheckList().get(position).getTasks().get(i).getTextCount().isEmpty()) {
                 tv_note_count.setText(data.getCheckList().get(position).getTasks().get(i).getTextCount());
-            }
-            else{
+            } else {
                 note_count.setVisibility(View.GONE);
             }
 
@@ -115,11 +109,11 @@ public class JobsDetailAdapter extends RecyclerView.Adapter<JobsDetailAdapter.Vi
                     Intent intent = new Intent(context, LogsActivity.class);
                     intent.putExtra("Logs", (Serializable) data.getCheckList().get(position).getTasks().get(finalI));
                     intent.putExtra("Alldata", (Serializable) data);
-                    intent.putExtra("position",finalI);
-                    intent.putExtra("checklistId",data.getCheckList().get(position).getId());
-                    intent.putExtra("taskId",data.getCheckList().get(position).getTasks().get(finalI).getId());
-                   // context.startActivity(intent);
-                    ((JobDetailActivity)context).startActivityForResult(intent, 11);
+                    intent.putExtra("position", finalI);
+                    intent.putExtra("checklistId", data.getCheckList().get(position).getId());
+                    intent.putExtra("taskId", data.getCheckList().get(position).getTasks().get(finalI).getId());
+                    // context.startActivity(intent);
+                    ((JobDetailActivity) context).startActivityForResult(intent, 11);
                 }
             });
 
@@ -135,7 +129,7 @@ public class JobsDetailAdapter extends RecyclerView.Adapter<JobsDetailAdapter.Vi
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         TextView task;
-        ImageView circle,plus;
+        ImageView circle, plus;
         LinearLayout subitems;
         View view;
         LinearLayoutCompat expand_view_btn;

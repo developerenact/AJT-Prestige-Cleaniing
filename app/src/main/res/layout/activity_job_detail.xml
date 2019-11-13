@@ -177,8 +177,7 @@
                             android:layout_marginTop="4dp"
                             android:layout_marginRight="8dp"
                             android:textColor="@color/white"
-                            android:textSize="12sp"
-                            android:visibility="gone" />
+                            android:textSize="12sp" />
 
 
                         <androidx.appcompat.widget.AppCompatTextView
@@ -186,7 +185,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_below="@id/carpets"
-                            android:layout_marginTop="16dp"
+                            android:layout_marginTop="4dp"
                             android:layout_marginRight="8dp"
                             android:textColor="@color/white"
                             android:textSize="11sp" />
@@ -196,10 +195,9 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_below="@id/description"
-                            android:layout_marginTop="8dp"
+                            android:layout_marginTop="4dp"
                             android:layout_marginRight="8dp"
                             android:textColor="@color/white"
-                            android:visibility="gone"
                             android:textSize="11sp" />
 
 

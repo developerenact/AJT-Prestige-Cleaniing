@@ -103,6 +103,8 @@ public class LogsActivity extends BaseActivity {
     int txt_count = 0;
     String checklistId = "";
     String taskId = "";
+    String userId="";
+    String jobstatus="";
     ImageView log_image;
     LinearLayout choose_file_layout;
     CircularRevealCardView log_img_card;
@@ -112,6 +114,7 @@ public class LogsActivity extends BaseActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         checkpermission();
+        userId=Paper.book().read(Constants.USERID,"2");
         final Intent intent = getIntent();
         tasks = (Task) intent.getSerializableExtra("Logs");
         datum = (Datum) intent.getSerializableExtra("Alldata");
@@ -124,9 +127,20 @@ public class LogsActivity extends BaseActivity {
         tv_log_desc = findViewById(R.id.log_desc);
         tv_log_name.setText(tasks.getName());
         tv_log_desc.setText(datum.getDescription());
+        jobstatus=datum.getJobStatus();
 
         add_logs = findViewById(R.id.add_logs_btn);
         log_label = findViewById(R.id.log_label);
+
+
+        if(jobstatus.equalsIgnoreCase(String.valueOf(Constants.INPROGRESS))){
+            add_logs.setVisibility(View.VISIBLE);
+            log_label.setVisibility(View.VISIBLE);
+        }
+        else {
+            add_logs.setVisibility(View.GONE);
+            log_label.setVisibility(View.GONE);
+        }
 
         Typeface custom_font = Typeface.createFromAsset(getApplicationContext().getAssets(), "fonts/Montserrat-Medium.ttf");
         log_label.setTypeface(custom_font);
@@ -198,7 +212,7 @@ public class LogsActivity extends BaseActivity {
                     et_note.setError("Please enter note");
                     et_note.requestFocus();
                 } else {
-                    addLog(datum.getId(), "2", tasks.getId(), et_note.getText().toString(), file);
+                    addLog(datum.getId(), Paper.book().read(Constants.USERID,"2"), tasks.getId(), et_note.getText().toString(), file);
 
                 }
             }
@@ -541,7 +555,7 @@ public class LogsActivity extends BaseActivity {
         showProgress();
         if (isNetworkAvailable()) {
             ApiInterface service = BaseUrl.CreateService(ApiInterface.class);
-            Call<AllLogsPojo> call = service.allLogs("2", datum.getId(), tasks.getId());
+            Call<AllLogsPojo> call = service.allLogs(userId, datum.getId(), tasks.getId());
             call.enqueue(new Callback<AllLogsPojo>() {
                 @Override
                 public void onResponse(Call<AllLogsPojo> call, Response<AllLogsPojo> response) {

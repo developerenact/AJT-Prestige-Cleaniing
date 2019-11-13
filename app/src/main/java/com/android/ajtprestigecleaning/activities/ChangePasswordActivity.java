@@ -103,7 +103,7 @@ public class ChangePasswordActivity extends BaseActivity {
         showProgress();
         if (isNetworkAvailable()) {
             ApiInterface service = BaseUrl.CreateService(ApiInterface.class);
-            Call<ChangePasswordPojo> call = service.chnagePass(Paper.book().read(Constants.USERID, "1"), getMd5Hash(ed_oldPass.getText().toString()), getMd5Hash(ed_confirmPass.getText().toString()));
+            Call<ChangePasswordPojo> call = service.chnagePass(Paper.book().read(Constants.USERID, "2"), getMd5Hash(ed_oldPass.getText().toString()), getMd5Hash(ed_confirmPass.getText().toString()));
             call.enqueue(new Callback<ChangePasswordPojo>() {
                 @Override
                 public void onResponse(Call<ChangePasswordPojo> call, Response<ChangePasswordPojo> response) {

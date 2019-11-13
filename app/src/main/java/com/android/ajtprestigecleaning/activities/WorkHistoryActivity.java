@@ -1,35 +1,24 @@
-package com.android.ajtprestigecleaning.fragments;
+package com.android.ajtprestigecleaning.activities;
 
-
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.app.ProgressDialog;
-import android.content.Context;
-import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.content.Context;
+import android.os.Build;
+import android.os.Bundle;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
-import android.widget.ProgressBar;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.ajtprestigecleaning.R;
-import com.android.ajtprestigecleaning.activities.DashboardActivity;
 import com.android.ajtprestigecleaning.adapter.JobsAdapter;
+import com.android.ajtprestigecleaning.adapter.WorkHistoryAdapter;
 import com.android.ajtprestigecleaning.apiServices.ApiInterface;
 import com.android.ajtprestigecleaning.apiServices.BaseUrl;
-
 import com.android.ajtprestigecleaning.model.JobsPojo.Datum;
 import com.android.ajtprestigecleaning.model.JobsPojo.JobsPojo;
 import com.android.ajtprestigecleaning.util.Constants;
@@ -45,60 +34,41 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static com.android.ajtprestigecleaning.activities.BaseActivityk.customDialog;
-import static com.android.ajtprestigecleaning.activities.BaseActivityk.hideLoader;
-import static com.android.ajtprestigecleaning.activities.BaseActivityk.isNetworkConnected;
-import static com.android.ajtprestigecleaning.activities.BaseActivityk.showLoader;
-
-/**
- * A simple {@link Fragment} subclass.
- */
-public class JobsFragment extends Fragment {
+public class WorkHistoryActivity extends BaseActivity {
+    ImageView back;
     RecyclerView recyclerView;
     RecyclerView.LayoutManager layoutManager;
-    JobsAdapter adapter;
+    WorkHistoryAdapter adapter;
     TextView header;
     List<Datum> joblist;
     List<String> type;
     ArrayList<Datum> jobsWithHeader;
     Context context;
     AVLoadingIndicatorView progressBar;
-    public JobsFragment() {
 
-    }
-
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        this.context = context;
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_jobs, container, false);
-        recyclerView = view.findViewById(R.id.job_recyclerview);
-        // progressBar = (AVLoadingIndicatorView) view.findViewById(R.id.loader);
-        // progressBar.show();
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        back=findViewById(R.id.back);
+        recyclerView = findViewById(R.id.history_recyclerview);
         type = new ArrayList<>();
         joblist = new ArrayList<>();
         jobsWithHeader = new ArrayList<>();
-        layoutManager = new LinearLayoutManager(getContext());
+        layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
-
-        // getjobs(0);
-
-
-
-
-        return view;
+        getjobs(0,WorkHistoryActivity.this);
+        back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
     }
 
-
     public void getjobs(int state, final Context context) {
-        ((DashboardActivity) context).showProgress();
-        if (((DashboardActivity) context).isNetworkAvailable()) {
+        ((WorkHistoryActivity) context).showProgress();
+        if (((WorkHistoryActivity) context).isNetworkAvailable()) {
             ApiInterface service = BaseUrl.CreateService(ApiInterface.class);
 
             String userid=  Paper.book().read(Constants.USERID, "2");
@@ -109,11 +79,11 @@ public class JobsFragment extends Fragment {
                     if (response.isSuccessful()) {
                         if (response.body().getStatus() == 0) {
 
-                            ((DashboardActivity) context).hideProgress();
+                            ((WorkHistoryActivity) context).hideProgress();
                             if (response.body().getData().size() > 0) {
 
                             } else {
-                                ((DashboardActivity) context).customDialog(getActivity().getString(R.string.no_jobs_available), getContext());
+                                ((WorkHistoryActivity) context).customDialog(context.getString(R.string.no_jobs_available), WorkHistoryActivity.this);
                             }
                             joblist = response.body().getData();
 
@@ -126,30 +96,25 @@ public class JobsFragment extends Fragment {
 
                             });
 
-                            List<Datum> In_progress = new ArrayList<>();
-                            List<Datum> Upcoming_Jobs = new ArrayList<>();
+
                             List<Datum> Past_Jobs = new ArrayList<>();
                             List<Datum> Rejected_Jobs = new ArrayList<>();
                             List<Datum> Completed = new ArrayList<>();
 
 
 // 0 -> All Jobs
+// 1 -> In progress
 // 2 -> Upcoming Jobs
-// 3 -> In progress
+// 3 -> Past Jobs
 // 4 -> Rejected Jobs
 // 5 -> Completed
-// 7 -> Past Jobs
 
 
                             if (joblist.size() > 0) {
 
                                 for (int i = 0; i < joblist.size(); i++) {
 
-                                    if (joblist.get(i).getJobStatus().equalsIgnoreCase(String.valueOf(Constants.INPROGRESS))) {
-                                        In_progress.add(joblist.get(i));
-                                    } else if (joblist.get(i).getJobStatus().equalsIgnoreCase(String.valueOf(Constants.UPCOMING))) {
-                                        Upcoming_Jobs.add(joblist.get(i));
-                                    } else if (joblist.get(i).getJobStatus().equalsIgnoreCase(String.valueOf(Constants.PAST))) {
+                                     if (joblist.get(i).getJobStatus().equalsIgnoreCase(String.valueOf(Constants.PAST))) {
                                         Past_Jobs.add(joblist.get(i));
                                     } else if (joblist.get(i).getJobStatus().equalsIgnoreCase(String.valueOf(Constants.REJECTED))) {
                                         Rejected_Jobs.add(joblist.get(i));
@@ -161,23 +126,6 @@ public class JobsFragment extends Fragment {
                             }
 
 
-                            if (In_progress.size() > 0) {
-                                Datum datum = new Datum();
-                                datum.setHeader(true);
-                                datum.setHeaderName("In Progress");
-                                joblist.add(datum);
-                                joblist.addAll(In_progress);
-
-                            }
-
-                            if (Upcoming_Jobs.size() > 0) {
-                                Datum datum = new Datum();
-                                datum.setHeader(true);
-                                datum.setHeaderName("Upcoming");
-                                joblist.add(datum);
-                                joblist.addAll(Upcoming_Jobs);
-
-                            }
 
                             if (Past_Jobs.size() > 0) {
                                 Datum datum = new Datum();
@@ -207,18 +155,18 @@ public class JobsFragment extends Fragment {
                             }
 
 
-                            adapter = new JobsAdapter(joblist, getContext());
+                            adapter = new WorkHistoryAdapter(joblist, WorkHistoryActivity.this);
                             recyclerView.setAdapter(adapter);
 
                         } else {
-                            ((DashboardActivity) context).hideProgress();
+                            ((WorkHistoryActivity) context).hideProgress();
 
                         }
 
                     } else {
 
-                        ((DashboardActivity) context).hideProgress();
-                        Toast.makeText(getContext(), getActivity().getString(R.string.something_wrong), Toast.LENGTH_LONG).show();
+                        ((WorkHistoryActivity) context).hideProgress();
+                        Toast.makeText(context, getApplicationContext().getString(R.string.something_wrong), Toast.LENGTH_LONG).show();
 
 
                     }
@@ -227,31 +175,22 @@ public class JobsFragment extends Fragment {
                 @Override
                 public void onFailure(Call<JobsPojo> call, Throwable t) {
 
-                    ((DashboardActivity) context).hideProgress();
+                    ((WorkHistoryActivity) context).hideProgress();
                     Log.d("otp", t.getMessage());
-                    Toast.makeText(getContext(), getActivity().getString(R.string.something_wrong), Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, getApplicationContext().getString(R.string.something_wrong), Toast.LENGTH_LONG).show();
                 }
             });
         } else {
 
-            ((DashboardActivity) context).hideProgress();
-            try {
-                ((DashboardActivity) context).customDialog(getActivity().getString(R.string.no_internet), getContext());
-
-            }
-            catch (Exception e){
-
-            }
+            ((WorkHistoryActivity) context).hideProgress();
+            ((WorkHistoryActivity) context).customDialog(context.getString(R.string.no_internet), WorkHistoryActivity.this);
 
         }
 
     }
 
-    public void update(int state) {
-        getjobs(state, context);
+    @Override
+    public int getLayoutResourceId() {
+        return R.layout.activity_work_history;
     }
-
-
-
-
 }

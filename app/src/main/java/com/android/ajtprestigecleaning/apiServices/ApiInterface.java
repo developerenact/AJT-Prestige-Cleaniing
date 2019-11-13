@@ -52,7 +52,7 @@ public interface ApiInterface {
     @FormUrlEncoded
     @Headers("Secret-Key:AJT_Lbim_0f6bd8a808ea3e9996b3aee1900aa2e8")
     @POST("jobs")
-    Call<JobsPojo> getjobs(@Field("userId") int userId,
+    Call<JobsPojo> getjobs(@Field("userId") String userId,
                            @Field("state") int State);
 
   /*  @FormUrlEncoded
@@ -117,10 +117,5 @@ public interface ApiInterface {
                                  @Field("jobId") String jobId,
                                  @Field("taskId") String taskId);
 
-
-    @Multipart
-    @Headers("Authorization:z673qhUDegF2Ek3Tvhcf")
-    @POST("vinFromImage")
-    Call<String> demo(@PartMap HashMap<String, RequestBody> hashMap);
 
 }

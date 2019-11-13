@@ -21,6 +21,8 @@ import com.android.ajtprestigecleaning.apiServices.ApiInterface;
 import com.android.ajtprestigecleaning.apiServices.BaseUrl;
 import com.android.ajtprestigecleaning.model.JobsPojo.Datum;
 import com.android.ajtprestigecleaning.model.UpdateJobStatusPojo.UpdateJobStatusPojo;
+import com.android.ajtprestigecleaning.util.Constants;
+import com.android.ajtprestigecleaning.util.GpsTracker;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -81,7 +83,7 @@ public class JobsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
         else {
 
-            if (results.get(position).getJobStatus().equals("1")) {
+            if (results.get(position).getJobStatus().equals(String.valueOf(Constants.INPROGRESS))) {
                 ((ViewHolder) holder).first_btn.setVisibility(View.VISIBLE);
                 ((ViewHolder) holder).second_btn.setVisibility(View.VISIBLE);
                 ((ViewHolder) holder).first_btn.setText("End Job");
@@ -89,10 +91,11 @@ public class JobsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 ((ViewHolder) holder).first_btn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        updateJobStatus(results.get(position).getId(), "5", ((ViewHolder) holder).first_btn, ((ViewHolder) holder).second_btn, holder.getAdapterPosition());
+                        getLocation();
+                        updateJobStatus(results.get(position).getId(), String.valueOf(Constants.COMPLETED), ((ViewHolder) holder).first_btn, ((ViewHolder) holder).second_btn, holder.getAdapterPosition());
                     }
                 });
-            } else if (results.get(position).getJobStatus().equals("2")) {
+            } else if (results.get(position).getJobStatus().equals(String.valueOf(Constants.UPCOMING))) {
                 ((ViewHolder) holder).first_btn.setVisibility(View.VISIBLE);
                 ((ViewHolder) holder).second_btn.setVisibility(View.VISIBLE);
                 ((ViewHolder) holder).first_btn.setText("Decline");
@@ -100,9 +103,17 @@ public class JobsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                 ((ViewHolder) holder).first_btn.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        updateJobStatus(results.get(position).getId(), "4", ((ViewHolder) holder).first_btn, ((ViewHolder) holder).second_btn, holder.getAdapterPosition());
+                        updateJobStatus(results.get(position).getId(), String.valueOf(Constants.REJECTED), ((ViewHolder) holder).first_btn, ((ViewHolder) holder).second_btn, holder.getAdapterPosition());
                     }
                 });
+
+                ((ViewHolder) holder).second_btn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        updateJobStatus(results.get(position).getId(), String.valueOf(Constants.UNAVAILABLE), ((ViewHolder) holder).first_btn, ((ViewHolder) holder).second_btn, holder.getAdapterPosition());
+                    }
+                });
+
             } else {
                 ((ViewHolder) holder).first_btn.setVisibility(View.GONE);
                 ((ViewHolder) holder).second_btn.setVisibility(View.GONE);
@@ -111,7 +122,7 @@ public class JobsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             ((ViewHolder) holder).address.setText(results.get(position).getAddress());
             ((ViewHolder) holder).work.setText(results.get(position).getName());
             if(!results.get(position).getPrice().isEmpty()){
-                ((ViewHolder) holder).jobprice.setText(results.get(position).getPrice());
+                ((ViewHolder) holder).jobprice.setText("$"+results.get(position).getPrice());
 
             }
             else {
@@ -178,7 +189,7 @@ public class JobsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         ((DashboardActivity)context).showProgress();
         if (((DashboardActivity) context).isNetworkAvailable()) {
             ApiInterface service = BaseUrl.CreateService(ApiInterface.class);
-            Call<UpdateJobStatusPojo> call = service.updateJobStatus(jobid, "2", status);
+            Call<UpdateJobStatusPojo> call = service.updateJobStatus(jobid, Paper.book().read(Constants.USERID,"2"), status);
             call.enqueue(new Callback<UpdateJobStatusPojo>() {
                 @Override
                 public void onResponse(Call<UpdateJobStatusPojo> call, Response<UpdateJobStatusPojo> response) {
@@ -222,6 +233,20 @@ public class JobsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     }
 
+
+    public void getLocation() {
+        GpsTracker gpsTracker = new GpsTracker(context);
+        if (gpsTracker.canGetLocation()) {
+            double latitude = gpsTracker.getLatitude();
+            double longitude = gpsTracker.getLongitude();
+           // Toast.makeText(context, String.valueOf(latitude)+String.valueOf(longitude), Toast.LENGTH_SHORT).show();
+            Log.d("lati",String.valueOf(latitude));
+            Log.d("longi",String.valueOf(longitude));
+
+        } else {
+            gpsTracker.showSettingsAlert();
+        }
+    }
 
 
 }

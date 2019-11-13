@@ -1,15 +1,19 @@
 package com.android.ajtprestigecleaning.activities;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.widget.LinearLayoutCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
@@ -47,6 +51,7 @@ import com.android.ajtprestigecleaning.model.JobsPojo.Task;
 import com.android.ajtprestigecleaning.model.SubmitHourPojo.SubmitHourPojo;
 import com.android.ajtprestigecleaning.model.UpdateJobStatusPojo.UpdateJobStatusPojo;
 import com.android.ajtprestigecleaning.util.Constants;
+import com.android.ajtprestigecleaning.util.GpsTracker;
 import com.google.gson.JsonObject;
 
 import java.math.BigInteger;
@@ -69,10 +74,12 @@ import retrofit2.Response;
 @RequiresApi(api = Build.VERSION_CODES.O)
 public class JobDetailActivity extends BaseActivity implements AdapterView.OnItemSelectedListener {
     ImageView back, navigation;
+    double latitude, longitude;
     TextView id, location, task, date, desc, approx_hour, tv_log_hour, tv_end_job, tv_job_type, tv_job_price, tv_carpets, tv_notes;
     RecyclerView recyclerView;
     RecyclerView.LayoutManager layoutManager;
     JobsDetailAdapter adapter;
+    GpsTracker gpsTracker;
     String jobId = "";
     String lat = "";
     Spinner spinner;
@@ -100,12 +107,12 @@ public class JobDetailActivity extends BaseActivity implements AdapterView.OnIte
     int task_position = -1;
     ImageView startjob;
     String jobstatus = "";
-
-    int starthour=0;
-    int endHour=0;
-    long startMili=0;
-    long endMili=0;
-    long diff=0;
+    String userId = "";
+    int starthour = 0;
+    int endHour = 0;
+    long startMili = 0;
+    long endMili = 0;
+    long diff = 0;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -115,8 +122,7 @@ public class JobDetailActivity extends BaseActivity implements AdapterView.OnIte
         datum = (Datum) intent.getSerializableExtra("sampleObject");
         //  jobDetail();
         hour = new Hour();
-
-
+        userId = Paper.book().read(Constants.USERID, "2");
         back = findViewById(R.id.back);
         id = findViewById(R.id.id_number);
         navigation = findViewById(R.id.navigation);
@@ -155,7 +161,8 @@ public class JobDetailActivity extends BaseActivity implements AdapterView.OnIte
         tv_end_job.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                jobstatus = "5";
+                getLocation();
+                jobstatus = String.valueOf(Constants.COMPLETED);
                 updateJobStatus(jobstatus);
             }
         });
@@ -163,8 +170,17 @@ public class JobDetailActivity extends BaseActivity implements AdapterView.OnIte
         startjob.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                jobstatus = "1";
-                updateJobStatus(jobstatus);
+                jobstatus = String.valueOf(Constants.INPROGRESS);
+                if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+                        checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 5);
+
+                } else {
+                    updateJobStatus(jobstatus);
+                }
+
+
+
             }
         });
 
@@ -229,7 +245,7 @@ public class JobDetailActivity extends BaseActivity implements AdapterView.OnIte
     }
 
 
-    public void submit(long starttime, long endtime,long difference, final String note) {
+    public void submit(long starttime, long endtime, long difference, final String note) {
         BigInteger bg1 = new BigInteger(String.valueOf(endtime - starttime));
         System.out.println(bg1.abs());
         Log.e("Dekho", String.valueOf(bg1.abs()));
@@ -237,7 +253,7 @@ public class JobDetailActivity extends BaseActivity implements AdapterView.OnIte
         showProgress();
         if (isNetworkAvailable()) {
             ApiInterface service = BaseUrl.CreateService(ApiInterface.class);
-            Call<SubmitHourPojo> call = service.submithour(jobId, "2", str_taskId, starttime, endtime, difference, note);
+            Call<SubmitHourPojo> call = service.submithour(jobId, userId, str_taskId, starttime, endtime, difference, note);
             call.enqueue(new Callback<SubmitHourPojo>() {
                 @Override
                 public void onResponse(Call<SubmitHourPojo> call, Response<SubmitHourPojo> response) {
@@ -320,7 +336,7 @@ public class JobDetailActivity extends BaseActivity implements AdapterView.OnIte
                 mTimePicker = new TimePickerDialog(JobDetailActivity.this, new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
-                       // et_from.setText(selectedHour + "  " + ":" + "  " + selectedMinute);
+                        // et_from.setText(selectedHour + "  " + ":" + "  " + selectedMinute);
                         et_from.setText(String.format("%02d  :  %02d", selectedHour, selectedMinute));
                         starttime = day + "-" + month + "-" + year + " " + selectedHour + ":" + selectedMinute;
 
@@ -329,9 +345,8 @@ public class JobDetailActivity extends BaseActivity implements AdapterView.OnIte
                         calendar.set(Calendar.MINUTE, selectedMinute);
                         calendar.set(Calendar.SECOND, 0);
                         calendar.set(Calendar.MILLISECOND, 0);
-                        starthour=selectedHour;
-                        startMili=calendar.getTimeInMillis();
-
+                        starthour = selectedHour;
+                        startMili = calendar.getTimeInMillis();
 
 
                     }
@@ -358,7 +373,7 @@ public class JobDetailActivity extends BaseActivity implements AdapterView.OnIte
                 mTimePicker = new TimePickerDialog(JobDetailActivity.this, new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
-                       // et_to.setText(selectedHour + "  " + ":" + "  " + selectedMinute);
+                        // et_to.setText(selectedHour + "  " + ":" + "  " + selectedMinute);
                         et_to.setText(String.format("%02d  :  %02d", selectedHour, selectedMinute));
                         endtime = day + "-" + month + "-" + year + " " + selectedHour + ":" + selectedMinute;
 
@@ -369,8 +384,8 @@ public class JobDetailActivity extends BaseActivity implements AdapterView.OnIte
                         calendar.set(Calendar.SECOND, 0);
                         calendar.set(Calendar.MILLISECOND, 0);
 
-                        endHour=selectedHour;
-                        endMili=calendar.getTimeInMillis();
+                        endHour = selectedHour;
+                        endMili = calendar.getTimeInMillis();
 
 
                     }
@@ -404,23 +419,29 @@ public class JobDetailActivity extends BaseActivity implements AdapterView.OnIte
 
                     // timeDiff(stringToTimeStamp(starttime),stringToTimeStamp(endtime));
                     // updateTaskStatus();
-                    if (starthour <= 12 && starthour<endHour) {
+                    if (starthour <= 12 && starthour < endHour) {
                         startMili = startMili + 86400000;
 
                     }
                     if (endHour <= 12) {
-                        endMili = endMili+ 86400000;
+                        endMili = endMili + 86400000;
 
                     }
 
 
-                   // Toast.makeText(JobDetailActivity.this, String.valueOf(convertSecondsToHMmSs(endMili-startMili)), Toast.LENGTH_SHORT).show();
-                    diff=endMili-startMili;
+                    // Toast.makeText(JobDetailActivity.this, String.valueOf(convertSecondsToHMmSs(endMili-startMili)), Toast.LENGTH_SHORT).show();
+                    diff = endMili - startMili;
                     BigInteger bg1 = new BigInteger(String.valueOf(diff));
                     System.out.println(bg1.abs());
-                   // Toast.makeText(JobDetailActivity.this, String.valueOf(bg1.abs()), Toast.LENGTH_SHORT).show();
+                    // Toast.makeText(JobDetailActivity.this, String.valueOf(bg1.abs()), Toast.LENGTH_SHORT).show();
 
-                    submit(stringToTimeStamp(starttime), stringToTimeStamp(endtime),bg1.abs().longValue(), et_note.getText().toString());
+                    if(str_taskId.isEmpty()){
+                        customDialog("Task list should not be empty", JobDetailActivity.this);
+                    }
+                    else {
+                        submit(stringToTimeStamp(starttime), stringToTimeStamp(endtime), bg1.abs().longValue(), et_note.getText().toString());
+
+                    }
 
                 }
             }
@@ -451,7 +472,7 @@ public class JobDetailActivity extends BaseActivity implements AdapterView.OnIte
         showProgress();
         if (isNetworkAvailable()) {
             ApiInterface service = BaseUrl.CreateService(ApiInterface.class);
-            Call<UpdateJobStatusPojo> call = service.updateJobStatus(jobId, "2", status);
+            Call<UpdateJobStatusPojo> call = service.updateJobStatus(jobId, userId, status);
             call.enqueue(new Callback<UpdateJobStatusPojo>() {
                 @Override
                 public void onResponse(Call<UpdateJobStatusPojo> call, Response<UpdateJobStatusPojo> response) {
@@ -459,7 +480,7 @@ public class JobDetailActivity extends BaseActivity implements AdapterView.OnIte
                         // hideLoader();
                         hideProgress();
                         if (response.body().getStatus() == 0) {
-                            if (jobstatus.equals("1")) {
+                            if (jobstatus.equals(String.valueOf(Constants.INPROGRESS))) {
                                 start_job_layout.setVisibility(View.GONE);
                                 log_hours_layout.setVisibility(View.VISIBLE);
                             } else {
@@ -511,7 +532,7 @@ public class JobDetailActivity extends BaseActivity implements AdapterView.OnIte
         location.setText(datum.getAddress());
         task.setText(datum.getName());
         if (!datum.getPrice().isEmpty()) {
-            tv_job_price.setText(datum.getPrice());
+            tv_job_price.setText("$"+datum.getPrice());
 
         } else {
             tv_job_price.setText("N/A");
@@ -521,10 +542,10 @@ public class JobDetailActivity extends BaseActivity implements AdapterView.OnIte
         approx_hour.setText(datum.getHoursDaily() + " Hours");
         tv_carpets.setText(datum.getCarpets());
         tv_notes.setText(datum.getNotes());
-        if (datum.getJobStatus().equals("2")) {
+        if (datum.getJobStatus().equals(String.valueOf(Constants.UPCOMING))) {
             log_hours_layout.setVisibility(View.GONE);
             start_job_layout.setVisibility(View.VISIBLE);
-        } else if (datum.getJobStatus().equals("1")) {
+        } else if (datum.getJobStatus().equals(String.valueOf(Constants.INPROGRESS))) {
             log_hours_layout.setVisibility(View.VISIBLE);
             start_job_layout.setVisibility(View.GONE);
         } else {
@@ -535,11 +556,18 @@ public class JobDetailActivity extends BaseActivity implements AdapterView.OnIte
         adapter = new JobsDetailAdapter(datum, JobDetailActivity.this);
         recyclerView.setAdapter(adapter);
 
-        for (int i = 0; i < datum.getHours().size(); i++) {
-            hoursModelList.add(datum.getHours().get(i));
+        try {
+            if (!datum.getHours().isEmpty() && datum.getHours().size() > 0) {
+                for (int i = 0; i < datum.getHours().size(); i++) {
+                    hoursModelList.add(datum.getHours().get(i));
+
+                }
+            }
 
         }
-
+        catch (Exception e){
+            e.printStackTrace();
+        }
         if (datum.getCheckList().size() > 0) {
             for (int i = 0; i < datum.getCheckList().size(); i++) {
                 for (int j = 0; j < datum.getCheckList().get(i).getTasks().size(); j++) {
@@ -559,7 +587,7 @@ public class JobDetailActivity extends BaseActivity implements AdapterView.OnIte
         // showProgress();
         if (isNetworkAvailable()) {
             ApiInterface service = BaseUrl.CreateService(ApiInterface.class);
-            Call<JsonObject> call = service.updateTask(jobId, "2", str_taskId);
+            Call<JsonObject> call = service.updateTask(jobId, userId, str_taskId);
             call.enqueue(new Callback<JsonObject>() {
                 @Override
                 public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
@@ -730,6 +758,51 @@ public class JobDetailActivity extends BaseActivity implements AdapterView.OnIte
 
         }
     }
+
+
+    private void checkpermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+
+            if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+                    checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 5);
+
+            } else {
+            }
+        }
+
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case 5: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+
+                    updateJobStatus(jobstatus);
+
+                } else {
+                }
+                return;
+            }
+        }
+    }
+
+
+    public void getLocation() {
+        gpsTracker = new GpsTracker(JobDetailActivity.this);
+        if (gpsTracker.canGetLocation()) {
+            latitude = gpsTracker.getLatitude();
+            longitude = gpsTracker.getLongitude();
+            Log.d("lati",String.valueOf(latitude));
+            Log.d("longi",String.valueOf(longitude));
+
+        } else {
+            gpsTracker.showSettingsAlert();
+        }
+    }
+
+
 
 
 }

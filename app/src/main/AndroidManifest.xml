@@ -19,15 +19,19 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
         android:largeHeap="true"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".activities.AboutActivity"
+        <activity android:name=".activities.WorkHistoryActivity"
             android:screenOrientation="portrait"></activity>
-        <activity android:name=".activities.LogsActivity"
-            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".activities.AboutActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.LogsActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".activities.UpdateProfileActivity"
             android:screenOrientation="portrait" />
@@ -49,8 +53,9 @@
         <activity
             android:name=".activities.MapsActivity"
             android:label="@string/title_activity_maps" />
-        <activity android:name=".activities.JobDetailActivity"
-            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".activities.JobDetailActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".activities.PrivacyActivity"
             android:screenOrientation="portrait" />

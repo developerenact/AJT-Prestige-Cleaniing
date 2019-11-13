@@ -12,4 +12,17 @@ public class Constants {
     public static final String ISLOGIN="false";
     public static final String DEVICETOKEN="devicetoken";
 
+
+    //job status
+
+    public static final int UPCOMING=2;
+    public static final int INPROGRESS=3;
+    public static final int REJECTED=4;
+    public static final int COMPLETED=5;
+    public static final int UNAVAILABLE=6;
+    public static final int PAST=7;
+
+
+
+
 }
