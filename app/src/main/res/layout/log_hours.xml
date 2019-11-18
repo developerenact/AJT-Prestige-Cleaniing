@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:fitsSystemWindows="true"
+    app:cardUseCompatPadding="true"
+    app:cardCornerRadius="8dp"
+    android:orientation="vertical"
+    android:elevation="2dp"
+    app:cardElevation="2dp">
+
+<LinearLayout
     android:id="@+id/bottom_sheet"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -12,8 +23,7 @@
     android:paddingTop="24dp"
     android:paddingBottom="16dp"
     app:behavior_hideable="false"
-    app:behavior_peekHeight="0dp"
-    app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+    app:behavior_peekHeight="0dp">
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/label"
@@ -29,26 +39,41 @@
         android:text="Log Hours"
         android:textSize="12sp" />
 
-    <RelativeLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp">
 
         <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/task_label"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginRight="12dp"
             android:text="Task :"
             android:textColor="@color/black"
-            android:textSize="14sp" />
+            android:textSize="14sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <LinearLayout
+            app:layout_constraintTop_toTopOf="parent"
+            android:id="@+id/spinner_layout"
+            app:layout_constraintStart_toEndOf="@id/task_label"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/spinner_bg"
+            android:orientation="horizontal">
 
             <androidx.appcompat.widget.AppCompatSpinner
                 android:id="@+id/spinner"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="-4dp"
+                android:layout_gravity="center"
                 android:gravity="center"
+                android:maxWidth="200dp"
                 android:background="@android:color/transparent"
-                android:layout_centerHorizontal="true">
+                >
 
             </androidx.appcompat.widget.AppCompatSpinner>
 
@@ -59,7 +84,9 @@
             android:src="@drawable/ic_keyboard_arrow_down_black_24dp"
             android:layout_toRightOf="@id/spinner"/>
 
-    </RelativeLayout>
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
     <RelativeLayout
@@ -190,3 +217,4 @@
         android:textColor="@color/white" />
 
 </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

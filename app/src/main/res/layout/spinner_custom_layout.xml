@@ -2,20 +2,26 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:orientation="horizontal">
+    android:orientation="vertical">
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/spinner_textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingLeft="4dp"
-        android:paddingRight="4dp"
-        android:layout_marginBottom="2dp"
+        android:paddingLeft="8dp"
+        android:maxWidth="200dp"
+        android:layout_marginBottom="4dp"
+        android:paddingRight="8dp"
         android:textColor="@color/draweritemcolour"
         android:layout_marginTop="2dp"
         android:layout_gravity="center"
         android:textSize="16sp"
         android:text="Custom Text"
         />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/grey2"/>
 
 </LinearLayout>

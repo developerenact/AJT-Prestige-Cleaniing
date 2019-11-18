@@ -97,7 +97,6 @@ public class JobDetailActivity extends BaseActivity implements AdapterView.OnIte
     String endtime = "";
     Datum datum;
     List<Hour> hoursModelList;
-    Hour hour;
     List<Task> tasks;
     List<String> checklistId;
     View view;
@@ -113,6 +112,18 @@ public class JobDetailActivity extends BaseActivity implements AdapterView.OnIte
     long startMili = 0;
     long endMili = 0;
     long diff = 0;
+    String update="no";
+    ArrayList<String> status=new ArrayList<>();
+
+    @Override
+    public void onBackPressed() {
+        Intent returnIntent = new Intent();
+        returnIntent.putExtra("update", update);
+        setResult(Activity.RESULT_OK, returnIntent);
+        finish();
+
+    }
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -121,7 +132,7 @@ public class JobDetailActivity extends BaseActivity implements AdapterView.OnIte
         jobId = intent.getStringExtra("jobId");
         datum = (Datum) intent.getSerializableExtra("sampleObject");
         //  jobDetail();
-        hour = new Hour();
+
         userId = Paper.book().read(Constants.USERID, "2");
         back = findViewById(R.id.back);
         id = findViewById(R.id.id_number);
@@ -193,7 +204,7 @@ public class JobDetailActivity extends BaseActivity implements AdapterView.OnIte
         back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
+                onBackPressed();
             }
         });
 
@@ -249,7 +260,6 @@ public class JobDetailActivity extends BaseActivity implements AdapterView.OnIte
         BigInteger bg1 = new BigInteger(String.valueOf(endtime - starttime));
         System.out.println(bg1.abs());
         Log.e("Dekho", String.valueOf(bg1.abs()));
-        //showLoader(JobDetailActivity.this);
         showProgress();
         if (isNetworkAvailable()) {
             ApiInterface service = BaseUrl.CreateService(ApiInterface.class);
@@ -265,16 +275,16 @@ public class JobDetailActivity extends BaseActivity implements AdapterView.OnIte
                         Log.e("end", response.body().getData().getEndTime() + "");
                         Log.e("diff", response.body().getData().getHours() + "");
                         updateTaskStatus();
-
+                        Hour hour = new Hour();
                         hour.setEndTime(response.body().getData().getEndTime());
                         hour.setStartTime(response.body().getData().getStartTime());
                         hour.setHours(response.body().getData().getHours());
                         hour.setTaskName(str_taskname);
                         hoursModelList.add(hour);
-                        if (view.getParent() != null) {
+                       /* if (view.getParent() != null) {
                             ((ViewGroup) view.getParent()).removeView(view);
                             // <- fix
-                        }
+                        }*/
                         logHours();
 
                     } else {
@@ -420,14 +430,13 @@ public class JobDetailActivity extends BaseActivity implements AdapterView.OnIte
                     // timeDiff(stringToTimeStamp(starttime),stringToTimeStamp(endtime));
                     // updateTaskStatus();
                     if (starthour <= 12 && starthour < endHour) {
-                        startMili = startMili + 86400000;
+                      startMili = startMili + 86400000;
 
                     }
                     if (endHour <= 12) {
-                        endMili = endMili + 86400000;
+                     endMili = endMili + 86400000;
 
                     }
-
 
                     // Toast.makeText(JobDetailActivity.this, String.valueOf(convertSecondsToHMmSs(endMili-startMili)), Toast.LENGTH_SHORT).show();
                     diff = endMili - startMili;
@@ -461,7 +470,8 @@ public class JobDetailActivity extends BaseActivity implements AdapterView.OnIte
         }
         long output = date.getTime() / 1000L;
         String str = Long.toString(output);
-        long timestamp = Long.parseLong(str) * 1000;
+       // long timestamp = Long.parseLong(str) * 1000;
+        long timestamp = Long.parseLong(str);
         System.out.println("Today is " + timestamp);
         return timestamp;
     }
@@ -480,6 +490,7 @@ public class JobDetailActivity extends BaseActivity implements AdapterView.OnIte
                         // hideLoader();
                         hideProgress();
                         if (response.body().getStatus() == 0) {
+                            update="yes";
                             if (jobstatus.equals(String.valueOf(Constants.INPROGRESS))) {
                                 start_job_layout.setVisibility(View.GONE);
                                 log_hours_layout.setVisibility(View.VISIBLE);
@@ -574,11 +585,24 @@ public class JobDetailActivity extends BaseActivity implements AdapterView.OnIte
                     if (datum.getCheckList().get(i).getTasks() != null) {
                         tasks.add(datum.getCheckList().get(i).getTasks().get(j));
                         checklistId.add(datum.getCheckList().get(i).getId());
+                        status.add(datum.getCheckList().get(i).getTasks().get(j).getStatus());
+
                     }
                 }
 
             }
         }
+
+       /* if(status.contains("0")){
+            tv_end_job.setBackgroundResource(R.drawable.disable_btn_bg);
+            tv_end_job.setEnabled(false);
+
+        }
+        else {
+            tv_end_job.setBackgroundResource(R.drawable.end_job_bg);
+            tv_end_job.setEnabled(true);
+
+        }*/
 
     }
 
@@ -625,15 +649,15 @@ public class JobDetailActivity extends BaseActivity implements AdapterView.OnIte
     }
 
     public String convertSecondsToHMmSs(long milliseconds) {
-        long s = (int) (milliseconds / 1000) % 60;
+        long s = (int) (milliseconds) % 60;
         long m = (int) Math.abs((milliseconds / (1000 * 60)) % 60);
         long h = (int) Math.abs((milliseconds / (1000 * 60 * 60)) % 24);
         return String.format("%02d:%02d", h, m);
     }
 
-    public String convertToTime(String dateInMilliseconds) {
+    public String convertToTime(String dateInseconds) {
 
-        return DateFormat.format("HH:mm", Long.parseLong(dateInMilliseconds)).toString();
+        return DateFormat.format("HH:mm", Long.parseLong(dateInseconds)*1000).toString();
 
     }
 
@@ -801,8 +825,5 @@ public class JobDetailActivity extends BaseActivity implements AdapterView.OnIte
             gpsTracker.showSettingsAlert();
         }
     }
-
-
-
 
 }

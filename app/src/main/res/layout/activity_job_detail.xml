@@ -118,15 +118,11 @@
                             android:textColor="@color/white"
                             android:textSize="11sp" />
 
-                        <RelativeLayout
-                            android:id="@+id/linear"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_below="@id/id_number"
-                            android:layout_marginTop="16dp"
-                            android:orientation="horizontal">
+
 
                             <androidx.appcompat.widget.AppCompatTextView
+                                android:layout_below="@id/id_number"
+                                android:layout_marginTop="16dp"
                                 android:id="@+id/location"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -136,20 +132,22 @@
                                 android:textSize="12sp" />
 
                             <androidx.appcompat.widget.AppCompatImageView
+                                android:layout_below="@id/id_number"
+                                android:layout_marginTop="12dp"
                                 android:id="@+id/navigation"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginLeft="16dp"
                                 android:layout_toRightOf="@id/location"
                                 app:srcCompat="@mipmap/navigation" />
-                        </RelativeLayout>
+
 
 
                         <androidx.appcompat.widget.AppCompatTextView
                             android:id="@+id/desc"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_below="@id/linear"
+                            android:layout_below="@id/location"
                             android:layout_marginTop="4dp"
                             android:drawableLeft="@mipmap/cleaning"
                             android:drawablePadding="4dp"

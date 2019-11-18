@@ -20,6 +20,8 @@
             android:gravity="center"
             android:padding="8dp"
             android:text="Floor Cleaning"
+            android:ellipsize="end"
+            android:maxLines="3"
             android:textSize="12sp"
             android:textColor="@color/black"
             app:layout_constraintBottom_toBottomOf="parent"

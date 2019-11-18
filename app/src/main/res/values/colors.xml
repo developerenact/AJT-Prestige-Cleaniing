@@ -20,5 +20,6 @@
     <color name="grey2">#B6B6B6</color>
     <color name="unselectcategory">#FBCCBE</color>
     <color name="selectedcircle">#B64908</color>
+    <color name="translucent_black">#80000000</color>
 
 </resources>

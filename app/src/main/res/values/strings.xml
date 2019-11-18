@@ -54,6 +54,7 @@
     <string name="past_jobs">Past Jobs</string>
     <string name="rejected_jobs">Rejected Jobs</string>
     <string name="completed_jobs">Completed Jobs</string>
+    <string name="all_jobs">All Jobs</string>
     <string name="choose_start_time">Choose start time</string>
     <string name="choose_end_time">Choose End time</string>
     <string name="time_should_not_same">Start time and End time should not be same</string>

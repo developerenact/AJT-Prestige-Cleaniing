@@ -96,8 +96,6 @@ public class LogsActivity extends BaseActivity {
     Task tasks;
     Datum datum;
     TextView tv_log_name, tv_log_desc, log_label;
-    ArrayList<com.android.ajtprestigecleaning.model.AllLogsPojo.Datum> logs = new ArrayList<>();
-    com.android.ajtprestigecleaning.model.AllLogsPojo.Datum logspojo;
     int position = -1;
     int img_count = 0;
     int txt_count = 0;
@@ -108,7 +106,7 @@ public class LogsActivity extends BaseActivity {
     ImageView log_image;
     LinearLayout choose_file_layout;
     CircularRevealCardView log_img_card;
-    File compressedFile;
+
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -150,7 +148,6 @@ public class LogsActivity extends BaseActivity {
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.getRecycledViewPool().setMaxRecycledViews(0, 0);
-        logspojo = new com.android.ajtprestigecleaning.model.AllLogsPojo.Datum();
 
         add_logs.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -226,6 +223,7 @@ public class LogsActivity extends BaseActivity {
     private void showimagePicker() {
         final CharSequence[] charSequence = {"Camera", "Gallery", "Cancel"};
         final AlertDialog.Builder alert = new AlertDialog.Builder(LogsActivity.this);
+        getWindow().setGravity(Gravity.BOTTOM);
         alert.setCancelable(false);
         alert.setTitle("Select Image");
         alert.setItems(charSequence, new DialogInterface.OnClickListener() {
@@ -490,10 +488,11 @@ public class LogsActivity extends BaseActivity {
                         dialog.dismiss();
                         choose_file_layout.setVisibility(View.VISIBLE);
                         log_img_card.setVisibility(View.GONE);
+                       com.android.ajtprestigecleaning.model.AllLogsPojo.Datum logspojo = new com.android.ajtprestigecleaning.model.AllLogsPojo.Datum();
                         logspojo.setText(response.body().getData().getText());
                         logspojo.setImage(response.body().getData().getImage());
-                        logs.add(logspojo);
-                        adapter.addItems(logs);
+
+                        adapter.addItems(logspojo);
                        // allLogsApi();
                         if (!response.body().getData().getText().toString().isEmpty()) {
                             txt_count += 1;

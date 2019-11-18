@@ -137,7 +137,9 @@ public class JobsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     intent.putExtra("sampleObject", (Serializable) results.get(position));
                     //  intent.putExtra("sampleObject", (Serializable) results.get(position).getCheckList().get(position));
                     intent.putExtra("jobId", results.get(position).getId());
-                    context.startActivity(intent);
+                   // context.startActivity(intent);
+                    ((DashboardActivity) context).startActivityForResult(intent, 11);
+
 
                 }
             });

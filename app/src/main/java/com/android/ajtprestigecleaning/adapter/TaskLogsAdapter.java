@@ -129,8 +129,8 @@ public class TaskLogsAdapter extends RecyclerView.Adapter<TaskLogsAdapter.ViewHo
 
     }
 
-    public void addItems(List<Datum> newItems) {
-        results.addAll(newItems);
+    public void addItems(Datum newItems) {
+        results.add(newItems);
         notifyDataSetChanged();
     }
 

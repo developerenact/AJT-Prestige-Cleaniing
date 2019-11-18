@@ -174,21 +174,27 @@ public class DashboardActivity extends BaseActivity
                     switch (finalI){
                         case 0:
                             state=0;
+                            label_alljobs.setText(R.string.all_jobs);
                             break;
                         case 1:
                             state=Constants.INPROGRESS;
+                            label_alljobs.setText(R.string.in_progress);
                             break;
                         case 2:
                             state=Constants.UPCOMING;
+                            label_alljobs.setText(R.string.upcoming);
                             break;
                         case 3:
                             state=Constants.PAST;
+                            label_alljobs.setText(R.string.past_jobs);
                             break;
                         case 4:
                             state=Constants.REJECTED;
+                            label_alljobs.setText(R.string.rejected_jobs);
                             break;
                         case 5:
                             state=Constants.COMPLETED;
+                            label_alljobs.setText(R.string.completed_jobs);
                             break;
                     }
                     fragment.getjobs(state, DashboardActivity.this);
@@ -636,6 +642,36 @@ public class DashboardActivity extends BaseActivity
     public void updateadapter() {
         fragment.update(state);
     }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        try {
+            super.onActivityResult(requestCode, resultCode, data);
+
+            if (requestCode == 11 && resultCode == RESULT_OK) {
+                String update = data.getStringExtra("update");
+
+                if(update.equalsIgnoreCase("yes")){
+                    if (fragment != null) {
+                        fragment.getjobs(state, DashboardActivity.this);
+                    }
+                }
+                else {
+
+                }
+
+
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+    }
+
+
+
+
 
 
 }
